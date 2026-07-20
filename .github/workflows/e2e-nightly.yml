@@ -1,0 +1,53 @@
+name: e2e-nightly
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-nightly
+  cancel-in-progress: true
+
+jobs:
+  complete-journey:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      NETKEEP_R2_TESTS: ${{ secrets.NETKEEP_R2_ENDPOINT != '' && 'true' || 'false' }}
+      NETKEEP_R2_ENDPOINT: ${{ secrets.NETKEEP_R2_ENDPOINT }}
+      NETKEEP_R2_BUCKET: ${{ secrets.NETKEEP_R2_BUCKET }}
+      NETKEEP_R2_ACCESS_KEY: ${{ secrets.NETKEEP_R2_ACCESS_KEY }}
+      NETKEEP_R2_SECRET_KEY: ${{ secrets.NETKEEP_R2_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install frontend test dependencies
+        run: npm ci --ignore-scripts
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Run complete journey
+        run: ./scripts/e2e-test.sh all
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: playwright-complete
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Logs on failure
+        if: failure()
+        run: docker compose -p netkeep-e2e -f compose.yaml -f compose.dev.yaml -f compose.e2e.yaml logs --no-color
+      - name: Stop installation
+        if: always()
+        run: docker compose -p netkeep-e2e -f compose.yaml -f compose.dev.yaml -f compose.e2e.yaml down --volumes --remove-orphans

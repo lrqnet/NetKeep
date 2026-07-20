@@ -1,0 +1,416 @@
+name: netkeep
+
+x-netkeep-image: &netkeep-image
+    image: ${NETKEEP_IMAGE:-docker.io/lrqnet/netkeep:1.0.0}
+
+x-netkeep-environment: &netkeep-environment
+    APP_ENV: production
+    APP_DEBUG: 'false'
+    DB_CONNECTION: pgsql
+    DB_HOST: postgres
+    DB_PORT: '5432'
+    DB_DATABASE: netkeep
+    DB_USERNAME: netkeep
+    OXIDIZED_URL: http://oxidized:8888
+    OXIDIZED_SANDBOX_URL: http://sandbox:8888
+    WUD_URL: http://wud:3000
+
+x-netkeep-volumes: &netkeep-volumes
+    - netkeep_secrets:/run/netkeep-secrets:ro
+    - netkeep_storage:/app/storage
+    - oxidized_config:/var/lib/netkeep/oxidized
+    - oxidized_git:/var/lib/netkeep/oxidized/repository
+    - sandbox_config:/var/lib/netkeep/sandbox
+    - sandbox_git:/var/lib/netkeep/sandbox/repository
+    - backup_data:/var/lib/netkeep/backups
+    - restore_inbox:/var/lib/netkeep/restore-inbox
+    - netkeep_cache:/app/bootstrap/cache
+
+services:
+    init:
+        <<: *netkeep-image
+        command: ['init-secrets']
+        user: '0:0'
+        restart: 'no'
+        read_only: true
+        pids_limit: 64
+        mem_limit: 128m
+        security_opt:
+            - no-new-privileges:true
+        tmpfs:
+            - /tmp:rw,noexec,nosuid,nodev,size=32m
+        volumes:
+            - netkeep_secrets:/run/netkeep-secrets
+            - netkeep_recovery_secrets:/run/netkeep-recovery-secrets
+            - netkeep_claim:/var/lib/netkeep/claim
+            - netkeep_storage:/var/lib/netkeep/storage
+            - netkeep_cache:/var/lib/netkeep/bootstrap-cache
+            - oxidized_config:/var/lib/netkeep/oxidized
+            - oxidized_git:/var/lib/netkeep/oxidized/repository
+            - sandbox_config:/var/lib/netkeep/sandbox
+            - sandbox_git:/var/lib/netkeep/sandbox/repository
+            - backup_data:/var/lib/netkeep/backups
+            - restore_inbox:/var/lib/netkeep/restore-inbox
+            - caddy_data:/var/lib/netkeep/caddy-data
+            - caddy_config:/var/lib/netkeep/caddy-config
+        network_mode: none
+
+    postgres:
+        image: postgres:18.4-bookworm@sha256:1961f96e6029a02c3812d7cb329a3b03a3ac2bb067058dec17b0f5596aca9296
+        restart: unless-stopped
+        read_only: true
+        pids_limit: 256
+        mem_limit: 1g
+        security_opt:
+            - no-new-privileges:true
+        depends_on:
+            init:
+                condition: service_completed_successfully
+        group_add:
+            - '20000'
+        environment:
+            POSTGRES_DB: postgres
+            POSTGRES_USER: netkeep_admin
+            POSTGRES_PASSWORD_FILE: /run/netkeep-recovery-secrets/postgres_admin_password
+            PGDATA: /var/lib/postgresql/18/docker
+        volumes:
+            - postgres_data:/var/lib/postgresql
+            - netkeep_recovery_secrets:/run/netkeep-recovery-secrets:ro
+        tmpfs:
+            - /tmp:rw,noexec,nosuid,nodev,size=64m
+            - /var/run/postgresql:rw,nosuid,nodev,size=16m
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U netkeep_admin -d postgres']
+            interval: 5s
+            timeout: 5s
+            retries: 30
+        networks:
+            - internal
+
+    database-init:
+        <<: *netkeep-image
+        command: ['php', 'artisan', 'netkeep:database-initialize']
+        user: '20000:20000'
+        restart: 'no'
+        read_only: true
+        cap_drop:
+            - ALL
+        pids_limit: 64
+        mem_limit: 128m
+        security_opt:
+            - no-new-privileges:true
+        tmpfs:
+            - /tmp:rw,noexec,nosuid,nodev,size=32m
+        depends_on:
+            init:
+                condition: service_completed_successfully
+            postgres:
+                condition: service_healthy
+        environment: *netkeep-environment
+        volumes:
+            - netkeep_secrets:/run/netkeep-secrets:ro
+            - netkeep_recovery_secrets:/run/netkeep-recovery-secrets:ro
+            - netkeep_cache:/app/bootstrap/cache
+        networks:
+            - internal
+
+    app:
+        <<: *netkeep-image
+        restart: unless-stopped
+        user: '20000:20000'
+        group_add:
+            - '30000'
+        read_only: true
+        cap_drop:
+            - ALL
+        pids_limit: 256
+        mem_limit: 768m
+        security_opt:
+            - no-new-privileges:true
+        tmpfs:
+            - /tmp:rw,noexec,nosuid,nodev,size=128m
+        depends_on:
+            init:
+                condition: service_completed_successfully
+            postgres:
+                condition: service_healthy
+            database-init:
+                condition: service_completed_successfully
+        environment: *netkeep-environment
+        volumes:
+            - netkeep_secrets:/run/netkeep-secrets:ro
+            - netkeep_claim:/run/netkeep-claim
+            - netkeep_storage:/app/storage
+            - oxidized_config:/var/lib/netkeep/oxidized
+            - oxidized_git:/var/lib/netkeep/oxidized/repository
+            - sandbox_config:/var/lib/netkeep/sandbox
+            - sandbox_git:/var/lib/netkeep/sandbox/repository
+            - backup_data:/var/lib/netkeep/backups
+            - restore_inbox:/var/lib/netkeep/restore-inbox
+            - netkeep_cache:/app/bootstrap/cache
+            - caddy_data:/data
+            - caddy_config:/config
+        ports:
+            - target: 8080
+              published: '${NETKEEP_HTTP_PORT:-80}'
+              host_ip: '${NETKEEP_BIND_IP:-0.0.0.0}'
+              protocol: tcp
+            - target: 8443
+              published: '${NETKEEP_HTTPS_PORT:-443}'
+              host_ip: '${NETKEEP_BIND_IP:-0.0.0.0}'
+              protocol: tcp
+        healthcheck:
+            test:
+                [
+                    'CMD',
+                    'curl',
+                    '--fail',
+                    '--silent',
+                    'http://localhost:8080/up',
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 20
+            start_period: 30s
+        labels:
+            wud.watch: 'true'
+            wud.tag.include: "^1\\.[0-9]+\\.[0-9]+$"
+            wud.trigger.include: 'dockercompose.netkeep:minor'
+            wud.link.template: 'https://github.com/lrqnet/NetKeep/releases/tag/v$${major}.$${minor}.$${patch}'
+        networks:
+            - edge
+            - internal
+            - sandbox_internal
+            - device_access
+            - egress
+
+    worker:
+        <<: *netkeep-image
+        command: ['/usr/local/bin/worker.sh']
+        restart: unless-stopped
+        user: '20000:20000'
+        group_add:
+            - '30000'
+        read_only: true
+        cap_drop:
+            - ALL
+        pids_limit: 256
+        mem_limit: 1g
+        security_opt:
+            - no-new-privileges:true
+        tmpfs:
+            - /tmp:rw,noexec,nosuid,nodev,size=128m
+        stop_grace_period: 30s
+        depends_on:
+            app:
+                condition: service_healthy
+        environment: *netkeep-environment
+        volumes: *netkeep-volumes
+        labels:
+            wud.watch: 'false'
+        healthcheck:
+            test: ['CMD-SHELL', 'kill -0 1']
+            interval: 15s
+            timeout: 5s
+            retries: 3
+        networks:
+            - internal
+            - sandbox_internal
+            - device_access
+            - egress
+
+    scheduler:
+        <<: *netkeep-image
+        command: ['/usr/local/bin/scheduler.sh']
+        restart: unless-stopped
+        user: '20000:20000'
+        group_add:
+            - '30000'
+        read_only: true
+        cap_drop:
+            - ALL
+        pids_limit: 128
+        mem_limit: 256m
+        security_opt:
+            - no-new-privileges:true
+        tmpfs:
+            - /tmp:rw,noexec,nosuid,nodev,size=64m
+        depends_on:
+            app:
+                condition: service_healthy
+        environment: *netkeep-environment
+        volumes: *netkeep-volumes
+        labels:
+            wud.watch: 'false'
+        healthcheck:
+            test: ['CMD-SHELL', 'kill -0 1']
+            interval: 15s
+            timeout: 5s
+            retries: 3
+        networks:
+            - internal
+            - egress
+
+    oxidized:
+        image: ${NETKEEP_OXIDIZED_IMAGE:-docker.io/lrqnet/netkeep-oxidized:0.37.0-r1}
+        user: '30000:30000'
+        restart: unless-stopped
+        read_only: true
+        cap_drop:
+            - ALL
+        pids_limit: 256
+        mem_limit: 2g
+        security_opt:
+            - no-new-privileges:true
+        tmpfs:
+            - /tmp:rw,noexec,nosuid,nodev,size=128m
+            - /run:rw,nosuid,nodev,size=16m
+        depends_on:
+            app:
+                condition: service_healthy
+        environment:
+            CONFIG_RELOAD_INTERVAL: '300'
+            OXIDIZED_HOME: /home/oxidized/.config/oxidized
+        volumes:
+            - oxidized_config:/home/oxidized/.config/oxidized
+            - oxidized_git:/home/oxidized/.config/oxidized/repository
+        healthcheck:
+            test:
+                [
+                    'CMD-SHELL',
+                    'ruby -rnet/http -e "u=URI(''http://localhost:8888/nodes.json'');r=Net::HTTP::Get.new(u);r[''Host'']=''oxidized'';exit(Net::HTTP.start(u.host,u.port){|h|h.request(r)}.is_a?(Net::HTTPSuccess) ? 0 : 1)"',
+                ]
+            interval: 15s
+            timeout: 5s
+            retries: 20
+        networks:
+            - internal
+            - device_access
+
+    sandbox:
+        image: ${NETKEEP_OXIDIZED_IMAGE:-docker.io/lrqnet/netkeep-oxidized:0.37.0-r1}
+        user: '30000:30000'
+        restart: unless-stopped
+        read_only: true
+        cap_drop:
+            - ALL
+        pids_limit: 64
+        mem_limit: 512m
+        security_opt:
+            - no-new-privileges:true
+        tmpfs:
+            - /tmp:rw,noexec,nosuid,nodev,size=64m
+            - /run:rw,nosuid,nodev,size=16m
+        depends_on:
+            app:
+                condition: service_healthy
+        environment:
+            CONFIG_RELOAD_INTERVAL: '300'
+            OXIDIZED_HOME: /home/oxidized/.config/oxidized
+        volumes:
+            - sandbox_config:/home/oxidized/.config/oxidized
+            - sandbox_git:/home/oxidized/.config/oxidized/repository
+        healthcheck:
+            test:
+                [
+                    'CMD-SHELL',
+                    'ruby -rnet/http -e "u=URI(''http://localhost:8888/nodes.json'');r=Net::HTTP::Get.new(u);r[''Host'']=''sandbox'';exit(Net::HTTP.start(u.host,u.port){|h|h.request(r)}.is_a?(Net::HTTPSuccess) ? 0 : 1)"',
+                ]
+            interval: 15s
+            timeout: 5s
+            retries: 20
+        networks:
+            - sandbox_internal
+            - sandbox_device_access
+
+    recovery:
+        <<: *netkeep-image
+        profiles: ['recovery']
+        command: ['php', 'artisan', 'list', 'netkeep']
+        user: '0:0'
+        restart: 'no'
+        read_only: true
+        cap_drop:
+            - ALL
+        cap_add:
+            - CHOWN
+            - DAC_OVERRIDE
+            - FOWNER
+        pids_limit: 128
+        mem_limit: 1g
+        security_opt:
+            - no-new-privileges:true
+        tmpfs:
+            - /tmp:rw,noexec,nosuid,nodev,size=256m
+        depends_on:
+            init:
+                condition: service_completed_successfully
+            postgres:
+                condition: service_healthy
+        environment: *netkeep-environment
+        volumes:
+            - netkeep_secrets:/run/netkeep-secrets
+            - netkeep_recovery_secrets:/run/netkeep-recovery-secrets:ro
+            - netkeep_claim:/run/netkeep-claim
+            - netkeep_storage:/app/storage
+            - netkeep_cache:/app/bootstrap/cache
+            - oxidized_config:/var/lib/netkeep/oxidized
+            - oxidized_git:/var/lib/netkeep/oxidized/repository
+            - sandbox_config:/var/lib/netkeep/sandbox
+            - sandbox_git:/var/lib/netkeep/sandbox/repository
+            - backup_data:/var/lib/netkeep/backups
+            - restore_inbox:/var/lib/netkeep/restore-inbox
+        networks:
+            - internal
+
+    wud:
+        image: getwud/wud:8.3.0@sha256:1cf5ecfdbd2389847427fd9685c4fd337ee8c74a0f584c52288d760d9a58811e
+        profiles: ['dangerous-auto-update']
+        restart: unless-stopped
+        read_only: true
+        pids_limit: 128
+        mem_limit: 256m
+        security_opt:
+            - no-new-privileges:true
+        tmpfs:
+            - /tmp:rw,noexec,nosuid,nodev,size=64m
+        environment:
+            WUD_WATCHER_LOCAL_CRON: '0 */6 * * *'
+            WUD_WATCHER_LOCAL_WATCHALL: 'false'
+            WUD_TRIGGER_DOCKERCOMPOSE_NETKEEP_FILE: /wud/compose.yaml
+            WUD_TRIGGER_DOCKERCOMPOSE_NETKEEP_PRUNE: 'true'
+            WUD_TRIGGER_DOCKERCOMPOSE_NETKEEP_AUTO: 'false'
+            WUD_TRIGGER_DOCKERCOMPOSE_NETKEEP_THRESHOLD: minor
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./compose.yaml:/wud/compose.yaml:ro
+            - wud_data:/store
+        networks:
+            - edge
+
+volumes:
+    postgres_data:
+    netkeep_secrets:
+    netkeep_recovery_secrets:
+    netkeep_claim:
+    netkeep_storage:
+    oxidized_config:
+    oxidized_git:
+    sandbox_config:
+    sandbox_git:
+    backup_data:
+    restore_inbox:
+    netkeep_cache:
+    wud_data:
+    caddy_data:
+    caddy_config:
+
+networks:
+    edge:
+    internal:
+        internal: true
+    sandbox_internal:
+        internal: true
+    device_access:
+    sandbox_device_access:
+    egress:

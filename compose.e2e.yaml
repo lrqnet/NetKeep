@@ -1,0 +1,88 @@
+services:
+    init:
+        build:
+            target: test
+
+    database-init:
+        build:
+            target: test
+
+    app:
+        build:
+            target: test
+        environment:
+            NETKEEP_INTEGRATION_TESTS: 'true'
+            TELEGRAM_API_BASE_URL: http://wiremock:8080
+            NETKEEP_R2_TESTS: '${NETKEEP_R2_TESTS:-false}'
+            NETKEEP_R2_ENDPOINT: '${NETKEEP_R2_ENDPOINT:-}'
+            NETKEEP_R2_BUCKET: '${NETKEEP_R2_BUCKET:-}'
+            NETKEEP_R2_ACCESS_KEY: '${NETKEEP_R2_ACCESS_KEY:-}'
+            NETKEEP_R2_SECRET_KEY: '${NETKEEP_R2_SECRET_KEY:-}'
+        depends_on:
+            s3mock:
+                condition: service_started
+            wiremock:
+                condition: service_started
+            mailpit:
+                condition: service_started
+
+    worker:
+        build:
+            target: test
+        environment:
+            NETKEEP_INTEGRATION_TESTS: 'true'
+            TELEGRAM_API_BASE_URL: http://wiremock:8080
+
+    scheduler:
+        build:
+            target: test
+
+    recovery:
+        build:
+            target: test
+
+    s3mock:
+        image: adobe/s3mock:5.1.0@sha256:65cf60155a2e235fe7d5bf6c633747d6fc7ed93f9f5a6727d86470026b83c2a2
+        environment:
+            COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS: netkeep-e2e
+        ports:
+            - target: 9090
+              published: '${NETKEEP_E2E_S3_PORT:-19090}'
+              host_ip: 127.0.0.1
+        networks:
+            - egress
+
+    wiremock:
+        image: wiremock/wiremock:3.13.2@sha256:0d4ecb3e4dc8213fd7a4d37d6a78f6e6b553a6d2e15bd51b0999781282ac61b3
+        command: ['--max-request-journal-entries', '500']
+        ports:
+            - target: 8080
+              published: '${NETKEEP_E2E_WIREMOCK_PORT:-18082}'
+              host_ip: 127.0.0.1
+        networks:
+            - egress
+
+    mailpit:
+        image: axllent/mailpit:v1.30.4@sha256:5a49a77c5bdbe7c5474450b4f46348d09949df3695257729c93a30369382d4f6
+        environment:
+            MP_MAX_MESSAGES: '500'
+            MP_DATABASE: /tmp/mailpit.db
+        ports:
+            - target: 8025
+              published: '${NETKEEP_E2E_MAILPIT_PORT:-18025}'
+              host_ip: 127.0.0.1
+        networks:
+            - egress
+
+    device-simulator:
+        build:
+            context: tests/Fixtures/device-simulator
+        networks:
+            device_access:
+                ipv4_address: 172.31.250.10
+
+networks:
+    device_access:
+        ipam:
+            config:
+                - subnet: 172.31.250.0/24

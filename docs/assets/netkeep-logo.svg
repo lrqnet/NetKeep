@@ -1,0 +1,59 @@
+<svg
+    width="1200"
+    height="360"
+    viewBox="0 0 1200 360"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    role="img"
+    aria-labelledby="title description"
+>
+    <title id="title">NetKeep</title>
+    <desc id="description">
+        NetKeep shield and network mark with the words open network configuration backup
+    </desc>
+    <rect width="1200" height="360" rx="36" fill="#07111F" />
+    <rect x="104" y="80" width="200" height="200" rx="48" fill="#34D399" />
+    <g transform="translate(104 80) scale(5)" color="#07111F">
+        <path
+            d="M20 3.5 34 8.8v9.4c0 8.6-5.4 15.4-14 18.3C11.4 33.6 6 26.8 6 18.2V8.8L20 3.5Z"
+            fill="currentColor"
+            opacity=".18"
+        />
+        <path
+            d="M20 4.5 33 9.4v8.8c0 7.9-4.8 14.2-13 17.1-8.2-2.9-13-9.2-13-17.1V9.4L20 4.5Z"
+            stroke="currentColor"
+            stroke-width="2.4"
+        />
+        <circle cx="14" cy="17" r="2.3" fill="currentColor" />
+        <circle cx="26" cy="14" r="2.3" fill="currentColor" />
+        <circle cx="24" cy="25" r="2.3" fill="currentColor" />
+        <path
+            d="m16 16.3 7.8-1.7M15.4 18.7l7.2 4.9"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+        />
+    </g>
+    <text
+        x="370"
+        y="205"
+        fill="#F8FAFC"
+        font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+        font-size="104"
+        font-weight="700"
+        letter-spacing="-4"
+    >
+        NetKeep
+    </text>
+    <text
+        x="376"
+        y="255"
+        fill="#94A3B8"
+        font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+        font-size="28"
+        font-weight="500"
+        letter-spacing=".5"
+    >
+        Open network configuration backup
+    </text>
+</svg>

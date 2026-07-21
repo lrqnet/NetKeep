@@ -30,6 +30,10 @@ else
     "${compose[@]}" up --detach --build --wait
 fi
 
+"${compose[@]}" exec --no-TTY app php artisan config:clear
+"${compose[@]}" exec --no-TTY app php artisan migrate:status --no-ansi
+"${compose[@]}" exec --no-TTY app php artisan optimize
+
 export NETKEEP_INSTALLATION_TOKEN
 NETKEEP_INSTALLATION_TOKEN="$("${compose[@]}" exec --no-TTY app php artisan netkeep:installation-token)"
 
@@ -112,5 +116,10 @@ test "$transient" = '0'
     git -C /home/oxidized/.config/oxidized/repository \
     show "HEAD:default/$device_uuid" |
     grep -q 'hostname NETKEEP-E2E'
+
+if "${compose[@]}" logs --no-color scheduler | grep -q 'failed with exit code'; then
+    "${compose[@]}" logs --no-color scheduler
+    exit 1
+fi
 
 "${compose[@]}" ps

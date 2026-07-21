@@ -165,6 +165,15 @@ npm run types:check
 npm run build
 ```
 
+O favicon usa o mesmo escudo com nós da interface. Depois de alterar
+`public/favicon.svg`, gere o ICO multirresolução e o Apple Touch Icon com o
+Chromium fornecido pelo Playwright:
+
+```bash
+npx playwright install chromium
+npm run assets:favicons
+```
+
 ## Desenvolvimento nativo
 
 Requer PHP 8.4, Composer 2, Node.js 22 e PostgreSQL.

@@ -132,12 +132,15 @@ jobs:
           APP_DIGEST: ${{ needs.netkeep-image.outputs.digest }}
           OXIDIZED_DIGEST: ${{ needs.oxidized-image.outputs.digest }}
         run: |
+          VERSION="${GITHUB_REF_NAME#v}"
           test "v$(sed -n 's/.*netkeep:\([0-9][0-9.]*\).*/\1/p' compose.yaml | head -1)" = "${GITHUB_REF_NAME}"
           mkdir -p dist
           sed \
-            -e "s#docker.io/lrqnet/netkeep:1.0.0#docker.io/lrqnet/netkeep@${APP_DIGEST}#g" \
+            -e "s#docker.io/lrqnet/netkeep:${VERSION}#docker.io/lrqnet/netkeep@${APP_DIGEST}#g" \
             -e "s#docker.io/lrqnet/netkeep-oxidized:0.37.0-r1#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g" \
             compose.yaml > dist/compose.yaml
+          grep -q "docker.io/lrqnet/netkeep@sha256:" dist/compose.yaml
+          grep -q "docker.io/lrqnet/netkeep-oxidized@sha256:" dist/compose.yaml
           docker compose -f dist/compose.yaml config --quiet
       - uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65
         with:

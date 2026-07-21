@@ -21,8 +21,8 @@ também são espelhadas no GHCR.
 ```bash
 mkdir -p /opt/netkeep
 cd /opt/netkeep
-curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.0/compose.yaml
-docker compose up -d
+curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.1/compose.yaml
+docker compose up -d --wait
 docker compose ps
 ```
 
@@ -41,6 +41,12 @@ Consulte o token de posse sem procurar dentro do volume e sem expô-lo em logs:
 ```bash
 docker compose exec app php artisan netkeep:installation-token
 ```
+
+Processos PHP iniciados por `docker compose exec app` carregam o ambiente de
+runtime diretamente do volume `netkeep_secrets`, que é montado somente para
+leitura. O arquivo não é impresso, copiado para o host nem incluído no comando.
+Evite `docker compose run app` para consultas administrativas, pois esse formato
+também inicia dependências de execução única sem necessidade.
 
 Abra `http://IP-DO-SERVIDOR`, informe esse token e crie o proprietário. O token
 é invalidado depois da criação. Uma transação, um bloqueio e um índice parcial
@@ -85,8 +91,9 @@ docker compose exec app php artisan about
 ```
 
 `postgres`, `app`, `worker`, `scheduler`, `oxidized` e `sandbox` devem ficar
-saudáveis. `init` e `database-init` devem aparecer como concluídos. Reiniciar
-a pilha não regenera segredos existentes.
+saudáveis. `init` e `database-init` devem aparecer como `Exited (0)`, pois são
+serviços de execução única concluídos com sucesso. Reiniciar a pilha não
+regenera segredos existentes.
 
 Confirme que a conta usada pela aplicação não possui privilégios elevados:
 

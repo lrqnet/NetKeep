@@ -34,8 +34,8 @@ O token fica somente no cofre de secrets do GitHub e não deve ser salvo em
 O workflow `.github/workflows/release.yml` é acionado por tags SemVer:
 
 ```bash
-git tag -a v1.0.0 -m "NetKeep v1.0.0"
-git push origin v1.0.0
+git tag -a v1.0.1 -m "NetKeep v1.0.1"
+git push origin v1.0.1
 ```
 
 O workflow:
@@ -54,12 +54,12 @@ O Compose nunca usa `latest`; a tag existe apenas para descoberta manual.
 ## Conferência
 
 ```bash
-docker pull lrqnet/netkeep:1.0.0
-docker image inspect lrqnet/netkeep:1.0.0
+docker pull lrqnet/netkeep:1.0.1
+docker image inspect lrqnet/netkeep:1.0.1
 cosign verify \
   --certificate-identity-regexp='github.com/lrqnet/NetKeep' \
   --certificate-oidc-issuer='https://token.actions.githubusercontent.com' \
-  docker.io/lrqnet/netkeep:1.0.0
+  docker.io/lrqnet/netkeep:1.0.1
 
 cosign verify \
   --certificate-identity-regexp='github.com/lrqnet/NetKeep' \
@@ -74,7 +74,7 @@ Em um servidor novo:
 ```bash
 mkdir -p /opt/netkeep
 cd /opt/netkeep
-curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.0/compose.yaml
+curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.1/compose.yaml
 docker compose up -d
 ```
 

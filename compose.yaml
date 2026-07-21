@@ -1,7 +1,7 @@
 name: netkeep
 
 x-netkeep-image: &netkeep-image
-    image: ${NETKEEP_IMAGE:-docker.io/lrqnet/netkeep:1.0.0}
+    image: ${NETKEEP_IMAGE:-docker.io/lrqnet/netkeep:1.0.1}
 
 x-netkeep-environment: &netkeep-environment
     APP_ENV: production
@@ -204,6 +204,8 @@ services:
         depends_on:
             app:
                 condition: service_healthy
+            oxidized:
+                condition: service_healthy
         environment: *netkeep-environment
         volumes: *netkeep-volumes
         labels:
@@ -237,6 +239,8 @@ services:
             - /tmp:rw,noexec,nosuid,nodev,size=64m
         depends_on:
             app:
+                condition: service_healthy
+            oxidized:
                 condition: service_healthy
         environment: *netkeep-environment
         volumes: *netkeep-volumes

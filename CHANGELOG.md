@@ -5,6 +5,34 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-07-21
+
+### Added
+
+- favicon oficial com o escudo e os nós do NetKeep em SVG, ICO
+  multirresolução e Apple Touch Icon, além de geração reproduzível pelo
+  Playwright;
+- regressões E2E para comandos Artisan após limpeza do cache de configuração e
+  para falhas do scheduler durante a inicialização.
+
+### Changed
+
+- worker de filas duradouro com reinicialização controlada a cada cinco
+  minutos e encerramento gracioso ao detectar manutenção, reduzindo o consumo
+  ocioso sem comprometer restaurações;
+- worker e scheduler aguardam o health check do Oxidized antes de iniciar;
+- workflow de release substitui a versão SemVer atual por digest sem depender
+  de um número de versão fixo.
+
+### Fixed
+
+- comandos Artisan executados com `docker compose exec app` carregam os
+  segredos de runtime do volume somente leitura mesmo quando o cache de
+  configuração foi removido;
+- corrida no primeiro ciclo do scheduler que podia registrar falha ao consultar
+  o Oxidized ainda em inicialização;
+- favicons padrão do Laravel substituídos pela identidade visual do NetKeep.
+
 ## [1.0.0] - 2026-07-20
 
 ### Added
@@ -103,5 +131,6 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 - ambiente PostgreSQL do CI alinhado ao arquivo de teste e asserções de
   mensagens independentes do idioma configurado.
 
-[Unreleased]: https://github.com/lrqnet/NetKeep/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/lrqnet/NetKeep/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/lrqnet/NetKeep/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/lrqnet/NetKeep/releases/tag/v1.0.0

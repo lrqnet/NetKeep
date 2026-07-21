@@ -54,7 +54,10 @@ class NotificationSenderTest extends TestCase
             $this->fail('Uma exceção sanitizada era esperada.');
         } catch (\RuntimeException $exception) {
             $this->assertStringNotContainsString($token, $exception->getMessage());
-            $this->assertSame('Não foi possível enviar o canal de alerta telegram.', $exception->getMessage());
+            $this->assertSame(
+                __('netkeep.notifications.send_failed', ['type' => 'telegram']),
+                $exception->getMessage(),
+            );
         }
     }
 }

@@ -98,8 +98,10 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 - resolução DNS de serviços Compose opcionais sem HTTP 500, preservando a
   rejeição fail-closed de destinos sem resolução e o bloqueio de endereços
   internos;
-- permissão mínima necessária para publicar relatórios SARIF do Trivy no
-  GitHub Actions.
+- preservação dos relatórios SARIF do Trivy como artefato e publicação
+  best-effort no Code Scanning quando o recurso estiver habilitado no GitHub;
+- ambiente PostgreSQL do CI alinhado ao arquivo de teste e asserções de
+  mensagens independentes do idioma configurado.
 
 [Unreleased]: https://github.com/lrqnet/NetKeep/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/lrqnet/NetKeep/releases/tag/v1.0.0

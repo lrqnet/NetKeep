@@ -29,6 +29,10 @@ Os motores usam uma imagem derivada do Oxidized 0.37.0 sem alterar seu código,
 executada como UID 30000. PostgreSQL, Oxidized, sandbox e recovery não publicam
 portas no host.
 
+Worker e scheduler só iniciam depois que a aplicação e o Oxidized estão
+saudáveis. O worker mantém um processo de fila duradouro e observa o marcador de
+manutenção a cada segundo, encerrando-o de forma graciosa antes de restaurações.
+
 Os contêineres permanentes usam filesystem somente leitura, `cap_drop: ALL`,
 `no-new-privileges`, limites de memória/processos, `tmpfs` para temporários e
 apenas os volumes explicitamente graváveis. `init` e `recovery` são processos
@@ -78,6 +82,12 @@ materializado em `known_hosts` e qualquer mudança pausa a coleta e gera alerta.
 A aplicação conecta ao PostgreSQL com o papel `netkeep`, sem superuser,
 `CREATEDB` ou `CREATEROLE`. A credencial administrativa fica em volume separado
 e só é montada em `database-init` e `recovery`.
+
+Cada processo PHP carrega o arquivo `app.env` do volume `netkeep_secrets`
+somente quando ele está legível e preserva variáveis já definidas pelo Compose.
+Isso mantém comandos Artisan executados via `docker compose exec` funcionais
+sem incluir valores secretos na definição pública do contêiner ou na linha de
+comando.
 
 Credenciais, tokens e configurações de destinos usam criptografia do Laravel.
 A chave fica fora do banco, no volume de segredos. Valores secretos não são

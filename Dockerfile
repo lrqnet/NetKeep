@@ -130,6 +130,7 @@ ENV APP_ENV=testing \
     APP_DEBUG=true
 COPY --from=php-test-dependencies /usr/bin/composer /usr/local/bin/composer
 COPY --from=php-test-dependencies /app/vendor /app/vendor
+COPY compose.yaml ./compose.yaml
 COPY phpunit.xml phpstan.neon pint.json ./
 COPY .env.example .env
 COPY tests tests

@@ -1,0 +1,46 @@
+name: Relatar problema
+description: Informe um defeito reproduzível sem incluir dados sensíveis.
+title: '[Bug] '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: Não publique configurações, credenciais, tokens, dumps ou logs sem sanitização.
+  - type: input
+    id: version
+    attributes:
+      label: Versão do NetKeep
+    validations:
+      required: true
+  - type: dropdown
+    id: architecture
+    attributes:
+      label: Arquitetura
+      options: [amd64, arm64, outra]
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para reproduzir
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Resultado observado
+    validations:
+      required: true
+  - type: checkboxes
+    id: sanitized
+    attributes:
+      label: Dados
+      options:
+        - label: Removi todos os segredos e dados identificáveis.
+          required: true

@@ -1,0 +1,131 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@b604ade2a87db23f8871b7182e69ec5e75effb45
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          coverage: none
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+      - name: Validate Composer metadata
+        run: composer validate --strict --no-check-publish
+      - name: Install frontend dependencies
+        run: npm ci --ignore-scripts
+      - name: Prepare test environment
+        run: |
+          cp .env.example .env
+          touch database/database.sqlite
+          php artisan key:generate
+      - name: Frontend build
+        run: npm run build
+      - name: PHP format
+        run: vendor/bin/pint --test
+      - name: PHP static analysis
+        run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+      - name: PHP tests
+        run: php artisan test
+      - name: Frontend lint
+        run: npm run lint:check
+      - name: Frontend format
+        run: npm run format:check
+      - name: TypeScript
+        run: npm run types:check
+      - name: Translation catalogs
+        run: npm run translations:check
+
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18.4-bookworm@sha256:1961f96e6029a02c3812d7cb329a3b03a3ac2bb067058dec17b0f5596aca9296
+        env:
+          POSTGRES_DB: netkeep
+          POSTGRES_USER: netkeep
+          POSTGRES_PASSWORD: netkeep-test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U netkeep -d netkeep"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      APP_ENV: testing
+      APP_KEY: base64:1QTk1+ULN5wM5yV54KeTiEtXy6QHUYJr2bFCNhvBclo=
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: netkeep
+      DB_USERNAME: netkeep
+      DB_PASSWORD: netkeep-test
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@b604ade2a87db23f8871b7182e69ec5e75effb45
+        with:
+          php-version: '8.4'
+          coverage: none
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+      - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - run: cp .env.example .env
+      - name: PostgreSQL migration and tests
+        run: |
+          php artisan migrate --force
+          php artisan test --testsuite=Feature
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install frontend test dependencies
+        run: npm ci --ignore-scripts
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run clean installation and integration journey
+        run: ./scripts/e2e-test.sh chromium
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: playwright-chromium
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: warn
+      - name: Logs on failure
+        if: failure()
+        run: docker compose -p netkeep-e2e -f compose.yaml -f compose.dev.yaml -f compose.e2e.yaml logs --no-color
+      - name: Stop installation
+        if: always()
+        run: docker compose -p netkeep-e2e -f compose.yaml -f compose.dev.yaml -f compose.e2e.yaml down --volumes --remove-orphans

@@ -1,0 +1,21 @@
+services:
+    init:
+        build:
+            context: .
+    app:
+        build:
+            context: .
+    worker:
+        build:
+            context: .
+    scheduler:
+        build:
+            context: .
+    oxidized:
+        build:
+            context: .
+            dockerfile: Dockerfile.oxidized
+    sandbox:
+        build:
+            context: .
+            dockerfile: Dockerfile.oxidized

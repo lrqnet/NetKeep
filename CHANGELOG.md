@@ -92,5 +92,14 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 - imagens multi-arquitetura espelhadas no Docker Hub e GHCR;
 - ambiente local isolado, metadados de autoria e proteção contra segredos.
 
+### Fixed
+
+- geração dos assets Vite antes das suítes PHP em SQLite e PostgreSQL no CI;
+- resolução DNS de serviços Compose opcionais sem HTTP 500, preservando a
+  rejeição fail-closed de destinos sem resolução e o bloqueio de endereços
+  internos;
+- permissão mínima necessária para publicar relatórios SARIF do Trivy no
+  GitHub Actions.
+
 [Unreleased]: https://github.com/lrqnet/NetKeep/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/lrqnet/NetKeep/releases/tag/v1.0.0

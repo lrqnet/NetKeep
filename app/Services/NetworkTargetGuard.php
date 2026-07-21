@@ -6,6 +6,8 @@ use Illuminate\Validation\ValidationException;
 
 class NetworkTargetGuard
 {
+    public function __construct(private readonly ?DnsResolver $dnsResolver = null) {}
+
     private const BLOCKED_HOSTS = [
         'app',
         'postgres',
@@ -48,13 +50,7 @@ class NetworkTargetGuard
                 $this->reject();
             }
 
-            $records = dns_get_record($normalized, DNS_A | DNS_AAAA);
-            $addresses = collect($records ?: [])
-                ->map(fn (array $record): ?string => $record['ip'] ?? $record['ipv6'] ?? null)
-                ->filter()
-                ->unique()
-                ->values()
-                ->all();
+            $addresses = $this->resolver()->resolve($normalized);
         }
 
         if ($addresses === []) {
@@ -65,7 +61,7 @@ class NetworkTargetGuard
             $this->assertAllowedAddress($address);
         }
 
-        return array_values($addresses);
+        return $addresses;
     }
 
     /**
@@ -153,15 +149,15 @@ class NetworkTargetGuard
         $addresses = [];
         foreach (self::BLOCKED_HOSTS as $host) {
             if (filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
-                foreach (dns_get_record($host, DNS_A | DNS_AAAA) ?: [] as $record) {
-                    $address = $record['ip'] ?? $record['ipv6'] ?? null;
-                    if (is_string($address)) {
-                        $addresses[] = strtolower($address);
-                    }
-                }
+                $addresses = [...$addresses, ...$this->resolver()->resolve($host)];
             }
         }
 
         return array_values(array_unique($addresses));
+    }
+
+    private function resolver(): DnsResolver
+    {
+        return $this->dnsResolver ?? new DnsResolver;
     }
 }

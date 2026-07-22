@@ -11,11 +11,6 @@ import (
 )
 
 func TestSimulatorAuthenticatesAndRunsReadOnlyCLI(t *testing.T) {
-	previousCLI := networkCLI
-	networkCLI = "./network-cli"
-	t.Cleanup(func() {
-		networkCLI = previousCLI
-	})
 	configuration, err := serverConfiguration()
 	if err != nil {
 		t.Fatal(err)

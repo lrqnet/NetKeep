@@ -77,4 +77,20 @@ class ContainerRuntimeTest extends TestCase
         $this->assertStringContainsString('trivyignores: .trivyignore.yaml', $workflow);
         $this->assertStringContainsString("exit-code: '1'", $workflow);
     }
+
+    public function test_security_sensitive_builders_and_fixture_are_current_and_pinned(): void
+    {
+        $root = dirname(__DIR__, 2);
+        $updater = file_get_contents($root.'/Dockerfile.updater');
+        $simulator = file_get_contents($root.'/tests/Fixtures/device-simulator/Dockerfile');
+
+        $this->assertIsString($updater);
+        $this->assertIsString($simulator);
+        $this->assertStringContainsString('golang:1.26.5-alpine@sha256:', $updater);
+        $this->assertStringContainsString('docker:29.6.2-cli-alpine3.24@sha256:', $updater);
+        $this->assertStringContainsString('RUN rm -f /usr/local/libexec/docker/cli-plugins/docker-buildx', $updater);
+        $this->assertStringContainsString('golang:1.26.5-alpine@sha256:', $simulator);
+        $this->assertStringContainsString("\nFROM scratch\n", $simulator);
+        $this->assertStringContainsString('USER 30001:30001', $simulator);
+    }
 }

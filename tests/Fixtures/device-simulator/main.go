@@ -1,21 +1,22 @@
 package main
 
 import (
+	"bufio"
 	"crypto/ed25519"
 	"crypto/rand"
 	"crypto/subtle"
 	"errors"
+	"io"
 	"net"
 	"os"
-	"os/exec"
+	"strings"
 	"time"
 
 	"golang.org/x/crypto/ssh"
 )
 
 const listenAddress = ":2222"
-
-var networkCLI = "/usr/local/bin/network-cli"
+const prompt = "NetKeep-E2E# "
 
 func main() {
 	if len(os.Args) == 2 && os.Args[1] == "healthcheck" {
@@ -125,16 +126,75 @@ func handleSession(channel ssh.Channel, requests <-chan *ssh.Request) {
 }
 
 func runCLI(channel ssh.Channel) {
-	command := exec.Command(networkCLI)
-	command.Stdin = channel
-	command.Stdout = channel
-	command.Stderr = channel
+	defer channel.Close()
+	_, _ = io.WriteString(channel, "\r\n"+prompt)
+	reader := bufio.NewScanner(channel)
+	for reader.Scan() {
+		response, exit := commandResponse(strings.TrimSuffix(reader.Text(), "\r"))
+		if response != "" {
+			_, _ = io.WriteString(channel, response)
+		}
+		if exit {
+			_, _ = channel.SendRequest("exit-status", false, ssh.Marshal(struct{ Status uint32 }{0}))
+			return
+		}
+		_, _ = io.WriteString(channel, prompt)
+	}
 	status := uint32(0)
-	if command.Run() != nil {
+	if reader.Err() != nil {
 		status = 1
 	}
 	_, _ = channel.SendRequest("exit-status", false, ssh.Marshal(struct{ Status uint32 }{status}))
-	_ = channel.Close()
+}
+
+func commandResponse(command string) (string, bool) {
+	responses := map[string][]string{
+		"show version": {
+			"Cisco IOS Software, C800 Software (C800-UNIVERSALK9-M), Version 15.8(3)M9",
+			"Compiled Mon 01-Jun-26 00:00 by NetKeep",
+			"NETKEEP-E2E processor with 262144K bytes of memory.",
+			"Processor board ID NETKEEP0001",
+		},
+		"show vtp status": {
+			"VTP Version capable             : 1 to 3",
+			"VTP version running             : 2",
+			"VTP Operating Mode              : Transparent",
+		},
+		"show inventory": {
+			`NAME: "NetKeep E2E", DESCR: "Virtual network device"`,
+			"PID: NETKEEP-E2E, VID: V01, SN: NETKEEP0001",
+		},
+		"show running-config": {
+			"Building configuration...",
+			"",
+			"Current configuration : 384 bytes",
+			"!",
+			"version 15.8",
+			"service timestamps log datetime msec",
+			"hostname NETKEEP-E2E",
+			"!",
+			"interface GigabitEthernet0/0",
+			" description NetKeep E2E simulated uplink",
+			" ip address 192.0.2.10 255.255.255.0",
+			" no shutdown",
+			"!",
+			"line vty 0 4",
+			" transport input ssh",
+			"!",
+			"end",
+		},
+	}
+	if command == "exit" || command == "logout" {
+		return "", true
+	}
+	if command == "" || command == "terminal length 0" || command == "terminal width 0" {
+		return "", false
+	}
+	lines, found := responses[command]
+	if !found {
+		return "% Invalid input detected at '^' marker.\r\n", false
+	}
+	return strings.Join(lines, "\r\n") + "\r\n", false
 }
 
 func reply(request *ssh.Request, accepted bool) {

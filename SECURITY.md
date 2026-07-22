@@ -80,6 +80,9 @@ release; cada release deve documentar os riscos conhecidos. Configurações
 altas ou críticas não justificadas bloqueiam o CI. Isso não reduz a obrigação
 de atualizar dependências quando houver correção disponível.
 
+O relatório específico da v1.0.2 está em
+[`docs/SECURITY_REVIEW_V1.0.2.md`](docs/SECURITY_REVIEW_V1.0.2.md).
+
 ## Limites
 
 Nenhum painel elimina o risco de armazenar configurações completas ou de

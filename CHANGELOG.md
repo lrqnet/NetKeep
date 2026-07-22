@@ -11,7 +11,11 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
   e limita a exceção root-equivalente do updater ao arquivo, motivo e prazo de
   revisão definidos;
 - simulador SSH E2E substituído por implementação mínima não-root em porta alta,
-  sem pacotes de sistema instalados em runtime.
+  sem pacotes de sistema instalados em runtime;
+- toolchain Go atualizado para 1.26.5 e `golang.org/x/crypto` para 0.54.0,
+  removendo vulnerabilidades corrigidas no servidor SSH de teste;
+- bases FrankenPHP e Docker CLI atualizadas para revisões oficiais corrigidas,
+  e o plugin Buildx não utilizado removido do updater.
 
 ### Fixed
 

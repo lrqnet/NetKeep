@@ -38,7 +38,7 @@ class CaddyTlsConfigService
         }
 
         if ($reload) {
-            $this->scheduleReload();
+            $this->scheduleReload($canonicalUrl);
         }
 
         return $reload;
@@ -46,12 +46,11 @@ class CaddyTlsConfigService
 
     public function isReady(?string $canonicalUrl): bool
     {
-        $host = $canonicalUrl ? (string) parse_url($canonicalUrl, PHP_URL_HOST) : '';
+        $host = $this->host($canonicalUrl);
         if (filter_var($host, FILTER_VALIDATE_IP) === false) {
             return $host !== '';
         }
 
-        $host = strtolower($host);
         $dataRoot = rtrim((string) config('netkeep.caddy_data_path', '/data/caddy'), '/');
         $certificate = "{$dataRoot}/certificates/local/{$host}/{$host}.crt";
         clearstatcache(true, $certificate);
@@ -61,23 +60,36 @@ class CaddyTlsConfigService
 
     private function siteContent(?string $canonicalUrl): string
     {
-        $host = $canonicalUrl ? (string) parse_url($canonicalUrl, PHP_URL_HOST) : '';
+        $host = $this->host($canonicalUrl);
         if (filter_var($host, FILTER_VALIDATE_IP) === false) {
             return '';
         }
 
-        $address = str_contains($host, ':') ? "[{$host}]" : $host;
-
-        return "https://{$address}:8443 {\n\ttls internal\n\timport netkeep_app\n}\n";
+        return "http://127.0.0.1:8081 {\n"
+            ."\t@canonical query domain={$host}\n"
+            ."\trespond @canonical 200\n"
+            ."\trewrite * /internal/caddy/ask\n"
+            ."\treverse_proxy http://127.0.0.1:8080\n"
+            ."}\n";
     }
 
     private function globalContent(?string $canonicalUrl): string
     {
-        $host = $canonicalUrl ? (string) parse_url($canonicalUrl, PHP_URL_HOST) : '';
+        $host = $this->host($canonicalUrl);
 
-        return filter_var($host, FILTER_VALIDATE_IP) === false
-            ? ''
-            : "default_sni {$host}\n";
+        if (filter_var($host, FILTER_VALIDATE_IP)) {
+            return "cert_issuer internal\n"
+                ."default_sni {$host}\n"
+                ."on_demand_tls {\n"
+                ."\task http://127.0.0.1:8081\n"
+                ."}\n";
+        }
+
+        return "cert_issuer acme\n"
+            ."cert_issuer internal\n"
+            ."on_demand_tls {\n"
+            ."\task http://127.0.0.1:8080/internal/caddy/ask\n"
+            ."}\n";
     }
 
     private function caddy(string $action): void
@@ -94,15 +106,28 @@ class CaddyTlsConfigService
         $process->mustRun();
     }
 
-    private function scheduleReload(): void
+    private function scheduleReload(?string $canonicalUrl): void
     {
+        $host = $this->host($canonicalUrl);
+        $command = 'sleep 1; frankenphp reload --config /etc/frankenphp/Caddyfile --adapter caddyfile';
+        if (filter_var($host, FILTER_VALIDATE_IP)) {
+            $command .= ' && curl --insecure --silent --show-error --max-time 15 https://127.0.0.1:8443/up >/dev/null';
+        }
+
         $process = new Process([
             '/bin/sh',
             '-c',
-            '(sleep 1; kill -USR1 1) >/dev/null 2>&1 &',
+            "({$command}) >/dev/null 2>&1 &",
         ]);
         $process->setTimeout(5);
         $process->mustRun();
+    }
+
+    private function host(?string $canonicalUrl): string
+    {
+        $host = $canonicalUrl ? (string) parse_url($canonicalUrl, PHP_URL_HOST) : '';
+
+        return strtolower(trim($host, '[]'));
     }
 
     private function atomicWrite(string $target, string $content): void

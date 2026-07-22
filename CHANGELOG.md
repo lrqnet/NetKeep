@@ -19,6 +19,13 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 
 ### Fixed
 
+- backup diário não é mais disparado pelo scheduler quando nenhum destino
+  local/S3 está ativo;
+- recarga da configuração TLS passa pela API administrativa do Caddy,
+  preservando conexões e pré-emitindo o certificado interno por IP durante a
+  ativação da URL canônica;
+- autorização TLS por IP passa a ocorrer no próprio Caddy após o setup,
+  eliminando a dependência circular de um worker PHP no handshake;
 - healthchecks nativos adicionados às imagens NetKeep, NetKeep-Oxidized e
   NetKeep-Updater, com o agente validando a atualidade do heartbeat persistido;
 - alertas Trivy de root no simulador, instalação de pacotes sem versão e

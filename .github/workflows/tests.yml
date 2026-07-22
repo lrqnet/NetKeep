@@ -142,7 +142,10 @@ jobs:
           if-no-files-found: warn
       - name: Logs on failure
         if: failure()
-        run: docker compose -p netkeep-e2e -f compose.yaml -f compose.dev.yaml -f compose.e2e.yaml logs --no-color
+        run: |
+          docker compose -p netkeep-e2e -f compose.yaml -f compose.dev.yaml -f compose.e2e.yaml ps --all
+          docker stats --no-stream
+          docker compose -p netkeep-e2e -f compose.yaml -f compose.dev.yaml -f compose.e2e.yaml logs --no-color
       - name: Stop installation
         if: always()
         run: docker compose -p netkeep-e2e -f compose.yaml -f compose.dev.yaml -f compose.e2e.yaml down --volumes --remove-orphans

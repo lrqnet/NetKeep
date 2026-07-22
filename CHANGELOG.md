@@ -5,6 +5,21 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 
 ## [Unreleased]
 
+### Changed
+
+- scanner Trivy agora bloqueia configurações altas e críticas não justificadas
+  e limita a exceção root-equivalente do updater ao arquivo, motivo e prazo de
+  revisão definidos;
+- simulador SSH E2E substituído por implementação mínima não-root em porta alta,
+  sem pacotes de sistema instalados em runtime.
+
+### Fixed
+
+- healthchecks nativos adicionados às imagens NetKeep, NetKeep-Oxidized e
+  NetKeep-Updater, com o agente validando a atualidade do heartbeat persistido;
+- alertas Trivy de root no simulador, instalação de pacotes sem versão e
+  ausência de healthcheck removidos sem reduzir o isolamento da produção.
+
 ## [1.0.2] - 2026-07-21
 
 ### Added

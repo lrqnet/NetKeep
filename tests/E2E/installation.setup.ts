@@ -99,7 +99,7 @@ setup('installs NetKeep and creates the first owner', async ({ page }) => {
     await page.goto('/devices');
     await page.getByLabel('Name', { exact: true }).fill('E2E Router');
     await page.getByLabel('IP address').fill('172.31.250.10');
-    await page.getByRole('spinbutton', { name: 'Port', exact: true }).fill('22');
+    await page.getByRole('spinbutton', { name: 'Port', exact: true }).fill('2222');
     await page.getByLabel('Oxidized driver').fill('ios');
     await page.getByLabel('Credential').selectOption({ label: 'E2E SSH' });
     await page.getByRole('button', { name: 'Add device' }).click();

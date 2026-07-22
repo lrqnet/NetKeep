@@ -1,27 +1,25 @@
-FROM debian:bookworm-20260623-slim@sha256:60eac759739651111db372c07be67863818726f754804b8707c90979bda511df
+FROM golang:1.24.5-alpine@sha256:daae04ebad0c21149979cd8e9db38f565ecefd8547cf4a591240dc1972cf1399 AS build
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends openssh-client openssh-server \
-    && rm -rf /var/lib/apt/lists/*
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY main.go ./
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /device-simulator .
 
+FROM alpine:3.23.0@sha256:51183f2cfa6320055da30872f211093f9ff1d3cf06f39a0bdb212314c5dc7375
+
+RUN addgroup -S -g 30001 netkeep \
+    && adduser -S -D -H -u 30001 -G netkeep netkeep
+
+COPY --from=build /device-simulator /usr/local/bin/device-simulator
 COPY network-cli /usr/local/bin/network-cli
 
-RUN chmod 0755 /usr/local/bin/network-cli \
-    && useradd --create-home --shell /usr/local/bin/network-cli netkeep \
-    && printf 'netkeep:e2e\n' | chpasswd \
-    && mkdir -p /run/sshd \
-    && ssh-keygen -A \
-    && printf '%s\n' \
-        'PasswordAuthentication yes' \
-        'PermitRootLogin no' \
-        'UsePAM no' \
-        'PrintMotd no' \
-        'LogLevel ERROR' \
-        'AllowUsers netkeep' \
-        >> /etc/ssh/sshd_config
+RUN chmod 0755 /usr/local/bin/device-simulator /usr/local/bin/network-cli
 
-EXPOSE 22
+USER 30001:30001
 
-HEALTHCHECK --interval=5s --timeout=3s --retries=20 CMD ssh-keyscan -T 2 localhost >/dev/null 2>&1
+EXPOSE 2222
 
-CMD ["/usr/sbin/sshd", "-D", "-e"]
+HEALTHCHECK --interval=5s --timeout=3s --retries=20 CMD ["/usr/local/bin/device-simulator", "healthcheck"]
+
+ENTRYPOINT ["/usr/local/bin/device-simulator"]

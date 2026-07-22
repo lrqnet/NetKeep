@@ -20,3 +20,4 @@ USER 30000:30000
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["oxidized"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 CMD ["ruby", "-rnet/http", "-e", "u=URI('http://localhost:8888/nodes.json');r=Net::HTTP::Get.new(u);r['Host']='oxidized';exit(Net::HTTP.start(u.host,u.port){|h|h.request(r)}.is_a?(Net::HTTPSuccess) ? 0 : 1)"]

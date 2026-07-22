@@ -126,6 +126,7 @@ USER 20000:20000
 EXPOSE 8080 8443
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 CMD ["curl", "--fail", "--silent", "http://localhost:8080/up"]
 
 FROM runtime-base AS test
 ENV APP_ENV=testing \

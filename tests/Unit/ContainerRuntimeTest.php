@@ -34,4 +34,47 @@ class ContainerRuntimeTest extends TestCase
             $compose,
         );
     }
+
+    public function test_updater_is_the_only_socket_consumer_and_remains_isolated(): void
+    {
+        $compose = file_get_contents(dirname(__DIR__, 2).'/compose.yaml');
+
+        $this->assertIsString($compose);
+        $this->assertSame(1, substr_count($compose, '/var/run/docker.sock:/var/run/docker.sock'));
+        $this->assertMatchesRegularExpression(
+            '/^    updater:\n(?:(?!^    \S).)*?^        read_only: true\n(?:(?!^    \S).)*?^        cap_drop:\n^            - ALL\n(?:(?!^    \S).)*?^        security_opt:\n^            - no-new-privileges:true\n(?:(?!^    \S).)*?^        network_mode: none$/ms',
+            $compose,
+        );
+        $this->assertDoesNotMatchRegularExpression(
+            '/^    updater:\n(?:(?!^    \S).)*?^        ports:/ms',
+            $compose,
+        );
+    }
+
+    public function test_container_images_define_healthchecks(): void
+    {
+        $root = dirname(__DIR__, 2);
+
+        foreach (['Dockerfile', 'Dockerfile.oxidized', 'Dockerfile.updater'] as $dockerfile) {
+            $contents = file_get_contents($root.'/'.$dockerfile);
+
+            $this->assertIsString($contents);
+            $this->assertStringContainsString('HEALTHCHECK', $contents, $dockerfile);
+        }
+    }
+
+    public function test_updater_root_exception_is_scoped_and_expires(): void
+    {
+        $root = dirname(__DIR__, 2);
+        $ignore = file_get_contents($root.'/.trivyignore.yaml');
+        $workflow = file_get_contents($root.'/.github/workflows/security.yml');
+
+        $this->assertIsString($ignore);
+        $this->assertIsString($workflow);
+        $this->assertSame(1, substr_count($ignore, 'AVD-DS-0002'));
+        $this->assertStringContainsString('- Dockerfile.updater', $ignore);
+        $this->assertMatchesRegularExpression('/expired_at: 20[0-9]{2}-[0-9]{2}-[0-9]{2}/', $ignore);
+        $this->assertStringContainsString('trivyignores: .trivyignore.yaml', $workflow);
+        $this->assertStringContainsString("exit-code: '1'", $workflow);
+    }
 }

@@ -16,3 +16,4 @@ LABEL org.opencontainers.image.title="NetKeep Updater" \
     org.opencontainers.image.source="https://github.com/lrqnet/NetKeep" \
     org.opencontainers.image.licenses="AGPL-3.0-only"
 ENTRYPOINT ["/usr/local/bin/netkeep-updater"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=45s --retries=3 CMD ["/usr/local/bin/netkeep-updater", "healthcheck"]

@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestVersionComparison(t *testing.T) {
@@ -131,6 +132,33 @@ func TestMergedEnvironmentReplacesImageOverrides(t *testing.T) {
 	}
 	if seen != 1 {
 		t.Fatalf("expected one image override, got %d", seen)
+	}
+}
+
+func TestHeartbeatHealthRequiresRecentRegularState(t *testing.T) {
+	directory := t.TempDir()
+	path := filepath.Join(directory, "heartbeat.json")
+	now := time.Date(2026, time.July, 21, 20, 0, 0, 0, time.UTC)
+	if err := os.WriteFile(path, []byte(`{"checked_at":"2026-07-21T19:59:00Z"}`), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := heartbeatHealthy(path, now); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, []byte(`{"checked_at":"2026-07-21T19:57:59Z"}`), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if heartbeatHealthy(path, now) == nil {
+		t.Fatal("stale heartbeat was accepted")
+	}
+	if err := os.Remove(path); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink("missing.json", path); err != nil {
+		t.Fatal(err)
+	}
+	if heartbeatHealthy(path, now) == nil {
+		t.Fatal("symlink heartbeat was accepted")
 	}
 }
 

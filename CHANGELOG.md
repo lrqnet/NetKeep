@@ -22,6 +22,9 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 - workflow de release atualizado para o instalador Cosign compatível com os
   bundles Sigstore publicados pelo Cosign 3.x, preservando a verificação do
   binário, das imagens e do manifesto de atualização;
+- restauração E2E alinhada ao fluxo de manutenção que drena filas antes da
+  troca de dados, com encerramento gracioso do scheduler e reinicialização dos
+  serviços em ordem de dependência após a finalização do modo de manutenção;
 - backup diário não é mais disparado pelo scheduler quando nenhum destino
   local/S3 está ativo;
 - recarga da configuração TLS passa pela API administrativa do Caddy,

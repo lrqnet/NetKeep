@@ -20,6 +20,41 @@ class ContainerRuntimeTest extends TestCase
         $this->assertStringNotContainsString('--stop-when-empty', $script);
     }
 
+    public function test_scheduler_forwards_shutdown_to_its_active_child(): void
+    {
+        $path = is_file('/usr/local/bin/scheduler.sh')
+            ? '/usr/local/bin/scheduler.sh'
+            : dirname(__DIR__, 2).'/docker/scheduler.sh';
+        $script = file_get_contents($path);
+
+        $this->assertIsString($script);
+        $this->assertStringContainsString('trap stop_scheduler INT TERM', $script);
+        $this->assertStringContainsString('kill -TERM "$child_pid"', $script);
+        $this->assertStringContainsString('run_child php artisan schedule:run --no-interaction', $script);
+        $this->assertStringContainsString('run_child sleep 60', $script);
+    }
+
+    public function test_restore_e2e_restarts_services_in_dependency_order(): void
+    {
+        $script = file_get_contents(dirname(__DIR__, 2).'/scripts/e2e-test.sh');
+
+        $this->assertIsString($script);
+        $app = strpos($script, "restart app\n");
+        $oxidized = strpos($script, "restart oxidized sandbox\n");
+        $workers = strpos($script, "restart worker scheduler\n");
+        $finalize = strpos($script, 'netkeep:restore finalize');
+
+        $this->assertIsInt($app);
+        $this->assertIsInt($oxidized);
+        $this->assertIsInt($workers);
+        $this->assertIsInt($finalize);
+        $this->assertLessThan($finalize, $app);
+        $this->assertLessThan($oxidized, $finalize);
+        $this->assertLessThan($workers, $oxidized);
+        $this->assertStringContainsString('wait_for_healthy()', $script);
+        $this->assertStringNotContainsString('up --detach --wait app worker scheduler oxidized sandbox', $script);
+    }
+
     public function test_worker_and_scheduler_wait_for_the_oxidized_healthcheck(): void
     {
         $compose = file_get_contents(dirname(__DIR__, 2).'/compose.yaml');

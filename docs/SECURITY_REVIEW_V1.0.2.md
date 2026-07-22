@@ -29,7 +29,12 @@ crítica e somente vulnerabilidades com correção conhecida.
 - a recarga TLS passou a usar a API administrativa do Caddy e a pré-emissão do
   certificado interno remove a dependência de um worker PHP no handshake;
 - o instalador Cosign do workflow foi atualizado para a versão oficial 4.1.2,
-  fixada por SHA, que valida o Cosign 3.0.6 pelos bundles Sigstore atuais.
+  fixada por SHA, que valida o Cosign 3.0.6 pelos bundles Sigstore atuais;
+- o teste de restauração passou a ativar manutenção antes da reinicialização
+  dos serviços, preservando jobs enquanto drena reservas ativas, e o scheduler
+  passou a encaminhar sinais de encerramento ao processo filho; após a troca,
+  o app é reiniciado e finaliza a manutenção antes dos motores e processos de
+  fila serem reiniciados e validados.
 
 Após as correções, filesystem, NetKeep-Oxidized e simulador não apresentaram
 achados altos ou críticos corrigíveis. Os pacotes do sistema e o binário

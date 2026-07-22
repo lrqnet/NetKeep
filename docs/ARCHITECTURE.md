@@ -45,7 +45,11 @@ root de execução única e não recebem rede externa nem socket Docker.
 O scheduler consulta releases oficiais com ETag e persistência no PostgreSQL,
 sem acessar o socket Docker. A instalação é separada e usa arquivos atômicos no
 volume `update_exchange`. O updater não possui rede ou API e é o único serviço
-com o socket Docker, equivalente a root no host.
+com o socket Docker, equivalente a root no host. Seu processo permanece root
+porque o GID do socket varia entre hosts e pertencer ao grupo Docker manteria a
+mesma capacidade root-equivalente. Essa exceção é restrita, expira para revisão
+periódica e possui regressão automática sobre isolamento, capabilities, portas
+e exclusividade do socket.
 
 Antes de aplicar qualquer mudança, Laravel cria um snapshot completo
 criptografado e baixa Compose, manifesto e bundle Sigstore de uma URL oficial.

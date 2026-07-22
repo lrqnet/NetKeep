@@ -93,7 +93,9 @@ docker compose exec app php artisan about
 `postgres`, `app`, `worker`, `scheduler`, `oxidized`, `sandbox` e `updater` devem ficar
 saudáveis. `init` e `database-init` devem aparecer como `Exited (0)`, pois são
 serviços de execução única concluídos com sucesso. Reiniciar a pilha não
-regenera segredos existentes.
+regenera segredos existentes. O healthcheck do updater valida a atualização
+recente do heartbeat no volume `update_exchange`; um estado unhealthy indica
+que o agente não está processando sua fila e deve impedir uma atualização.
 
 Confirme que a conta usada pela aplicação não possui privilégios elevados:
 

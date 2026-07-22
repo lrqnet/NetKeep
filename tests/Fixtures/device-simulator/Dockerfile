@@ -1,27 +1,19 @@
-FROM debian:bookworm-20260623-slim@sha256:60eac759739651111db372c07be67863818726f754804b8707c90979bda511df
+FROM golang:1.26.5-alpine@sha256:0178a641fbb4858c5f1b48e34bdaabe0350a330a1b1149aabd498d0699ff5fb2 AS build
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends openssh-client openssh-server \
-    && rm -rf /var/lib/apt/lists/*
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY main.go ./
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /device-simulator .
 
-COPY network-cli /usr/local/bin/network-cli
+FROM scratch
 
-RUN chmod 0755 /usr/local/bin/network-cli \
-    && useradd --create-home --shell /usr/local/bin/network-cli netkeep \
-    && printf 'netkeep:e2e\n' | chpasswd \
-    && mkdir -p /run/sshd \
-    && ssh-keygen -A \
-    && printf '%s\n' \
-        'PasswordAuthentication yes' \
-        'PermitRootLogin no' \
-        'UsePAM no' \
-        'PrintMotd no' \
-        'LogLevel ERROR' \
-        'AllowUsers netkeep' \
-        >> /etc/ssh/sshd_config
+COPY --from=build /device-simulator /usr/local/bin/device-simulator
 
-EXPOSE 22
+USER 30001:30001
 
-HEALTHCHECK --interval=5s --timeout=3s --retries=20 CMD ssh-keyscan -T 2 localhost >/dev/null 2>&1
+EXPOSE 2222
 
-CMD ["/usr/sbin/sshd", "-D", "-e"]
+HEALTHCHECK --interval=5s --timeout=3s --retries=20 CMD ["/usr/local/bin/device-simulator", "healthcheck"]
+
+ENTRYPOINT ["/usr/local/bin/device-simulator"]

@@ -64,10 +64,24 @@ provenance e assinaturas Cosign para NetKeep, NetKeep-Oxidized e
 NetKeep-Updater. O Compose e o manifesto de atualização também são anexados à
 release, e o manifesto recebe assinatura keyless com bundle Sigstore.
 
+O updater permanece root dentro do seu contêiner porque instalações Docker
+rootful não oferecem um GID portátil para o socket. Executá-lo como usuário
+com acesso ao grupo do socket continuaria permitindo controle root-equivalente
+do host e apenas esconderia esse risco do scanner. A exceção `AVD-DS-0002` é
+restrita ao `Dockerfile.updater`, possui expiração para revisão periódica e é
+compensada por ausência de rede e portas, filesystem somente leitura,
+capabilities removidas, `no-new-privileges`, limites de recursos, validação
+offline de assinatura e teste automático que impede outro serviço de montar o
+socket.
+
 Auditorias de dependências e Trivy publicam relatórios e SARIF. Por decisão do
 projeto, CVEs altas ou críticas restantes não bloqueiam automaticamente uma
-release; cada release deve documentar os riscos conhecidos. Isso não reduz a
-obrigação de atualizar dependências quando houver correção disponível.
+release; cada release deve documentar os riscos conhecidos. Configurações
+altas ou críticas não justificadas bloqueiam o CI. Isso não reduz a obrigação
+de atualizar dependências quando houver correção disponível.
+
+O relatório específico da v1.0.2 está em
+[`docs/SECURITY_REVIEW_V1.0.2.md`](docs/SECURITY_REVIEW_V1.0.2.md).
 
 ## Limites
 

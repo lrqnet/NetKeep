@@ -63,6 +63,10 @@ type status struct {
 	UpdatedAt     string `json:"updated_at"`
 }
 
+type heartbeatState struct {
+	CheckedAt string `json:"checked_at"`
+}
+
 type composeConfig struct {
 	Services map[string]composeService `json:"services"`
 }
@@ -90,8 +94,15 @@ type updater struct {
 }
 
 func main() {
+	exchange := env("NETKEEP_UPDATE_EXCHANGE", exchangeDefault)
+	if len(os.Args) == 2 && os.Args[1] == "healthcheck" {
+		if heartbeatHealthy(filepath.Join(exchange, "heartbeat.json"), time.Now().UTC()) != nil {
+			os.Exit(1)
+		}
+		return
+	}
 	u := updater{
-		exchange:   env("NETKEEP_UPDATE_EXCHANGE", exchangeDefault),
+		exchange:   exchange,
 		installDir: env("NETKEEP_INSTALL_DIR", ""),
 		project:    env("NETKEEP_COMPOSE_PROJECT", "netkeep"),
 	}
@@ -130,6 +141,21 @@ func (u *updater) heartbeat() {
 		})
 		time.Sleep(30 * time.Second)
 	}
+}
+
+func heartbeatHealthy(path string, now time.Time) error {
+	if err := requireRegular(path); err != nil {
+		return err
+	}
+	var value heartbeatState
+	if err := decodeStrict(path, 4096, &value); err != nil {
+		return err
+	}
+	checkedAt, err := time.Parse(time.RFC3339, value.CheckedAt)
+	if err != nil || checkedAt.After(now.Add(30*time.Second)) || checkedAt.Before(now.Add(-2*time.Minute)) {
+		return errors.New("heartbeat_stale")
+	}
+	return nil
 }
 
 func (u *updater) processNext() error {

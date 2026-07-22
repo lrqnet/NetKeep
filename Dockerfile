@@ -42,7 +42,7 @@ RUN npm run build
 
 FROM postgres:18.4-bookworm@sha256:1961f96e6029a02c3812d7cb329a3b03a3ac2bb067058dec17b0f5596aca9296 AS postgres-client
 
-FROM dunglas/frankenphp:1-php8.4-bookworm@sha256:ccc3881b09569780572ef94e1460f912132a3ff71014fa4c06221d0219200c7f AS runtime-base
+FROM dunglas/frankenphp:1-php8.4-bookworm@sha256:79b347211bfec90d6a1373c4956a7d3832c8248a2ff2d76bd0b677f37284d32f AS runtime-base
 RUN install-php-extensions \
         bcmath \
         intl \
@@ -52,6 +52,7 @@ RUN install-php-extensions \
         pdo_sqlite \
         zip \
     && apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
     && apt-get install -y --no-install-recommends \
         age \
         ca-certificates \
@@ -126,6 +127,7 @@ USER 20000:20000
 EXPOSE 8080 8443
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 CMD ["curl", "--fail", "--silent", "http://localhost:8080/up"]
 
 FROM runtime-base AS test
 ENV APP_ENV=testing \

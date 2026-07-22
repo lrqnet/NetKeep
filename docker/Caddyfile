@@ -2,8 +2,6 @@
 	frankenphp
 	auto_https disable_redirects
 	skip_install_trust
-	cert_issuer acme
-	cert_issuer internal
 	servers {
 		protocols h1
 	}

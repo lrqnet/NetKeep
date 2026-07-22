@@ -5,6 +5,32 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 
 ## [Unreleased]
 
+### Changed
+
+- scanner Trivy agora bloqueia configurações altas e críticas não justificadas
+  e limita a exceção root-equivalente do updater ao arquivo, motivo e prazo de
+  revisão definidos;
+- simulador SSH E2E substituído por implementação mínima não-root em porta alta,
+  sem pacotes de sistema instalados em runtime;
+- toolchain Go atualizado para 1.26.5 e `golang.org/x/crypto` para 0.54.0,
+  removendo vulnerabilidades corrigidas no servidor SSH de teste;
+- bases FrankenPHP e Docker CLI atualizadas para revisões oficiais corrigidas,
+  e o plugin Buildx não utilizado removido do updater.
+
+### Fixed
+
+- backup diário não é mais disparado pelo scheduler quando nenhum destino
+  local/S3 está ativo;
+- recarga da configuração TLS passa pela API administrativa do Caddy,
+  preservando conexões e pré-emitindo o certificado interno por IP durante a
+  ativação da URL canônica;
+- autorização TLS por IP passa a ocorrer no próprio Caddy após o setup,
+  eliminando a dependência circular de um worker PHP no handshake;
+- healthchecks nativos adicionados às imagens NetKeep, NetKeep-Oxidized e
+  NetKeep-Updater, com o agente validando a atualidade do heartbeat persistido;
+- alertas Trivy de root no simulador, instalação de pacotes sem versão e
+  ausência de healthcheck removidos sem reduzir o isolamento da produção.
+
 ## [1.0.2] - 2026-07-21
 
 ### Added

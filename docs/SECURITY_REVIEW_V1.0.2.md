@@ -21,13 +21,20 @@ crítica e somente vulnerabilidades com correção conhecida.
   operacional ou pacotes de runtime;
 - Oxidized preservado na versão 0.37.0, com pacotes do sistema atualizados no
   build;
-- configurações altas e críticas não justificadas passaram a bloquear o CI.
+- configurações altas e críticas não justificadas passaram a bloquear o CI;
 - o backup diário passou a exigir um destino local ou S3 ativo antes de ser
   enfileirado pelo scheduler;
 - a autorização sob demanda de certificados para URLs canônicas por IP passou
   a ocorrer em um endpoint interno do Caddy que aceita somente o IP configurado;
 - a recarga TLS passou a usar a API administrativa do Caddy e a pré-emissão do
-  certificado interno remove a dependência de um worker PHP no handshake.
+  certificado interno remove a dependência de um worker PHP no handshake;
+- o instalador Cosign do workflow foi atualizado para a versão oficial 4.1.2,
+  fixada por SHA, que valida o Cosign 3.0.6 pelos bundles Sigstore atuais;
+- o teste de restauração passou a ativar manutenção antes da reinicialização
+  dos serviços, preservando jobs enquanto drena reservas ativas, e o scheduler
+  passou a encaminhar sinais de encerramento ao processo filho; após a troca,
+  o app é reiniciado e finaliza a manutenção antes dos motores e processos de
+  fila serem reiniciados e validados.
 
 Após as correções, filesystem, NetKeep-Oxidized e simulador não apresentaram
 achados altos ou críticos corrigíveis. Os pacotes do sistema e o binário

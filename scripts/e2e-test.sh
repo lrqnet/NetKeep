@@ -24,6 +24,35 @@ compose=(
     --file compose.e2e.yaml
 )
 
+wait_for_healthy() {
+    local service="$1"
+    local attempts="${2:-60}"
+    local container=''
+    local status=''
+
+    for _ in $(seq 1 "$attempts"); do
+        container="$("${compose[@]}" ps --quiet "$service")"
+        if [[ -n "$container" ]]; then
+            status="$(
+                docker inspect \
+                    --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' \
+                    "$container" 2>/dev/null || true
+            )"
+            if [[ "$status" == 'healthy' || "$status" == 'running' ]]; then
+                return 0
+            fi
+            if [[ "$status" == 'dead' || "$status" == 'exited' ]]; then
+                break
+            fi
+        fi
+        sleep 2
+    done
+
+    "${compose[@]}" ps "$service"
+    "${compose[@]}" logs --no-color --tail 150 "$service"
+    return 1
+}
+
 "${compose[@]}" down --volumes --remove-orphans
 if [[ "${NETKEEP_E2E_BUILD:-true}" == 'false' ]]; then
     "${compose[@]}" up --detach --no-build --wait
@@ -76,7 +105,6 @@ test -n "$device_uuid"
     grep -q 'hostname NETKEEP-E2E'
 
 "${compose[@]}" exec --no-TTY app php artisan test --testsuite=Integration
-"${compose[@]}" stop app worker scheduler oxidized sandbox
 
 prepare_output="$(
     "${compose[@]}" --profile recovery run --rm --no-deps recovery \
@@ -95,10 +123,16 @@ fi
 
 "${compose[@]}" --profile recovery run --rm --no-deps recovery \
     php artisan netkeep:restore apply --operation="$operation" --force
+"${compose[@]}" restart app
+wait_for_healthy app
 "${compose[@]}" --profile recovery run --rm --no-deps recovery \
     php artisan netkeep:restore finalize --operation="$operation" --force
-
-"${compose[@]}" up --detach --wait app worker scheduler oxidized sandbox
+"${compose[@]}" restart oxidized sandbox
+wait_for_healthy oxidized
+wait_for_healthy sandbox
+"${compose[@]}" restart worker scheduler
+wait_for_healthy worker
+wait_for_healthy scheduler
 
 preserved="$(
     "${compose[@]}" exec --no-TTY postgres \

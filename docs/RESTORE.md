@@ -104,12 +104,23 @@ Reinicie os processos para carregarem as chaves restauradas e o token interno
 rotacionado:
 
 ```bash
-docker compose restart app worker scheduler oxidized sandbox
+docker compose restart app
+docker compose ps app
 docker compose --profile recovery run --rm recovery \
   php artisan netkeep:restore finalize \
   --operation=UUID-DA-OPERACAO \
   --force
+docker compose restart oxidized sandbox
+docker compose ps oxidized sandbox
+docker compose restart worker scheduler
 ```
+
+Antes de avançar para o próximo comando, aguarde os serviços exibidos por
+`docker compose ps` ficarem saudáveis. O `finalize` retira o app do modo de
+manutenção antes de reiniciar os motores. Essa ordem garante que eles só
+consultem a API interna após o app carregar as chaves restauradas e voltar a
+aceitar requisições, e que worker e scheduler só iniciem quando os motores
+estiverem prontos.
 
 `finalize` valida a propriedade única, banco, Git e chaves antes de remover o
 estado anterior e invalida o token de posse. Se essa verificação falhar, o

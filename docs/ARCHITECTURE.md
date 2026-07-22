@@ -22,6 +22,8 @@ LAN administrativa / Internet
        +---- sandbox_internal -- Oxidized sandbox ---- Git isolado
                                    |
                             sandbox_device_access
+
+Docker socket ---- updater sem rede ---- volume update_exchange ---- Laravel
 ```
 
 Web, worker e scheduler usam a mesma imagem NetKeep, executada como UID 20000.
@@ -37,6 +39,22 @@ Os contêineres permanentes usam filesystem somente leitura, `cap_drop: ALL`,
 `no-new-privileges`, limites de memória/processos, `tmpfs` para temporários e
 apenas os volumes explicitamente graváveis. `init` e `recovery` são processos
 root de execução única e não recebem rede externa nem socket Docker.
+
+## Atualizações integradas
+
+O scheduler consulta releases oficiais com ETag e persistência no PostgreSQL,
+sem acessar o socket Docker. A instalação é separada e usa arquivos atômicos no
+volume `update_exchange`. O updater não possui rede ou API e é o único serviço
+com o socket Docker, equivalente a root no host.
+
+Antes de aplicar qualquer mudança, Laravel cria um snapshot completo
+criptografado e baixa Compose, manifesto e bundle Sigstore de uma URL oficial.
+O updater verifica offline assinatura, identidade exata do workflow, origem,
+SemVer, hashes, imagens permitidas, ausência de downgrade, isolamento e
+exposição do socket. Imagens são baixadas pelo daemon antes da indisponibilidade.
+O Compose completo é aplicado, os serviços recebem até dez minutos para ficar
+saudáveis e o rollback automático só ocorre quando a política assinada da
+release o declara seguro.
 
 ## Controle das coletas
 
@@ -106,7 +124,7 @@ stream integralmente criptografado.
 
 No modo seguro:
 
-- Telnet, Ruby arbitrário, drivers não revisados, login HTTP/IP e WUD estão
+- Telnet, Ruby arbitrário, drivers não revisados e login HTTP/IP estão
   desativados;
 - drivers precisam constar no manifesto revisado de somente leitura;
 - modelos guiados aceitam apenas comandos constantes aprovados por driver;

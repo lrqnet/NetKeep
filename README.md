@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-34d399" alt="AGPL-3.0 license"></a>
-  <a href="https://github.com/lrqnet/NetKeep/releases/tag/v1.0.1"><img src="https://img.shields.io/badge/release-v1.0.1-0f172a" alt="NetKeep v1.0.1"></a>
+  <a href="https://github.com/lrqnet/NetKeep/releases/tag/v1.0.2"><img src="https://img.shields.io/badge/release-v1.0.2-0f172a" alt="NetKeep v1.0.2"></a>
   <a href="https://hub.docker.com/r/lrqnet/netkeep"><img src="https://img.shields.io/badge/Docker-amd64%20%7C%20arm64-2496ed?logo=docker&logoColor=white" alt="Docker images for amd64 and arm64"></a>
   <a href="https://github.com/ytti/oxidized"><img src="https://img.shields.io/badge/Oxidized-0.37.0-475569" alt="Oxidized 0.37.0"></a>
 </p>
@@ -56,6 +56,8 @@ history, notifications, and encrypted redundancy.
 - Owner, administrator, operator, and reader roles, with optional TOTP 2FA and
   passkeys.
 - English, Brazilian Portuguese, and Latin American Spanish interfaces.
+- Hourly official-release detection and signed, coordinated stack updates with
+  mandatory encrypted recovery snapshots.
 - Multi-architecture images for `linux/amd64` and `linux/arm64`.
 
 ## How it works
@@ -97,13 +99,13 @@ administrative networks are strongly recommended.
 
 ## Quick installation
 
-Create a directory, download the Compose file attached to the v1.0.1 release,
+Create a directory, download the Compose file attached to the v1.0.2 release,
 and start the stack:
 
 ```bash
 sudo mkdir -p /opt/netkeep
 cd /opt/netkeep
-sudo curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.1/compose.yaml
+sudo curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.2/compose.yaml
 sudo docker compose up -d --wait
 sudo docker compose ps
 ```
@@ -177,8 +179,11 @@ soft-deleted.
 - Store recovery passwords or key files outside the NetKeep installation.
 - Review advanced Ruby models before publishing them; they execute code inside
   the isolated Oxidized container.
-- Keep Telnet, arbitrary Ruby, unreviewed drivers, HTTP/IP login, and the WUD
-  Docker-socket profile disabled unless the documented risk is accepted.
+- Keep Telnet, arbitrary Ruby, unreviewed drivers, and HTTP/IP login disabled
+  unless the documented risk is accepted.
+- The updater is the only service with Docker socket access. It has no network,
+  accepts only official signed manifests, and still has host-root-equivalent
+  privileges; protect the installation directory and Docker host accordingly.
 - Treat short intervals, high timeouts, retries, and high concurrency as load
   on production equipment, not merely panel performance settings.
 - Test restoration regularly instead of treating an uploaded backup as proof

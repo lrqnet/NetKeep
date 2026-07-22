@@ -95,6 +95,9 @@ jobs:
           - name: netkeep-oxidized
             build: docker build -f Dockerfile.oxidized -t netkeep-oxidized:scan .
             image: netkeep-oxidized:scan
+          - name: netkeep-updater
+            build: docker build -f Dockerfile.updater -t netkeep-updater:scan .
+            image: netkeep-updater:scan
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:

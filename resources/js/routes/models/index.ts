@@ -7,7 +7,7 @@ import {
 } from './../../wayfinder';
 /**
  * @see \App\Http\Controllers\CustomModelController::index
- * @see Http/Controllers/CustomModelController.php:21
+ * @see Http/Controllers/CustomModelController.php:27
  * @route '/models'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -22,7 +22,7 @@ index.definition = {
 
 /**
  * @see \App\Http\Controllers\CustomModelController::index
- * @see Http/Controllers/CustomModelController.php:21
+ * @see Http/Controllers/CustomModelController.php:27
  * @route '/models'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -31,7 +31,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\CustomModelController::index
- * @see Http/Controllers/CustomModelController.php:21
+ * @see Http/Controllers/CustomModelController.php:27
  * @route '/models'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -41,7 +41,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\CustomModelController::index
- * @see Http/Controllers/CustomModelController.php:21
+ * @see Http/Controllers/CustomModelController.php:27
  * @route '/models'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -51,7 +51,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\CustomModelController::index
- * @see Http/Controllers/CustomModelController.php:21
+ * @see Http/Controllers/CustomModelController.php:27
  * @route '/models'
  */
 const indexForm = (
@@ -63,7 +63,7 @@ const indexForm = (
 
 /**
  * @see \App\Http\Controllers\CustomModelController::index
- * @see Http/Controllers/CustomModelController.php:21
+ * @see Http/Controllers/CustomModelController.php:27
  * @route '/models'
  */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -73,7 +73,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\CustomModelController::index
- * @see Http/Controllers/CustomModelController.php:21
+ * @see Http/Controllers/CustomModelController.php:27
  * @route '/models'
  */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -90,7 +90,7 @@ index.form = indexForm;
 
 /**
  * @see \App\Http\Controllers\CustomModelController::store
- * @see Http/Controllers/CustomModelController.php:38
+ * @see Http/Controllers/CustomModelController.php:53
  * @route '/models'
  */
 export const store = (
@@ -107,7 +107,7 @@ store.definition = {
 
 /**
  * @see \App\Http\Controllers\CustomModelController::store
- * @see Http/Controllers/CustomModelController.php:38
+ * @see Http/Controllers/CustomModelController.php:53
  * @route '/models'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -116,7 +116,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\CustomModelController::store
- * @see Http/Controllers/CustomModelController.php:38
+ * @see Http/Controllers/CustomModelController.php:53
  * @route '/models'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -126,7 +126,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\CustomModelController::store
- * @see Http/Controllers/CustomModelController.php:38
+ * @see Http/Controllers/CustomModelController.php:53
  * @route '/models'
  */
 const storeForm = (
@@ -138,7 +138,7 @@ const storeForm = (
 
 /**
  * @see \App\Http\Controllers\CustomModelController::store
- * @see Http/Controllers/CustomModelController.php:38
+ * @see Http/Controllers/CustomModelController.php:53
  * @route '/models'
  */
 storeForm.post = (
@@ -152,7 +152,7 @@ store.form = storeForm;
 
 /**
  * @see \App\Http\Controllers\CustomModelController::update
- * @see Http/Controllers/CustomModelController.php:77
+ * @see Http/Controllers/CustomModelController.php:101
  * @route '/models/{model}'
  */
 export const update = (
@@ -174,7 +174,7 @@ update.definition = {
 
 /**
  * @see \App\Http\Controllers\CustomModelController::update
- * @see Http/Controllers/CustomModelController.php:77
+ * @see Http/Controllers/CustomModelController.php:101
  * @route '/models/{model}'
  */
 update.url = (
@@ -214,7 +214,7 @@ update.url = (
 
 /**
  * @see \App\Http\Controllers\CustomModelController::update
- * @see Http/Controllers/CustomModelController.php:77
+ * @see Http/Controllers/CustomModelController.php:101
  * @route '/models/{model}'
  */
 update.put = (
@@ -231,7 +231,7 @@ update.put = (
 
 /**
  * @see \App\Http\Controllers\CustomModelController::update
- * @see Http/Controllers/CustomModelController.php:77
+ * @see Http/Controllers/CustomModelController.php:101
  * @route '/models/{model}'
  */
 update.patch = (
@@ -248,7 +248,7 @@ update.patch = (
 
 /**
  * @see \App\Http\Controllers\CustomModelController::update
- * @see Http/Controllers/CustomModelController.php:77
+ * @see Http/Controllers/CustomModelController.php:101
  * @route '/models/{model}'
  */
 const updateForm = (
@@ -270,7 +270,7 @@ const updateForm = (
 
 /**
  * @see \App\Http\Controllers\CustomModelController::update
- * @see Http/Controllers/CustomModelController.php:77
+ * @see Http/Controllers/CustomModelController.php:101
  * @route '/models/{model}'
  */
 updateForm.put = (
@@ -292,7 +292,7 @@ updateForm.put = (
 
 /**
  * @see \App\Http\Controllers\CustomModelController::update
- * @see Http/Controllers/CustomModelController.php:77
+ * @see Http/Controllers/CustomModelController.php:101
  * @route '/models/{model}'
  */
 updateForm.patch = (
@@ -316,7 +316,7 @@ update.form = updateForm;
 
 /**
  * @see \App\Http\Controllers\CustomModelController::destroy
- * @see Http/Controllers/CustomModelController.php:170
+ * @see Http/Controllers/CustomModelController.php:237
  * @route '/models/{model}'
  */
 export const destroy = (
@@ -338,7 +338,7 @@ destroy.definition = {
 
 /**
  * @see \App\Http\Controllers\CustomModelController::destroy
- * @see Http/Controllers/CustomModelController.php:170
+ * @see Http/Controllers/CustomModelController.php:237
  * @route '/models/{model}'
  */
 destroy.url = (
@@ -378,7 +378,7 @@ destroy.url = (
 
 /**
  * @see \App\Http\Controllers\CustomModelController::destroy
- * @see Http/Controllers/CustomModelController.php:170
+ * @see Http/Controllers/CustomModelController.php:237
  * @route '/models/{model}'
  */
 destroy.delete = (
@@ -395,7 +395,7 @@ destroy.delete = (
 
 /**
  * @see \App\Http\Controllers\CustomModelController::destroy
- * @see Http/Controllers/CustomModelController.php:170
+ * @see Http/Controllers/CustomModelController.php:237
  * @route '/models/{model}'
  */
 const destroyForm = (
@@ -417,7 +417,7 @@ const destroyForm = (
 
 /**
  * @see \App\Http\Controllers\CustomModelController::destroy
- * @see Http/Controllers/CustomModelController.php:170
+ * @see Http/Controllers/CustomModelController.php:237
  * @route '/models/{model}'
  */
 destroyForm.delete = (
@@ -441,7 +441,7 @@ destroy.form = destroyForm;
 
 /**
  * @see \App\Http\Controllers\CustomModelController::publish
- * @see Http/Controllers/CustomModelController.php:112
+ * @see Http/Controllers/CustomModelController.php:150
  * @route '/models/{model}/publish'
  */
 export const publish = (
@@ -463,7 +463,7 @@ publish.definition = {
 
 /**
  * @see \App\Http\Controllers\CustomModelController::publish
- * @see Http/Controllers/CustomModelController.php:112
+ * @see Http/Controllers/CustomModelController.php:150
  * @route '/models/{model}/publish'
  */
 publish.url = (
@@ -503,7 +503,7 @@ publish.url = (
 
 /**
  * @see \App\Http\Controllers\CustomModelController::publish
- * @see Http/Controllers/CustomModelController.php:112
+ * @see Http/Controllers/CustomModelController.php:150
  * @route '/models/{model}/publish'
  */
 publish.post = (
@@ -520,7 +520,7 @@ publish.post = (
 
 /**
  * @see \App\Http\Controllers\CustomModelController::publish
- * @see Http/Controllers/CustomModelController.php:112
+ * @see Http/Controllers/CustomModelController.php:150
  * @route '/models/{model}/publish'
  */
 const publishForm = (
@@ -537,7 +537,7 @@ const publishForm = (
 
 /**
  * @see \App\Http\Controllers\CustomModelController::publish
- * @see Http/Controllers/CustomModelController.php:112
+ * @see Http/Controllers/CustomModelController.php:150
  * @route '/models/{model}/publish'
  */
 publishForm.post = (
@@ -556,7 +556,7 @@ publish.form = publishForm;
 
 /**
  * @see \App\Http\Controllers\CustomModelController::test
- * @see Http/Controllers/CustomModelController.php:146
+ * @see Http/Controllers/CustomModelController.php:206
  * @route '/models/{model}/test'
  */
 export const test = (
@@ -578,7 +578,7 @@ test.definition = {
 
 /**
  * @see \App\Http\Controllers\CustomModelController::test
- * @see Http/Controllers/CustomModelController.php:146
+ * @see Http/Controllers/CustomModelController.php:206
  * @route '/models/{model}/test'
  */
 test.url = (
@@ -618,7 +618,7 @@ test.url = (
 
 /**
  * @see \App\Http\Controllers\CustomModelController::test
- * @see Http/Controllers/CustomModelController.php:146
+ * @see Http/Controllers/CustomModelController.php:206
  * @route '/models/{model}/test'
  */
 test.post = (
@@ -635,7 +635,7 @@ test.post = (
 
 /**
  * @see \App\Http\Controllers\CustomModelController::test
- * @see Http/Controllers/CustomModelController.php:146
+ * @see Http/Controllers/CustomModelController.php:206
  * @route '/models/{model}/test'
  */
 const testForm = (
@@ -652,7 +652,7 @@ const testForm = (
 
 /**
  * @see \App\Http\Controllers\CustomModelController::test
- * @see Http/Controllers/CustomModelController.php:146
+ * @see Http/Controllers/CustomModelController.php:206
  * @route '/models/{model}/test'
  */
 testForm.post = (

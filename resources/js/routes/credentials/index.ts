@@ -7,7 +7,7 @@ import {
 } from './../../wayfinder';
 /**
  * @see \App\Http\Controllers\CredentialProfileController::index
- * @see Http/Controllers/CredentialProfileController.php:16
+ * @see Http/Controllers/CredentialProfileController.php:19
  * @route '/credentials'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -22,7 +22,7 @@ index.definition = {
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::index
- * @see Http/Controllers/CredentialProfileController.php:16
+ * @see Http/Controllers/CredentialProfileController.php:19
  * @route '/credentials'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -31,7 +31,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::index
- * @see Http/Controllers/CredentialProfileController.php:16
+ * @see Http/Controllers/CredentialProfileController.php:19
  * @route '/credentials'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -41,7 +41,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::index
- * @see Http/Controllers/CredentialProfileController.php:16
+ * @see Http/Controllers/CredentialProfileController.php:19
  * @route '/credentials'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -51,7 +51,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::index
- * @see Http/Controllers/CredentialProfileController.php:16
+ * @see Http/Controllers/CredentialProfileController.php:19
  * @route '/credentials'
  */
 const indexForm = (
@@ -63,7 +63,7 @@ const indexForm = (
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::index
- * @see Http/Controllers/CredentialProfileController.php:16
+ * @see Http/Controllers/CredentialProfileController.php:19
  * @route '/credentials'
  */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -73,7 +73,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::index
- * @see Http/Controllers/CredentialProfileController.php:16
+ * @see Http/Controllers/CredentialProfileController.php:19
  * @route '/credentials'
  */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -90,7 +90,7 @@ index.form = indexForm;
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::store
- * @see Http/Controllers/CredentialProfileController.php:37
+ * @see Http/Controllers/CredentialProfileController.php:40
  * @route '/credentials'
  */
 export const store = (
@@ -107,7 +107,7 @@ store.definition = {
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::store
- * @see Http/Controllers/CredentialProfileController.php:37
+ * @see Http/Controllers/CredentialProfileController.php:40
  * @route '/credentials'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -116,7 +116,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::store
- * @see Http/Controllers/CredentialProfileController.php:37
+ * @see Http/Controllers/CredentialProfileController.php:40
  * @route '/credentials'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -126,7 +126,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::store
- * @see Http/Controllers/CredentialProfileController.php:37
+ * @see Http/Controllers/CredentialProfileController.php:40
  * @route '/credentials'
  */
 const storeForm = (
@@ -138,7 +138,7 @@ const storeForm = (
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::store
- * @see Http/Controllers/CredentialProfileController.php:37
+ * @see Http/Controllers/CredentialProfileController.php:40
  * @route '/credentials'
  */
 storeForm.post = (
@@ -152,7 +152,7 @@ store.form = storeForm;
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::update
- * @see Http/Controllers/CredentialProfileController.php:52
+ * @see Http/Controllers/CredentialProfileController.php:55
  * @route '/credentials/{credential}'
  */
 export const update = (
@@ -174,7 +174,7 @@ update.definition = {
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::update
- * @see Http/Controllers/CredentialProfileController.php:52
+ * @see Http/Controllers/CredentialProfileController.php:55
  * @route '/credentials/{credential}'
  */
 update.url = (
@@ -217,7 +217,7 @@ update.url = (
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::update
- * @see Http/Controllers/CredentialProfileController.php:52
+ * @see Http/Controllers/CredentialProfileController.php:55
  * @route '/credentials/{credential}'
  */
 update.put = (
@@ -234,7 +234,7 @@ update.put = (
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::update
- * @see Http/Controllers/CredentialProfileController.php:52
+ * @see Http/Controllers/CredentialProfileController.php:55
  * @route '/credentials/{credential}'
  */
 update.patch = (
@@ -251,7 +251,7 @@ update.patch = (
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::update
- * @see Http/Controllers/CredentialProfileController.php:52
+ * @see Http/Controllers/CredentialProfileController.php:55
  * @route '/credentials/{credential}'
  */
 const updateForm = (
@@ -273,7 +273,7 @@ const updateForm = (
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::update
- * @see Http/Controllers/CredentialProfileController.php:52
+ * @see Http/Controllers/CredentialProfileController.php:55
  * @route '/credentials/{credential}'
  */
 updateForm.put = (
@@ -295,7 +295,7 @@ updateForm.put = (
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::update
- * @see Http/Controllers/CredentialProfileController.php:52
+ * @see Http/Controllers/CredentialProfileController.php:55
  * @route '/credentials/{credential}'
  */
 updateForm.patch = (
@@ -319,7 +319,7 @@ update.form = updateForm;
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::destroy
- * @see Http/Controllers/CredentialProfileController.php:73
+ * @see Http/Controllers/CredentialProfileController.php:115
  * @route '/credentials/{credential}'
  */
 export const destroy = (
@@ -341,7 +341,7 @@ destroy.definition = {
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::destroy
- * @see Http/Controllers/CredentialProfileController.php:73
+ * @see Http/Controllers/CredentialProfileController.php:115
  * @route '/credentials/{credential}'
  */
 destroy.url = (
@@ -384,7 +384,7 @@ destroy.url = (
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::destroy
- * @see Http/Controllers/CredentialProfileController.php:73
+ * @see Http/Controllers/CredentialProfileController.php:115
  * @route '/credentials/{credential}'
  */
 destroy.delete = (
@@ -401,7 +401,7 @@ destroy.delete = (
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::destroy
- * @see Http/Controllers/CredentialProfileController.php:73
+ * @see Http/Controllers/CredentialProfileController.php:115
  * @route '/credentials/{credential}'
  */
 const destroyForm = (
@@ -423,7 +423,7 @@ const destroyForm = (
 
 /**
  * @see \App\Http\Controllers\CredentialProfileController::destroy
- * @see Http/Controllers/CredentialProfileController.php:73
+ * @see Http/Controllers/CredentialProfileController.php:115
  * @route '/credentials/{credential}'
  */
 destroyForm.delete = (

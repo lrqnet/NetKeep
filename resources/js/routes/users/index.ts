@@ -7,7 +7,7 @@ import {
 } from './../../wayfinder';
 /**
  * @see \App\Http\Controllers\UserController::index
- * @see Http/Controllers/UserController.php:19
+ * @see Http/Controllers/UserController.php:24
  * @route '/users'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -22,7 +22,7 @@ index.definition = {
 
 /**
  * @see \App\Http\Controllers\UserController::index
- * @see Http/Controllers/UserController.php:19
+ * @see Http/Controllers/UserController.php:24
  * @route '/users'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -31,7 +31,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\UserController::index
- * @see Http/Controllers/UserController.php:19
+ * @see Http/Controllers/UserController.php:24
  * @route '/users'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -41,7 +41,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\UserController::index
- * @see Http/Controllers/UserController.php:19
+ * @see Http/Controllers/UserController.php:24
  * @route '/users'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -51,7 +51,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\UserController::index
- * @see Http/Controllers/UserController.php:19
+ * @see Http/Controllers/UserController.php:24
  * @route '/users'
  */
 const indexForm = (
@@ -63,7 +63,7 @@ const indexForm = (
 
 /**
  * @see \App\Http\Controllers\UserController::index
- * @see Http/Controllers/UserController.php:19
+ * @see Http/Controllers/UserController.php:24
  * @route '/users'
  */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -73,7 +73,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\UserController::index
- * @see Http/Controllers/UserController.php:19
+ * @see Http/Controllers/UserController.php:24
  * @route '/users'
  */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -90,7 +90,7 @@ index.form = indexForm;
 
 /**
  * @see \App\Http\Controllers\UserController::store
- * @see Http/Controllers/UserController.php:32
+ * @see Http/Controllers/UserController.php:37
  * @route '/users'
  */
 export const store = (
@@ -107,7 +107,7 @@ store.definition = {
 
 /**
  * @see \App\Http\Controllers\UserController::store
- * @see Http/Controllers/UserController.php:32
+ * @see Http/Controllers/UserController.php:37
  * @route '/users'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -116,7 +116,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\UserController::store
- * @see Http/Controllers/UserController.php:32
+ * @see Http/Controllers/UserController.php:37
  * @route '/users'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -126,7 +126,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\UserController::store
- * @see Http/Controllers/UserController.php:32
+ * @see Http/Controllers/UserController.php:37
  * @route '/users'
  */
 const storeForm = (
@@ -138,7 +138,7 @@ const storeForm = (
 
 /**
  * @see \App\Http\Controllers\UserController::store
- * @see Http/Controllers/UserController.php:32
+ * @see Http/Controllers/UserController.php:37
  * @route '/users'
  */
 storeForm.post = (
@@ -152,7 +152,7 @@ store.form = storeForm;
 
 /**
  * @see \App\Http\Controllers\UserController::update
- * @see Http/Controllers/UserController.php:55
+ * @see Http/Controllers/UserController.php:61
  * @route '/users/{user}'
  */
 export const update = (
@@ -174,7 +174,7 @@ update.definition = {
 
 /**
  * @see \App\Http\Controllers\UserController::update
- * @see Http/Controllers/UserController.php:55
+ * @see Http/Controllers/UserController.php:61
  * @route '/users/{user}'
  */
 update.url = (
@@ -214,7 +214,7 @@ update.url = (
 
 /**
  * @see \App\Http\Controllers\UserController::update
- * @see Http/Controllers/UserController.php:55
+ * @see Http/Controllers/UserController.php:61
  * @route '/users/{user}'
  */
 update.put = (
@@ -231,7 +231,7 @@ update.put = (
 
 /**
  * @see \App\Http\Controllers\UserController::update
- * @see Http/Controllers/UserController.php:55
+ * @see Http/Controllers/UserController.php:61
  * @route '/users/{user}'
  */
 update.patch = (
@@ -248,7 +248,7 @@ update.patch = (
 
 /**
  * @see \App\Http\Controllers\UserController::update
- * @see Http/Controllers/UserController.php:55
+ * @see Http/Controllers/UserController.php:61
  * @route '/users/{user}'
  */
 const updateForm = (
@@ -270,7 +270,7 @@ const updateForm = (
 
 /**
  * @see \App\Http\Controllers\UserController::update
- * @see Http/Controllers/UserController.php:55
+ * @see Http/Controllers/UserController.php:61
  * @route '/users/{user}'
  */
 updateForm.put = (
@@ -292,7 +292,7 @@ updateForm.put = (
 
 /**
  * @see \App\Http\Controllers\UserController::update
- * @see Http/Controllers/UserController.php:55
+ * @see Http/Controllers/UserController.php:61
  * @route '/users/{user}'
  */
 updateForm.patch = (
@@ -316,7 +316,7 @@ update.form = updateForm;
 
 /**
  * @see \App\Http\Controllers\UserController::transferOwnership
- * @see Http/Controllers/UserController.php:73
+ * @see Http/Controllers/UserController.php:108
  * @route '/users/{user}/transfer-ownership'
  */
 export const transferOwnership = (
@@ -338,7 +338,7 @@ transferOwnership.definition = {
 
 /**
  * @see \App\Http\Controllers\UserController::transferOwnership
- * @see Http/Controllers/UserController.php:73
+ * @see Http/Controllers/UserController.php:108
  * @route '/users/{user}/transfer-ownership'
  */
 transferOwnership.url = (
@@ -378,7 +378,7 @@ transferOwnership.url = (
 
 /**
  * @see \App\Http\Controllers\UserController::transferOwnership
- * @see Http/Controllers/UserController.php:73
+ * @see Http/Controllers/UserController.php:108
  * @route '/users/{user}/transfer-ownership'
  */
 transferOwnership.post = (
@@ -395,7 +395,7 @@ transferOwnership.post = (
 
 /**
  * @see \App\Http\Controllers\UserController::transferOwnership
- * @see Http/Controllers/UserController.php:73
+ * @see Http/Controllers/UserController.php:108
  * @route '/users/{user}/transfer-ownership'
  */
 const transferOwnershipForm = (
@@ -412,7 +412,7 @@ const transferOwnershipForm = (
 
 /**
  * @see \App\Http\Controllers\UserController::transferOwnership
- * @see Http/Controllers/UserController.php:73
+ * @see Http/Controllers/UserController.php:108
  * @route '/users/{user}/transfer-ownership'
  */
 transferOwnershipForm.post = (

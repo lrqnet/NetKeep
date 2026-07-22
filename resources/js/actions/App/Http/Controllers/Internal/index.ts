@@ -1,5 +1,6 @@
 import CaddyDomainController from './CaddyDomainController';
 import OxidizedNodesController from './OxidizedNodesController';
+import SandboxNodesController from './SandboxNodesController';
 
 const Internal = {
     CaddyDomainController: Object.assign(
@@ -9,6 +10,10 @@ const Internal = {
     OxidizedNodesController: Object.assign(
         OxidizedNodesController,
         OxidizedNodesController,
+    ),
+    SandboxNodesController: Object.assign(
+        SandboxNodesController,
+        SandboxNodesController,
     ),
 };
 

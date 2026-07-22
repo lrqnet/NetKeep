@@ -79,7 +79,7 @@ return [
         'http_ip_login_blocked' => 'El inicio de sesión HTTP por IP está bloqueado en modo seguro. Usa la dirección HTTPS canónica.',
         'dangerous_feature_enabled' => 'Función peligrosa habilitada. Las garantías del modo seguro ahora son condicionales.',
         'dangerous_feature_disabled' => 'Función peligrosa deshabilitada.',
-        'automatic_updates_disabled' => 'Las actualizaciones con WUD están desactivadas en modo seguro.',
+        'automatic_updates_disabled' => 'Las actualizaciones automáticas requieren aceptación explícita del riesgo.',
     ],
     'integrations' => [
         'url_credentials' => 'La URL no puede contener credenciales.',
@@ -133,6 +133,11 @@ return [
         'policy_saved' => 'Política de actualización guardada.',
         'none_available' => 'No hay una actualización compatible disponible.',
         'queued' => 'El respaldo previo y la actualización se agregaron a la cola.',
+        'check_queued' => 'La verificación de actualización se agregó a la cola.',
+        'already_running' => 'Ya hay otra operación de actualización en curso.',
+        'not_installable' => 'Esta versión no puede instalarse desde la versión actual.',
+        'release_changed' => 'La versión disponible cambió. Revísala antes de continuar.',
+        'confirm_version' => 'Escribe la versión de destino exacta para confirmar esta actualización principal.',
     ],
     'catalog' => [
         'invalid_type' => 'Tipo de catálogo no válido.',
@@ -160,6 +165,7 @@ return [
         'backup_failed' => 'Falló el respaldo cifrado.',
         'update_started' => 'La actualización de NetKeep comenzó.',
         'update_failed' => 'Falló la actualización de NetKeep.',
+        'update_available' => 'NetKeep :version está disponible. La versión instalada es :current_version.',
         'device_recovered' => 'El equipo :device se recuperó.',
         'device_failed' => 'Falló la recolección del equipo :device.',
         'device_changed' => 'La configuración del equipo :device cambió.',

@@ -8,7 +8,9 @@ Schedule::command('netkeep:dispatch-collections')->everyMinute()->withoutOverlap
 Schedule::command('netkeep:check-overdue')->everyFiveMinutes()->withoutOverlapping()->onOneServer();
 Schedule::command('netkeep:backup')->dailyAt('02:30')->withoutOverlapping()->onOneServer();
 Schedule::command('netkeep:mirror-git')->everyFifteenMinutes()->withoutOverlapping()->onOneServer();
-Schedule::command('netkeep:auto-update')->hourly()->withoutOverlapping()->onOneServer();
+Schedule::command('netkeep:check-updates')->everyFiveMinutes()->withoutOverlapping()->onOneServer();
+Schedule::command('netkeep:auto-update')->everyFiveMinutes()->withoutOverlapping()->onOneServer();
+Schedule::command('netkeep:reconcile-updates')->everyMinute()->withoutOverlapping()->onOneServer();
 Schedule::command('netkeep:prune-backups')->dailyAt('03:30')->withoutOverlapping()->onOneServer();
 Schedule::command('queue:prune-batches --hours=72')->daily();
 use Illuminate\Foundation\Inspiring;

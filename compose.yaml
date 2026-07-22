@@ -1,7 +1,7 @@
 name: netkeep
 
 x-netkeep-image: &netkeep-image
-    image: ${NETKEEP_IMAGE:-docker.io/lrqnet/netkeep:1.0.1}
+    image: ${NETKEEP_IMAGE:-docker.io/lrqnet/netkeep:1.0.2}
 
 x-netkeep-environment: &netkeep-environment
     APP_ENV: production
@@ -13,7 +13,6 @@ x-netkeep-environment: &netkeep-environment
     DB_USERNAME: netkeep
     OXIDIZED_URL: http://oxidized:8888
     OXIDIZED_SANDBOX_URL: http://sandbox:8888
-    WUD_URL: http://wud:3000
 
 x-netkeep-volumes: &netkeep-volumes
     - netkeep_secrets:/run/netkeep-secrets:ro
@@ -24,6 +23,7 @@ x-netkeep-volumes: &netkeep-volumes
     - sandbox_git:/var/lib/netkeep/sandbox/repository
     - backup_data:/var/lib/netkeep/backups
     - restore_inbox:/var/lib/netkeep/restore-inbox
+    - update_exchange:/var/lib/netkeep/updates
     - netkeep_cache:/app/bootstrap/cache
 
 services:
@@ -51,6 +51,7 @@ services:
             - sandbox_git:/var/lib/netkeep/sandbox/repository
             - backup_data:/var/lib/netkeep/backups
             - restore_inbox:/var/lib/netkeep/restore-inbox
+            - update_exchange:/var/lib/netkeep/updates
             - caddy_data:/var/lib/netkeep/caddy-data
             - caddy_config:/var/lib/netkeep/caddy-config
         network_mode: none
@@ -147,6 +148,7 @@ services:
             - sandbox_git:/var/lib/netkeep/sandbox/repository
             - backup_data:/var/lib/netkeep/backups
             - restore_inbox:/var/lib/netkeep/restore-inbox
+            - update_exchange:/var/lib/netkeep/updates
             - netkeep_cache:/app/bootstrap/cache
             - caddy_data:/data
             - caddy_config:/config
@@ -172,11 +174,6 @@ services:
             timeout: 5s
             retries: 20
             start_period: 30s
-        labels:
-            wud.watch: 'true'
-            wud.tag.include: "^1\\.[0-9]+\\.[0-9]+$"
-            wud.trigger.include: 'dockercompose.netkeep:minor'
-            wud.link.template: 'https://github.com/lrqnet/NetKeep/releases/tag/v$${major}.$${minor}.$${patch}'
         networks:
             - edge
             - internal
@@ -208,8 +205,6 @@ services:
                 condition: service_healthy
         environment: *netkeep-environment
         volumes: *netkeep-volumes
-        labels:
-            wud.watch: 'false'
         healthcheck:
             test: ['CMD-SHELL', 'kill -0 1']
             interval: 15s
@@ -244,8 +239,6 @@ services:
                 condition: service_healthy
         environment: *netkeep-environment
         volumes: *netkeep-volumes
-        labels:
-            wud.watch: 'false'
         healthcheck:
             test: ['CMD-SHELL', 'kill -0 1']
             interval: 15s
@@ -367,30 +360,32 @@ services:
         networks:
             - internal
 
-    wud:
-        image: getwud/wud:8.3.0@sha256:1cf5ecfdbd2389847427fd9685c4fd337ee8c74a0f584c52288d760d9a58811e
-        profiles: ['dangerous-auto-update']
+    updater:
+        image: ${NETKEEP_UPDATER_IMAGE:-docker.io/lrqnet/netkeep-updater:1.0.2}
         restart: unless-stopped
+        group_add:
+            - '20000'
         read_only: true
-        pids_limit: 128
-        mem_limit: 256m
+        cap_drop:
+            - ALL
+        pids_limit: 64
+        mem_limit: 128m
         security_opt:
             - no-new-privileges:true
         tmpfs:
-            - /tmp:rw,noexec,nosuid,nodev,size=64m
+            - /tmp:rw,noexec,nosuid,nodev,size=32m
+        depends_on:
+            init:
+                condition: service_completed_successfully
         environment:
-            WUD_WATCHER_LOCAL_CRON: '0 */6 * * *'
-            WUD_WATCHER_LOCAL_WATCHALL: 'false'
-            WUD_TRIGGER_DOCKERCOMPOSE_NETKEEP_FILE: /wud/compose.yaml
-            WUD_TRIGGER_DOCKERCOMPOSE_NETKEEP_PRUNE: 'true'
-            WUD_TRIGGER_DOCKERCOMPOSE_NETKEEP_AUTO: 'false'
-            WUD_TRIGGER_DOCKERCOMPOSE_NETKEEP_THRESHOLD: minor
+            NETKEEP_INSTALL_DIR: '${PWD}'
+            NETKEEP_UPDATE_EXCHANGE: /var/lib/netkeep/updates
+            NETKEEP_COMPOSE_PROJECT: '${COMPOSE_PROJECT_NAME:-netkeep}'
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-            - ./compose.yaml:/wud/compose.yaml:ro
-            - wud_data:/store
-        networks:
-            - edge
+            - '${PWD}:${PWD}'
+            - update_exchange:/var/lib/netkeep/updates
+        network_mode: none
 
 volumes:
     postgres_data:
@@ -404,8 +399,8 @@ volumes:
     sandbox_git:
     backup_data:
     restore_inbox:
+    update_exchange:
     netkeep_cache:
-    wud_data:
     caddy_data:
     caddy_config:
 

@@ -44,6 +44,11 @@ return [
     'caddy_global_path' => env('NETKEEP_CADDY_GLOBAL_PATH', '/config/netkeep-global.caddy'),
     'backup_path' => env('NETKEEP_BACKUP_PATH', storage_path('app/backups')),
     'updates' => [
-        'wud_url' => env('WUD_URL', 'http://wud:3000'),
+        'releases_url' => env(
+            'NETKEEP_RELEASES_URL',
+            'https://api.github.com/repos/lrqnet/NetKeep/releases?per_page=30',
+        ),
+        'exchange_path' => env('NETKEEP_UPDATE_EXCHANGE_PATH', '/var/lib/netkeep/updates'),
+        'snapshot_retention' => 3,
     ],
 ];

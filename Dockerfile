@@ -87,6 +87,7 @@ ENV APP_ENV=production \
     OXIDIZED_SANDBOX_CONFIG_PATH=/var/lib/netkeep/sandbox \
     OXIDIZED_GIT_PATH=/var/lib/netkeep/oxidized/repository \
     NETKEEP_BACKUP_PATH=/var/lib/netkeep/backups \
+    NETKEEP_UPDATE_EXCHANGE_PATH=/var/lib/netkeep/updates \
     LD_LIBRARY_PATH=/usr/local/lib
 
 WORKDIR /app
@@ -115,6 +116,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/init-secrets.sh /usr/lo
         /var/lib/netkeep/backups \
         /var/lib/netkeep/oxidized \
         /var/lib/netkeep/sandbox \
+        /var/lib/netkeep/updates \
         /var/lib/netkeep/restore-inbox \
     && ln -s ../storage/app/public /app/public/storage \
     && chown -R 20000:20000 /app/storage /app/bootstrap/cache /var/lib/netkeep/backups /var/lib/netkeep/restore-inbox

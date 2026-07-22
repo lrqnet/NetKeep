@@ -4,9 +4,10 @@ import {
     type RouteDefinition,
     type RouteFormDefinition,
 } from './../../wayfinder';
+import operations from './operations';
 /**
  * @see \App\Http\Controllers\UpdateController::index
- * @see Http/Controllers/UpdateController.php:19
+ * @see Http/Controllers/UpdateController.php:28
  * @route '/updates'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -21,7 +22,7 @@ index.definition = {
 
 /**
  * @see \App\Http\Controllers\UpdateController::index
- * @see Http/Controllers/UpdateController.php:19
+ * @see Http/Controllers/UpdateController.php:28
  * @route '/updates'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -30,7 +31,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\UpdateController::index
- * @see Http/Controllers/UpdateController.php:19
+ * @see Http/Controllers/UpdateController.php:28
  * @route '/updates'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -40,7 +41,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\UpdateController::index
- * @see Http/Controllers/UpdateController.php:19
+ * @see Http/Controllers/UpdateController.php:28
  * @route '/updates'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -50,7 +51,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\UpdateController::index
- * @see Http/Controllers/UpdateController.php:19
+ * @see Http/Controllers/UpdateController.php:28
  * @route '/updates'
  */
 const indexForm = (
@@ -62,7 +63,7 @@ const indexForm = (
 
 /**
  * @see \App\Http\Controllers\UpdateController::index
- * @see Http/Controllers/UpdateController.php:19
+ * @see Http/Controllers/UpdateController.php:28
  * @route '/updates'
  */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -72,7 +73,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\UpdateController::index
- * @see Http/Controllers/UpdateController.php:19
+ * @see Http/Controllers/UpdateController.php:28
  * @route '/updates'
  */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -88,8 +89,70 @@ indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 index.form = indexForm;
 
 /**
+ * @see \App\Http\Controllers\UpdateController::check
+ * @see Http/Controllers/UpdateController.php:60
+ * @route '/updates/check'
+ */
+export const check = (
+    options?: RouteQueryOptions,
+): RouteDefinition<'post'> => ({
+    url: check.url(options),
+    method: 'post',
+});
+
+check.definition = {
+    methods: ['post'],
+    url: '/updates/check',
+} satisfies RouteDefinition<['post']>;
+
+/**
+ * @see \App\Http\Controllers\UpdateController::check
+ * @see Http/Controllers/UpdateController.php:60
+ * @route '/updates/check'
+ */
+check.url = (options?: RouteQueryOptions) => {
+    return check.definition.url + queryParams(options);
+};
+
+/**
+ * @see \App\Http\Controllers\UpdateController::check
+ * @see Http/Controllers/UpdateController.php:60
+ * @route '/updates/check'
+ */
+check.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: check.url(options),
+    method: 'post',
+});
+
+/**
+ * @see \App\Http\Controllers\UpdateController::check
+ * @see Http/Controllers/UpdateController.php:60
+ * @route '/updates/check'
+ */
+const checkForm = (
+    options?: RouteQueryOptions,
+): RouteFormDefinition<'post'> => ({
+    action: check.url(options),
+    method: 'post',
+});
+
+/**
+ * @see \App\Http\Controllers\UpdateController::check
+ * @see Http/Controllers/UpdateController.php:60
+ * @route '/updates/check'
+ */
+checkForm.post = (
+    options?: RouteQueryOptions,
+): RouteFormDefinition<'post'> => ({
+    action: check.url(options),
+    method: 'post',
+});
+
+check.form = checkForm;
+
+/**
  * @see \App\Http\Controllers\UpdateController::settings
- * @see Http/Controllers/UpdateController.php:37
+ * @see Http/Controllers/UpdateController.php:74
  * @route '/updates/settings'
  */
 export const settings = (
@@ -106,7 +169,7 @@ settings.definition = {
 
 /**
  * @see \App\Http\Controllers\UpdateController::settings
- * @see Http/Controllers/UpdateController.php:37
+ * @see Http/Controllers/UpdateController.php:74
  * @route '/updates/settings'
  */
 settings.url = (options?: RouteQueryOptions) => {
@@ -115,7 +178,7 @@ settings.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\UpdateController::settings
- * @see Http/Controllers/UpdateController.php:37
+ * @see Http/Controllers/UpdateController.php:74
  * @route '/updates/settings'
  */
 settings.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -125,7 +188,7 @@ settings.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
 
 /**
  * @see \App\Http\Controllers\UpdateController::settings
- * @see Http/Controllers/UpdateController.php:37
+ * @see Http/Controllers/UpdateController.php:74
  * @route '/updates/settings'
  */
 const settingsForm = (
@@ -142,7 +205,7 @@ const settingsForm = (
 
 /**
  * @see \App\Http\Controllers\UpdateController::settings
- * @see Http/Controllers/UpdateController.php:37
+ * @see Http/Controllers/UpdateController.php:74
  * @route '/updates/settings'
  */
 settingsForm.put = (
@@ -161,7 +224,7 @@ settings.form = settingsForm;
 
 /**
  * @see \App\Http\Controllers\UpdateController::run
- * @see Http/Controllers/UpdateController.php:56
+ * @see Http/Controllers/UpdateController.php:116
  * @route '/updates/run'
  */
 export const run = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -176,7 +239,7 @@ run.definition = {
 
 /**
  * @see \App\Http\Controllers\UpdateController::run
- * @see Http/Controllers/UpdateController.php:56
+ * @see Http/Controllers/UpdateController.php:116
  * @route '/updates/run'
  */
 run.url = (options?: RouteQueryOptions) => {
@@ -185,7 +248,7 @@ run.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\UpdateController::run
- * @see Http/Controllers/UpdateController.php:56
+ * @see Http/Controllers/UpdateController.php:116
  * @route '/updates/run'
  */
 run.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -195,7 +258,7 @@ run.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\UpdateController::run
- * @see Http/Controllers/UpdateController.php:56
+ * @see Http/Controllers/UpdateController.php:116
  * @route '/updates/run'
  */
 const runForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -205,7 +268,7 @@ const runForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\UpdateController::run
- * @see Http/Controllers/UpdateController.php:56
+ * @see Http/Controllers/UpdateController.php:116
  * @route '/updates/run'
  */
 runForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -217,8 +280,10 @@ run.form = runForm;
 
 const updates = {
     index: Object.assign(index, index),
+    check: Object.assign(check, check),
     settings: Object.assign(settings, settings),
     run: Object.assign(run, run),
+    operations: Object.assign(operations, operations),
 };
 
 export default updates;

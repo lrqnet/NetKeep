@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $type
  * @property string $name
  * @property bool $enabled
+ * @property bool $is_system
  * @property array<string, mixed> $config
  * @property BackupDestinationRunStatus|null $last_run_status
  * @property CarbonImmutable|null $last_run_at
@@ -28,6 +29,7 @@ class BackupDestination extends Model
         return [
             'config' => 'encrypted:array',
             'enabled' => 'boolean',
+            'is_system' => 'boolean',
             'last_run_status' => BackupDestinationRunStatus::class,
             'last_run_at' => 'immutable_datetime',
         ];

@@ -82,7 +82,8 @@ Uma alteração de chave SSH nunca é aceita silenciosamente.
 - modelos Ruby arbitrários;
 - drivers não revisados;
 - login HTTP por IP;
-- atualização automática com WUD e socket Docker.
+- atualização automática integrada com janela, snapshot obrigatório e socket
+  Docker isolado no updater.
 
 Somente o proprietário pode alterar essas opções. Habilitar exige confirmação
 de senha recente, texto exato e auditoria. Telnet ainda precisa ser autorizado

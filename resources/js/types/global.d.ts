@@ -35,6 +35,10 @@ declare module '@inertiajs/core' {
                 version: string;
                 source_url: string;
                 source_version_url: string;
+                update: {
+                    available: boolean;
+                    version: string | null;
+                } | null;
             };
             unsafeHttpIpLogin: boolean;
             sidebarOpen: boolean;

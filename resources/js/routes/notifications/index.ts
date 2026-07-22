@@ -7,7 +7,7 @@ import {
 import channels from './channels';
 /**
  * @see \App\Http\Controllers\NotificationChannelController::index
- * @see Http/Controllers/NotificationChannelController.php:19
+ * @see Http/Controllers/NotificationChannelController.php:20
  * @route '/notifications'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -22,7 +22,7 @@ index.definition = {
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::index
- * @see Http/Controllers/NotificationChannelController.php:19
+ * @see Http/Controllers/NotificationChannelController.php:20
  * @route '/notifications'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -31,7 +31,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::index
- * @see Http/Controllers/NotificationChannelController.php:19
+ * @see Http/Controllers/NotificationChannelController.php:20
  * @route '/notifications'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -41,7 +41,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::index
- * @see Http/Controllers/NotificationChannelController.php:19
+ * @see Http/Controllers/NotificationChannelController.php:20
  * @route '/notifications'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -51,7 +51,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::index
- * @see Http/Controllers/NotificationChannelController.php:19
+ * @see Http/Controllers/NotificationChannelController.php:20
  * @route '/notifications'
  */
 const indexForm = (
@@ -63,7 +63,7 @@ const indexForm = (
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::index
- * @see Http/Controllers/NotificationChannelController.php:19
+ * @see Http/Controllers/NotificationChannelController.php:20
  * @route '/notifications'
  */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -73,7 +73,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::index
- * @see Http/Controllers/NotificationChannelController.php:19
+ * @see Http/Controllers/NotificationChannelController.php:20
  * @route '/notifications'
  */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

@@ -172,12 +172,19 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/updates', [UpdateController::class, 'index'])
             ->middleware('role:owner')
             ->name('updates.index');
+        Route::post('/updates/check', [UpdateController::class, 'check'])
+            ->middleware(['role:owner', 'throttle:6,10'])
+            ->name('updates.check');
         Route::put('/updates/settings', [UpdateController::class, 'settings'])
             ->middleware(['role:owner', 'password.confirm'])
             ->name('updates.settings');
         Route::post('/updates/run', [UpdateController::class, 'run'])
             ->middleware(['role:owner', 'password.confirm', 'throttle:3,10'])
             ->name('updates.run');
+        Route::get('/updates/operations/{operation}', [UpdateController::class, 'operation'])
+            ->middleware(['role:owner', 'throttle:120,1'])
+            ->whereUuid('operation')
+            ->name('updates.operations.show');
 
         Route::get('/system', [SystemSettingsController::class, 'index'])
             ->middleware('role:owner,administrator')

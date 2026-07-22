@@ -7,7 +7,7 @@ import {
 } from './../../../../wayfinder';
 /**
  * @see \App\Http\Controllers\DeviceController::exportMethod
- * @see Http/Controllers/DeviceController.php:147
+ * @see Http/Controllers/DeviceController.php:307
  * @route '/devices/export'
  */
 export const exportMethod = (
@@ -24,7 +24,7 @@ exportMethod.definition = {
 
 /**
  * @see \App\Http\Controllers\DeviceController::exportMethod
- * @see Http/Controllers/DeviceController.php:147
+ * @see Http/Controllers/DeviceController.php:307
  * @route '/devices/export'
  */
 exportMethod.url = (options?: RouteQueryOptions) => {
@@ -33,7 +33,7 @@ exportMethod.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\DeviceController::exportMethod
- * @see Http/Controllers/DeviceController.php:147
+ * @see Http/Controllers/DeviceController.php:307
  * @route '/devices/export'
  */
 exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -43,7 +43,7 @@ exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\DeviceController::exportMethod
- * @see Http/Controllers/DeviceController.php:147
+ * @see Http/Controllers/DeviceController.php:307
  * @route '/devices/export'
  */
 exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -53,7 +53,7 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\DeviceController::exportMethod
- * @see Http/Controllers/DeviceController.php:147
+ * @see Http/Controllers/DeviceController.php:307
  * @route '/devices/export'
  */
 const exportMethodForm = (
@@ -65,7 +65,7 @@ const exportMethodForm = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::exportMethod
- * @see Http/Controllers/DeviceController.php:147
+ * @see Http/Controllers/DeviceController.php:307
  * @route '/devices/export'
  */
 exportMethodForm.get = (
@@ -77,7 +77,7 @@ exportMethodForm.get = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::exportMethod
- * @see Http/Controllers/DeviceController.php:147
+ * @see Http/Controllers/DeviceController.php:307
  * @route '/devices/export'
  */
 exportMethodForm.head = (
@@ -96,7 +96,7 @@ exportMethod.form = exportMethodForm;
 
 /**
  * @see \App\Http\Controllers\DeviceController::importMethod
- * @see Http/Controllers/DeviceController.php:173
+ * @see Http/Controllers/DeviceController.php:333
  * @route '/devices/import'
  */
 export const importMethod = (
@@ -113,7 +113,7 @@ importMethod.definition = {
 
 /**
  * @see \App\Http\Controllers\DeviceController::importMethod
- * @see Http/Controllers/DeviceController.php:173
+ * @see Http/Controllers/DeviceController.php:333
  * @route '/devices/import'
  */
 importMethod.url = (options?: RouteQueryOptions) => {
@@ -122,7 +122,7 @@ importMethod.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\DeviceController::importMethod
- * @see Http/Controllers/DeviceController.php:173
+ * @see Http/Controllers/DeviceController.php:333
  * @route '/devices/import'
  */
 importMethod.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -132,7 +132,7 @@ importMethod.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\DeviceController::importMethod
- * @see Http/Controllers/DeviceController.php:173
+ * @see Http/Controllers/DeviceController.php:333
  * @route '/devices/import'
  */
 const importMethodForm = (
@@ -144,7 +144,7 @@ const importMethodForm = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::importMethod
- * @see Http/Controllers/DeviceController.php:173
+ * @see Http/Controllers/DeviceController.php:333
  * @route '/devices/import'
  */
 importMethodForm.post = (
@@ -158,7 +158,7 @@ importMethod.form = importMethodForm;
 
 /**
  * @see \App\Http\Controllers\DeviceController::collect
- * @see Http/Controllers/DeviceController.php:135
+ * @see Http/Controllers/DeviceController.php:167
  * @route '/devices/{device}/collect'
  */
 export const collect = (
@@ -180,7 +180,7 @@ collect.definition = {
 
 /**
  * @see \App\Http\Controllers\DeviceController::collect
- * @see Http/Controllers/DeviceController.php:135
+ * @see Http/Controllers/DeviceController.php:167
  * @route '/devices/{device}/collect'
  */
 collect.url = (
@@ -220,7 +220,7 @@ collect.url = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::collect
- * @see Http/Controllers/DeviceController.php:135
+ * @see Http/Controllers/DeviceController.php:167
  * @route '/devices/{device}/collect'
  */
 collect.post = (
@@ -237,7 +237,7 @@ collect.post = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::collect
- * @see Http/Controllers/DeviceController.php:135
+ * @see Http/Controllers/DeviceController.php:167
  * @route '/devices/{device}/collect'
  */
 const collectForm = (
@@ -254,7 +254,7 @@ const collectForm = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::collect
- * @see Http/Controllers/DeviceController.php:135
+ * @see Http/Controllers/DeviceController.php:167
  * @route '/devices/{device}/collect'
  */
 collectForm.post = (
@@ -272,8 +272,353 @@ collectForm.post = (
 collect.form = collectForm;
 
 /**
+ * @see \App\Http\Controllers\DeviceController::forceCollect
+ * @see Http/Controllers/DeviceController.php:197
+ * @route '/devices/{device}/force-collect'
+ */
+export const forceCollect = (
+    args:
+        | { device: number | { id: number } }
+        | [device: number | { id: number }]
+        | number
+        | { id: number },
+    options?: RouteQueryOptions,
+): RouteDefinition<'post'> => ({
+    url: forceCollect.url(args, options),
+    method: 'post',
+});
+
+forceCollect.definition = {
+    methods: ['post'],
+    url: '/devices/{device}/force-collect',
+} satisfies RouteDefinition<['post']>;
+
+/**
+ * @see \App\Http\Controllers\DeviceController::forceCollect
+ * @see Http/Controllers/DeviceController.php:197
+ * @route '/devices/{device}/force-collect'
+ */
+forceCollect.url = (
+    args:
+        | { device: number | { id: number } }
+        | [device: number | { id: number }]
+        | number
+        | { id: number },
+    options?: RouteQueryOptions,
+) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { device: args };
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { device: args.id };
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            device: args[0],
+        };
+    }
+
+    args = applyUrlDefaults(args);
+
+    const parsedArgs = {
+        device: typeof args.device === 'object' ? args.device.id : args.device,
+    };
+
+    return (
+        forceCollect.definition.url
+            .replace('{device}', parsedArgs.device.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+    );
+};
+
+/**
+ * @see \App\Http\Controllers\DeviceController::forceCollect
+ * @see Http/Controllers/DeviceController.php:197
+ * @route '/devices/{device}/force-collect'
+ */
+forceCollect.post = (
+    args:
+        | { device: number | { id: number } }
+        | [device: number | { id: number }]
+        | number
+        | { id: number },
+    options?: RouteQueryOptions,
+): RouteDefinition<'post'> => ({
+    url: forceCollect.url(args, options),
+    method: 'post',
+});
+
+/**
+ * @see \App\Http\Controllers\DeviceController::forceCollect
+ * @see Http/Controllers/DeviceController.php:197
+ * @route '/devices/{device}/force-collect'
+ */
+const forceCollectForm = (
+    args:
+        | { device: number | { id: number } }
+        | [device: number | { id: number }]
+        | number
+        | { id: number },
+    options?: RouteQueryOptions,
+): RouteFormDefinition<'post'> => ({
+    action: forceCollect.url(args, options),
+    method: 'post',
+});
+
+/**
+ * @see \App\Http\Controllers\DeviceController::forceCollect
+ * @see Http/Controllers/DeviceController.php:197
+ * @route '/devices/{device}/force-collect'
+ */
+forceCollectForm.post = (
+    args:
+        | { device: number | { id: number } }
+        | [device: number | { id: number }]
+        | number
+        | { id: number },
+    options?: RouteQueryOptions,
+): RouteFormDefinition<'post'> => ({
+    action: forceCollect.url(args, options),
+    method: 'post',
+});
+
+forceCollect.form = forceCollectForm;
+
+/**
+ * @see \App\Http\Controllers\DeviceController::approve
+ * @see Http/Controllers/DeviceController.php:222
+ * @route '/devices/{device}/approve'
+ */
+export const approve = (
+    args:
+        | { device: number | { id: number } }
+        | [device: number | { id: number }]
+        | number
+        | { id: number },
+    options?: RouteQueryOptions,
+): RouteDefinition<'post'> => ({
+    url: approve.url(args, options),
+    method: 'post',
+});
+
+approve.definition = {
+    methods: ['post'],
+    url: '/devices/{device}/approve',
+} satisfies RouteDefinition<['post']>;
+
+/**
+ * @see \App\Http\Controllers\DeviceController::approve
+ * @see Http/Controllers/DeviceController.php:222
+ * @route '/devices/{device}/approve'
+ */
+approve.url = (
+    args:
+        | { device: number | { id: number } }
+        | [device: number | { id: number }]
+        | number
+        | { id: number },
+    options?: RouteQueryOptions,
+) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { device: args };
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { device: args.id };
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            device: args[0],
+        };
+    }
+
+    args = applyUrlDefaults(args);
+
+    const parsedArgs = {
+        device: typeof args.device === 'object' ? args.device.id : args.device,
+    };
+
+    return (
+        approve.definition.url
+            .replace('{device}', parsedArgs.device.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+    );
+};
+
+/**
+ * @see \App\Http\Controllers\DeviceController::approve
+ * @see Http/Controllers/DeviceController.php:222
+ * @route '/devices/{device}/approve'
+ */
+approve.post = (
+    args:
+        | { device: number | { id: number } }
+        | [device: number | { id: number }]
+        | number
+        | { id: number },
+    options?: RouteQueryOptions,
+): RouteDefinition<'post'> => ({
+    url: approve.url(args, options),
+    method: 'post',
+});
+
+/**
+ * @see \App\Http\Controllers\DeviceController::approve
+ * @see Http/Controllers/DeviceController.php:222
+ * @route '/devices/{device}/approve'
+ */
+const approveForm = (
+    args:
+        | { device: number | { id: number } }
+        | [device: number | { id: number }]
+        | number
+        | { id: number },
+    options?: RouteQueryOptions,
+): RouteFormDefinition<'post'> => ({
+    action: approve.url(args, options),
+    method: 'post',
+});
+
+/**
+ * @see \App\Http\Controllers\DeviceController::approve
+ * @see Http/Controllers/DeviceController.php:222
+ * @route '/devices/{device}/approve'
+ */
+approveForm.post = (
+    args:
+        | { device: number | { id: number } }
+        | [device: number | { id: number }]
+        | number
+        | { id: number },
+    options?: RouteQueryOptions,
+): RouteFormDefinition<'post'> => ({
+    action: approve.url(args, options),
+    method: 'post',
+});
+
+approve.form = approveForm;
+
+/**
+ * @see \App\Http\Controllers\DeviceController::revoke
+ * @see Http/Controllers/DeviceController.php:292
+ * @route '/devices/{device}/revoke-approval'
+ */
+export const revoke = (
+    args:
+        | { device: number | { id: number } }
+        | [device: number | { id: number }]
+        | number
+        | { id: number },
+    options?: RouteQueryOptions,
+): RouteDefinition<'post'> => ({
+    url: revoke.url(args, options),
+    method: 'post',
+});
+
+revoke.definition = {
+    methods: ['post'],
+    url: '/devices/{device}/revoke-approval',
+} satisfies RouteDefinition<['post']>;
+
+/**
+ * @see \App\Http\Controllers\DeviceController::revoke
+ * @see Http/Controllers/DeviceController.php:292
+ * @route '/devices/{device}/revoke-approval'
+ */
+revoke.url = (
+    args:
+        | { device: number | { id: number } }
+        | [device: number | { id: number }]
+        | number
+        | { id: number },
+    options?: RouteQueryOptions,
+) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { device: args };
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { device: args.id };
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            device: args[0],
+        };
+    }
+
+    args = applyUrlDefaults(args);
+
+    const parsedArgs = {
+        device: typeof args.device === 'object' ? args.device.id : args.device,
+    };
+
+    return (
+        revoke.definition.url
+            .replace('{device}', parsedArgs.device.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+    );
+};
+
+/**
+ * @see \App\Http\Controllers\DeviceController::revoke
+ * @see Http/Controllers/DeviceController.php:292
+ * @route '/devices/{device}/revoke-approval'
+ */
+revoke.post = (
+    args:
+        | { device: number | { id: number } }
+        | [device: number | { id: number }]
+        | number
+        | { id: number },
+    options?: RouteQueryOptions,
+): RouteDefinition<'post'> => ({
+    url: revoke.url(args, options),
+    method: 'post',
+});
+
+/**
+ * @see \App\Http\Controllers\DeviceController::revoke
+ * @see Http/Controllers/DeviceController.php:292
+ * @route '/devices/{device}/revoke-approval'
+ */
+const revokeForm = (
+    args:
+        | { device: number | { id: number } }
+        | [device: number | { id: number }]
+        | number
+        | { id: number },
+    options?: RouteQueryOptions,
+): RouteFormDefinition<'post'> => ({
+    action: revoke.url(args, options),
+    method: 'post',
+});
+
+/**
+ * @see \App\Http\Controllers\DeviceController::revoke
+ * @see Http/Controllers/DeviceController.php:292
+ * @route '/devices/{device}/revoke-approval'
+ */
+revokeForm.post = (
+    args:
+        | { device: number | { id: number } }
+        | [device: number | { id: number }]
+        | number
+        | { id: number },
+    options?: RouteQueryOptions,
+): RouteFormDefinition<'post'> => ({
+    action: revoke.url(args, options),
+    method: 'post',
+});
+
+revoke.form = revokeForm;
+
+/**
  * @see \App\Http\Controllers\DeviceController::index
- * @see Http/Controllers/DeviceController.php:42
+ * @see Http/Controllers/DeviceController.php:53
  * @route '/devices'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -288,7 +633,7 @@ index.definition = {
 
 /**
  * @see \App\Http\Controllers\DeviceController::index
- * @see Http/Controllers/DeviceController.php:42
+ * @see Http/Controllers/DeviceController.php:53
  * @route '/devices'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -297,7 +642,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\DeviceController::index
- * @see Http/Controllers/DeviceController.php:42
+ * @see Http/Controllers/DeviceController.php:53
  * @route '/devices'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -307,7 +652,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\DeviceController::index
- * @see Http/Controllers/DeviceController.php:42
+ * @see Http/Controllers/DeviceController.php:53
  * @route '/devices'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -317,7 +662,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\DeviceController::index
- * @see Http/Controllers/DeviceController.php:42
+ * @see Http/Controllers/DeviceController.php:53
  * @route '/devices'
  */
 const indexForm = (
@@ -329,7 +674,7 @@ const indexForm = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::index
- * @see Http/Controllers/DeviceController.php:42
+ * @see Http/Controllers/DeviceController.php:53
  * @route '/devices'
  */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -339,7 +684,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\DeviceController::index
- * @see Http/Controllers/DeviceController.php:42
+ * @see Http/Controllers/DeviceController.php:53
  * @route '/devices'
  */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -356,7 +701,7 @@ index.form = indexForm;
 
 /**
  * @see \App\Http\Controllers\DeviceController::store
- * @see Http/Controllers/DeviceController.php:83
+ * @see Http/Controllers/DeviceController.php:98
  * @route '/devices'
  */
 export const store = (
@@ -373,7 +718,7 @@ store.definition = {
 
 /**
  * @see \App\Http\Controllers\DeviceController::store
- * @see Http/Controllers/DeviceController.php:83
+ * @see Http/Controllers/DeviceController.php:98
  * @route '/devices'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -382,7 +727,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\DeviceController::store
- * @see Http/Controllers/DeviceController.php:83
+ * @see Http/Controllers/DeviceController.php:98
  * @route '/devices'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -392,7 +737,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\DeviceController::store
- * @see Http/Controllers/DeviceController.php:83
+ * @see Http/Controllers/DeviceController.php:98
  * @route '/devices'
  */
 const storeForm = (
@@ -404,7 +749,7 @@ const storeForm = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::store
- * @see Http/Controllers/DeviceController.php:83
+ * @see Http/Controllers/DeviceController.php:98
  * @route '/devices'
  */
 storeForm.post = (
@@ -418,7 +763,7 @@ store.form = storeForm;
 
 /**
  * @see \App\Http\Controllers\DeviceController::edit
- * @see Http/Controllers/DeviceController.php:64
+ * @see Http/Controllers/DeviceController.php:76
  * @route '/devices/{device}/edit'
  */
 export const edit = (
@@ -440,7 +785,7 @@ edit.definition = {
 
 /**
  * @see \App\Http\Controllers\DeviceController::edit
- * @see Http/Controllers/DeviceController.php:64
+ * @see Http/Controllers/DeviceController.php:76
  * @route '/devices/{device}/edit'
  */
 edit.url = (
@@ -480,7 +825,7 @@ edit.url = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::edit
- * @see Http/Controllers/DeviceController.php:64
+ * @see Http/Controllers/DeviceController.php:76
  * @route '/devices/{device}/edit'
  */
 edit.get = (
@@ -497,7 +842,7 @@ edit.get = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::edit
- * @see Http/Controllers/DeviceController.php:64
+ * @see Http/Controllers/DeviceController.php:76
  * @route '/devices/{device}/edit'
  */
 edit.head = (
@@ -514,7 +859,7 @@ edit.head = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::edit
- * @see Http/Controllers/DeviceController.php:64
+ * @see Http/Controllers/DeviceController.php:76
  * @route '/devices/{device}/edit'
  */
 const editForm = (
@@ -531,7 +876,7 @@ const editForm = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::edit
- * @see Http/Controllers/DeviceController.php:64
+ * @see Http/Controllers/DeviceController.php:76
  * @route '/devices/{device}/edit'
  */
 editForm.get = (
@@ -548,7 +893,7 @@ editForm.get = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::edit
- * @see Http/Controllers/DeviceController.php:64
+ * @see Http/Controllers/DeviceController.php:76
  * @route '/devices/{device}/edit'
  */
 editForm.head = (
@@ -572,7 +917,7 @@ edit.form = editForm;
 
 /**
  * @see \App\Http\Controllers\DeviceController::update
- * @see Http/Controllers/DeviceController.php:102
+ * @see Http/Controllers/DeviceController.php:120
  * @route '/devices/{device}'
  */
 export const update = (
@@ -594,7 +939,7 @@ update.definition = {
 
 /**
  * @see \App\Http\Controllers\DeviceController::update
- * @see Http/Controllers/DeviceController.php:102
+ * @see Http/Controllers/DeviceController.php:120
  * @route '/devices/{device}'
  */
 update.url = (
@@ -634,7 +979,7 @@ update.url = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::update
- * @see Http/Controllers/DeviceController.php:102
+ * @see Http/Controllers/DeviceController.php:120
  * @route '/devices/{device}'
  */
 update.put = (
@@ -651,7 +996,7 @@ update.put = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::update
- * @see Http/Controllers/DeviceController.php:102
+ * @see Http/Controllers/DeviceController.php:120
  * @route '/devices/{device}'
  */
 update.patch = (
@@ -668,7 +1013,7 @@ update.patch = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::update
- * @see Http/Controllers/DeviceController.php:102
+ * @see Http/Controllers/DeviceController.php:120
  * @route '/devices/{device}'
  */
 const updateForm = (
@@ -690,7 +1035,7 @@ const updateForm = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::update
- * @see Http/Controllers/DeviceController.php:102
+ * @see Http/Controllers/DeviceController.php:120
  * @route '/devices/{device}'
  */
 updateForm.put = (
@@ -712,7 +1057,7 @@ updateForm.put = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::update
- * @see Http/Controllers/DeviceController.php:102
+ * @see Http/Controllers/DeviceController.php:120
  * @route '/devices/{device}'
  */
 updateForm.patch = (
@@ -736,7 +1081,7 @@ update.form = updateForm;
 
 /**
  * @see \App\Http\Controllers\DeviceController::destroy
- * @see Http/Controllers/DeviceController.php:125
+ * @see Http/Controllers/DeviceController.php:157
  * @route '/devices/{device}'
  */
 export const destroy = (
@@ -758,7 +1103,7 @@ destroy.definition = {
 
 /**
  * @see \App\Http\Controllers\DeviceController::destroy
- * @see Http/Controllers/DeviceController.php:125
+ * @see Http/Controllers/DeviceController.php:157
  * @route '/devices/{device}'
  */
 destroy.url = (
@@ -798,7 +1143,7 @@ destroy.url = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::destroy
- * @see Http/Controllers/DeviceController.php:125
+ * @see Http/Controllers/DeviceController.php:157
  * @route '/devices/{device}'
  */
 destroy.delete = (
@@ -815,7 +1160,7 @@ destroy.delete = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::destroy
- * @see Http/Controllers/DeviceController.php:125
+ * @see Http/Controllers/DeviceController.php:157
  * @route '/devices/{device}'
  */
 const destroyForm = (
@@ -837,7 +1182,7 @@ const destroyForm = (
 
 /**
  * @see \App\Http\Controllers\DeviceController::destroy
- * @see Http/Controllers/DeviceController.php:125
+ * @see Http/Controllers/DeviceController.php:157
  * @route '/devices/{device}'
  */
 destroyForm.delete = (
@@ -863,6 +1208,9 @@ const DeviceController = {
     exportMethod,
     importMethod,
     collect,
+    forceCollect,
+    approve,
+    revoke,
     index,
     store,
     edit,

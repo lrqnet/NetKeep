@@ -90,7 +90,7 @@ index.form = indexForm;
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::store
- * @see Http/Controllers/DataProtectionController.php:60
+ * @see Http/Controllers/DataProtectionController.php:61
  * @route '/data-protection/destinations'
  */
 export const store = (
@@ -107,7 +107,7 @@ store.definition = {
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::store
- * @see Http/Controllers/DataProtectionController.php:60
+ * @see Http/Controllers/DataProtectionController.php:61
  * @route '/data-protection/destinations'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -116,7 +116,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::store
- * @see Http/Controllers/DataProtectionController.php:60
+ * @see Http/Controllers/DataProtectionController.php:61
  * @route '/data-protection/destinations'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -126,7 +126,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::store
- * @see Http/Controllers/DataProtectionController.php:60
+ * @see Http/Controllers/DataProtectionController.php:61
  * @route '/data-protection/destinations'
  */
 const storeForm = (
@@ -138,7 +138,7 @@ const storeForm = (
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::store
- * @see Http/Controllers/DataProtectionController.php:60
+ * @see Http/Controllers/DataProtectionController.php:61
  * @route '/data-protection/destinations'
  */
 storeForm.post = (
@@ -152,7 +152,7 @@ store.form = storeForm;
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::update
- * @see Http/Controllers/DataProtectionController.php:103
+ * @see Http/Controllers/DataProtectionController.php:109
  * @route '/data-protection/destinations/{destination}'
  */
 export const update = (
@@ -174,7 +174,7 @@ update.definition = {
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::update
- * @see Http/Controllers/DataProtectionController.php:103
+ * @see Http/Controllers/DataProtectionController.php:109
  * @route '/data-protection/destinations/{destination}'
  */
 update.url = (
@@ -217,7 +217,7 @@ update.url = (
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::update
- * @see Http/Controllers/DataProtectionController.php:103
+ * @see Http/Controllers/DataProtectionController.php:109
  * @route '/data-protection/destinations/{destination}'
  */
 update.patch = (
@@ -234,7 +234,7 @@ update.patch = (
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::update
- * @see Http/Controllers/DataProtectionController.php:103
+ * @see Http/Controllers/DataProtectionController.php:109
  * @route '/data-protection/destinations/{destination}'
  */
 const updateForm = (
@@ -256,7 +256,7 @@ const updateForm = (
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::update
- * @see Http/Controllers/DataProtectionController.php:103
+ * @see Http/Controllers/DataProtectionController.php:109
  * @route '/data-protection/destinations/{destination}'
  */
 updateForm.patch = (
@@ -280,7 +280,7 @@ update.form = updateForm;
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::runBackup
- * @see Http/Controllers/DataProtectionController.php:119
+ * @see Http/Controllers/DataProtectionController.php:126
  * @route '/data-protection/destinations/{destination}/backup'
  */
 export const runBackup = (
@@ -302,7 +302,7 @@ runBackup.definition = {
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::runBackup
- * @see Http/Controllers/DataProtectionController.php:119
+ * @see Http/Controllers/DataProtectionController.php:126
  * @route '/data-protection/destinations/{destination}/backup'
  */
 runBackup.url = (
@@ -345,7 +345,7 @@ runBackup.url = (
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::runBackup
- * @see Http/Controllers/DataProtectionController.php:119
+ * @see Http/Controllers/DataProtectionController.php:126
  * @route '/data-protection/destinations/{destination}/backup'
  */
 runBackup.post = (
@@ -362,7 +362,7 @@ runBackup.post = (
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::runBackup
- * @see Http/Controllers/DataProtectionController.php:119
+ * @see Http/Controllers/DataProtectionController.php:126
  * @route '/data-protection/destinations/{destination}/backup'
  */
 const runBackupForm = (
@@ -379,7 +379,7 @@ const runBackupForm = (
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::runBackup
- * @see Http/Controllers/DataProtectionController.php:119
+ * @see Http/Controllers/DataProtectionController.php:126
  * @route '/data-protection/destinations/{destination}/backup'
  */
 runBackupForm.post = (
@@ -398,7 +398,7 @@ runBackup.form = runBackupForm;
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::mirrorGit
- * @see Http/Controllers/DataProtectionController.php:129
+ * @see Http/Controllers/DataProtectionController.php:137
  * @route '/data-protection/destinations/{destination}/mirror'
  */
 export const mirrorGit = (
@@ -420,7 +420,7 @@ mirrorGit.definition = {
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::mirrorGit
- * @see Http/Controllers/DataProtectionController.php:129
+ * @see Http/Controllers/DataProtectionController.php:137
  * @route '/data-protection/destinations/{destination}/mirror'
  */
 mirrorGit.url = (
@@ -463,7 +463,7 @@ mirrorGit.url = (
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::mirrorGit
- * @see Http/Controllers/DataProtectionController.php:129
+ * @see Http/Controllers/DataProtectionController.php:137
  * @route '/data-protection/destinations/{destination}/mirror'
  */
 mirrorGit.post = (
@@ -480,7 +480,7 @@ mirrorGit.post = (
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::mirrorGit
- * @see Http/Controllers/DataProtectionController.php:129
+ * @see Http/Controllers/DataProtectionController.php:137
  * @route '/data-protection/destinations/{destination}/mirror'
  */
 const mirrorGitForm = (
@@ -497,7 +497,7 @@ const mirrorGitForm = (
 
 /**
  * @see \App\Http\Controllers\DataProtectionController::mirrorGit
- * @see Http/Controllers/DataProtectionController.php:129
+ * @see Http/Controllers/DataProtectionController.php:137
  * @route '/data-protection/destinations/{destination}/mirror'
  */
 mirrorGitForm.post = (

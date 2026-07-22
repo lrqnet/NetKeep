@@ -28,6 +28,14 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                             <Link href={item.href} prefetch>
                                 {item.icon && <item.icon />}
                                 <span>{item.title}</span>
+                                {item.badge && (
+                                    <span
+                                        aria-label={t(
+                                            'updates.available_badge',
+                                        )}
+                                        className="ml-auto size-2 rounded-full bg-emerald-500 group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:top-1 group-data-[collapsible=icon]:right-1"
+                                    />
+                                )}
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

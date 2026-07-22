@@ -79,7 +79,7 @@ return [
         'http_ip_login_blocked' => 'O login HTTP por IP está bloqueado no modo seguro. Use o endereço HTTPS canônico.',
         'dangerous_feature_enabled' => 'Recurso perigoso habilitado. As garantias do modo seguro agora são condicionais.',
         'dangerous_feature_disabled' => 'Recurso perigoso desabilitado.',
-        'automatic_updates_disabled' => 'Atualizações com WUD estão desativadas no modo seguro.',
+        'automatic_updates_disabled' => 'Atualizações automáticas exigem aceite explícito do risco.',
     ],
     'integrations' => [
         'url_credentials' => 'A URL não pode conter credenciais.',
@@ -133,6 +133,11 @@ return [
         'policy_saved' => 'Política de atualização salva.',
         'none_available' => 'Nenhuma atualização compatível está disponível.',
         'queued' => 'O backup prévio e a atualização foram enfileirados.',
+        'check_queued' => 'A verificação de atualização foi enfileirada.',
+        'already_running' => 'Outra operação de atualização já está em andamento.',
+        'not_installable' => 'Esta release não pode ser instalada a partir da versão atual.',
+        'release_changed' => 'A release disponível mudou. Revise-a antes de continuar.',
+        'confirm_version' => 'Digite a versão de destino exata para confirmar esta atualização principal.',
     ],
     'catalog' => [
         'invalid_type' => 'Tipo de catálogo inválido.',
@@ -160,6 +165,7 @@ return [
         'backup_failed' => 'O backup criptografado falhou.',
         'update_started' => 'A atualização do NetKeep foi iniciada.',
         'update_failed' => 'A atualização do NetKeep falhou.',
+        'update_available' => 'O NetKeep :version está disponível. A versão instalada é :current_version.',
         'device_recovered' => 'O equipamento :device se recuperou.',
         'device_failed' => 'A coleta do equipamento :device falhou.',
         'device_changed' => 'A configuração do equipamento :device foi alterada.',

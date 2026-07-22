@@ -5,7 +5,7 @@ import {
     type RouteFormDefinition,
 } from './../../wayfinder';
 /**
- * @see routes/settings.php:34
+ * @see routes/settings.php:32
  * @route '/.well-known/passkey-endpoints'
  */
 export const passkeys = (
@@ -21,7 +21,7 @@ passkeys.definition = {
 } satisfies RouteDefinition<['get', 'head']>;
 
 /**
- * @see routes/settings.php:34
+ * @see routes/settings.php:32
  * @route '/.well-known/passkey-endpoints'
  */
 passkeys.url = (options?: RouteQueryOptions) => {
@@ -29,7 +29,7 @@ passkeys.url = (options?: RouteQueryOptions) => {
 };
 
 /**
- * @see routes/settings.php:34
+ * @see routes/settings.php:32
  * @route '/.well-known/passkey-endpoints'
  */
 passkeys.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -38,7 +38,7 @@ passkeys.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 });
 
 /**
- * @see routes/settings.php:34
+ * @see routes/settings.php:32
  * @route '/.well-known/passkey-endpoints'
  */
 passkeys.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -47,7 +47,7 @@ passkeys.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 });
 
 /**
- * @see routes/settings.php:34
+ * @see routes/settings.php:32
  * @route '/.well-known/passkey-endpoints'
  */
 const passkeysForm = (
@@ -58,7 +58,7 @@ const passkeysForm = (
 });
 
 /**
- * @see routes/settings.php:34
+ * @see routes/settings.php:32
  * @route '/.well-known/passkey-endpoints'
  */
 passkeysForm.get = (
@@ -69,7 +69,7 @@ passkeysForm.get = (
 });
 
 /**
- * @see routes/settings.php:34
+ * @see routes/settings.php:32
  * @route '/.well-known/passkey-endpoints'
  */
 passkeysForm.head = (

@@ -60,7 +60,9 @@ jobs:
           sbom: true
           cache-from: type=gha,scope=netkeep
           cache-to: type=gha,mode=max,scope=netkeep
-      - uses: sigstore/cosign-installer@f713795cb21599bc4e5c4b58cbad1da852d7eeb9
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6
+        with:
+          cosign-release: v3.0.6
       - name: Sign NetKeep image
         env:
           DIGEST: ${{ steps.build.outputs.digest }}
@@ -108,7 +110,9 @@ jobs:
           sbom: true
           cache-from: type=gha,scope=netkeep-oxidized
           cache-to: type=gha,mode=max,scope=netkeep-oxidized
-      - uses: sigstore/cosign-installer@f713795cb21599bc4e5c4b58cbad1da852d7eeb9
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6
+        with:
+          cosign-release: v3.0.6
       - name: Sign NetKeep Oxidized image
         env:
           DIGEST: ${{ steps.build.outputs.digest }}
@@ -160,7 +164,7 @@ jobs:
           sbom: true
           cache-from: type=gha,scope=netkeep-updater
           cache-to: type=gha,mode=max,scope=netkeep-updater
-      - uses: sigstore/cosign-installer@f713795cb21599bc4e5c4b58cbad1da852d7eeb9
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6
         with:
           cosign-release: v3.0.6
       - name: Sign NetKeep updater image
@@ -222,7 +226,7 @@ jobs:
               compose_sha256: $compose_sha,
               images: $images
             }' > dist/update-manifest.json
-      - uses: sigstore/cosign-installer@f713795cb21599bc4e5c4b58cbad1da852d7eeb9
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6
         with:
           cosign-release: v3.0.6
       - name: Sign update manifest

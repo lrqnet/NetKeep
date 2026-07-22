@@ -93,4 +93,18 @@ class ContainerRuntimeTest extends TestCase
         $this->assertStringContainsString("\nFROM scratch\n", $simulator);
         $this->assertStringContainsString('USER 30001:30001', $simulator);
     }
+
+    public function test_release_uses_the_current_pinned_cosign_installer(): void
+    {
+        $workflow = file_get_contents(dirname(__DIR__, 2).'/.github/workflows/release.yml');
+        $installer = 'sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6';
+
+        $this->assertIsString($workflow);
+        $this->assertSame(4, substr_count($workflow, $installer));
+        $this->assertSame(4, substr_count($workflow, 'cosign-release: v3.0.6'));
+        $this->assertStringNotContainsString(
+            'sigstore/cosign-installer@f713795cb21599bc4e5c4b58cbad1da852d7eeb9',
+            $workflow,
+        );
+    }
 }

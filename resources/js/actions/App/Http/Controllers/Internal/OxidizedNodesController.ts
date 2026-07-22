@@ -6,7 +6,7 @@ import {
 } from './../../../../../wayfinder';
 /**
  * @see \App\Http\Controllers\Internal\OxidizedNodesController::__invoke
- * @see Http/Controllers/Internal/OxidizedNodesController.php:12
+ * @see Http/Controllers/Internal/OxidizedNodesController.php:15
  * @route '/internal/oxidized/nodes'
  */
 const OxidizedNodesController = (
@@ -23,7 +23,7 @@ OxidizedNodesController.definition = {
 
 /**
  * @see \App\Http\Controllers\Internal\OxidizedNodesController::__invoke
- * @see Http/Controllers/Internal/OxidizedNodesController.php:12
+ * @see Http/Controllers/Internal/OxidizedNodesController.php:15
  * @route '/internal/oxidized/nodes'
  */
 OxidizedNodesController.url = (options?: RouteQueryOptions) => {
@@ -32,7 +32,7 @@ OxidizedNodesController.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\Internal\OxidizedNodesController::__invoke
- * @see Http/Controllers/Internal/OxidizedNodesController.php:12
+ * @see Http/Controllers/Internal/OxidizedNodesController.php:15
  * @route '/internal/oxidized/nodes'
  */
 OxidizedNodesController.get = (
@@ -44,7 +44,7 @@ OxidizedNodesController.get = (
 
 /**
  * @see \App\Http\Controllers\Internal\OxidizedNodesController::__invoke
- * @see Http/Controllers/Internal/OxidizedNodesController.php:12
+ * @see Http/Controllers/Internal/OxidizedNodesController.php:15
  * @route '/internal/oxidized/nodes'
  */
 OxidizedNodesController.head = (
@@ -56,7 +56,7 @@ OxidizedNodesController.head = (
 
 /**
  * @see \App\Http\Controllers\Internal\OxidizedNodesController::__invoke
- * @see Http/Controllers/Internal/OxidizedNodesController.php:12
+ * @see Http/Controllers/Internal/OxidizedNodesController.php:15
  * @route '/internal/oxidized/nodes'
  */
 const OxidizedNodesControllerForm = (
@@ -68,7 +68,7 @@ const OxidizedNodesControllerForm = (
 
 /**
  * @see \App\Http\Controllers\Internal\OxidizedNodesController::__invoke
- * @see Http/Controllers/Internal/OxidizedNodesController.php:12
+ * @see Http/Controllers/Internal/OxidizedNodesController.php:15
  * @route '/internal/oxidized/nodes'
  */
 OxidizedNodesControllerForm.get = (
@@ -80,7 +80,7 @@ OxidizedNodesControllerForm.get = (
 
 /**
  * @see \App\Http\Controllers\Internal\OxidizedNodesController::__invoke
- * @see Http/Controllers/Internal/OxidizedNodesController.php:12
+ * @see Http/Controllers/Internal/OxidizedNodesController.php:15
  * @route '/internal/oxidized/nodes'
  */
 OxidizedNodesControllerForm.head = (

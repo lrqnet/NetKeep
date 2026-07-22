@@ -6,7 +6,7 @@ import {
 } from './../../wayfinder';
 /**
  * @see \App\Http\Controllers\Settings\SecurityController::update
- * @see Http/Controllers/Settings/SecurityController.php:62
+ * @see Http/Controllers/Settings/SecurityController.php:63
  * @route '/settings/password'
  */
 export const update = (
@@ -23,7 +23,7 @@ update.definition = {
 
 /**
  * @see \App\Http\Controllers\Settings\SecurityController::update
- * @see Http/Controllers/Settings/SecurityController.php:62
+ * @see Http/Controllers/Settings/SecurityController.php:63
  * @route '/settings/password'
  */
 update.url = (options?: RouteQueryOptions) => {
@@ -32,7 +32,7 @@ update.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\Settings\SecurityController::update
- * @see Http/Controllers/Settings/SecurityController.php:62
+ * @see Http/Controllers/Settings/SecurityController.php:63
  * @route '/settings/password'
  */
 update.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -42,7 +42,7 @@ update.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
 
 /**
  * @see \App\Http\Controllers\Settings\SecurityController::update
- * @see Http/Controllers/Settings/SecurityController.php:62
+ * @see Http/Controllers/Settings/SecurityController.php:63
  * @route '/settings/password'
  */
 const updateForm = (
@@ -59,7 +59,7 @@ const updateForm = (
 
 /**
  * @see \App\Http\Controllers\Settings\SecurityController::update
- * @see Http/Controllers/Settings/SecurityController.php:62
+ * @see Http/Controllers/Settings/SecurityController.php:63
  * @route '/settings/password'
  */
 updateForm.put = (

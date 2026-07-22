@@ -14,6 +14,7 @@ export NETKEEP_E2E_BOOTSTRAP_URL="http://127.0.0.1:${NETKEEP_HTTP_PORT}"
 export NETKEEP_E2E_BASE_URL="https://127.0.0.1:${NETKEEP_HTTPS_PORT}"
 export NETKEEP_IMAGE="${NETKEEP_E2E_IMAGE:-netkeep:e2e}"
 export NETKEEP_OXIDIZED_IMAGE="${NETKEEP_E2E_OXIDIZED_IMAGE:-netkeep-oxidized:e2e}"
+export NETKEEP_UPDATER_IMAGE="${NETKEEP_E2E_UPDATER_IMAGE:-netkeep-updater:e2e}"
 
 compose=(
     docker compose

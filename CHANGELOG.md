@@ -5,6 +5,37 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-07-21
+
+### Added
+
+- descoberta horária de releases oficiais com ETag, preservação do último
+  resultado, verificação manual assíncrona e notificação única por versão;
+- card e indicador de atualização exclusivos do proprietário, estados
+  operacionais, confirmação e stepper com reconexão após reinício;
+- agente multi-arquitetura `netkeep-updater`, sem rede ou API, com validação
+  offline de manifesto e Compose assinados por bundle Sigstore;
+- snapshots locais criptografados obrigatórios, cópia adicional opcional,
+  retenção dos três mais recentes e preservação indefinida após falha;
+- política automática opt-in para patch e minor, com dias, janela no fuso da
+  empresa, reautenticação e aceite explícito do risco do socket Docker.
+
+### Changed
+
+- WUD, profile, labels e integração HTTP removidos; somente o updater recebe o
+  socket Docker e a comunicação com Laravel usa arquivos atômicos;
+- workflow de release publica e assina a terceira imagem, fixa três digests e
+  anexa Compose, manifesto e bundle Sigstore à release;
+- atualização manual permanece disponível independentemente da política
+  automática e sempre valida imagens antes da indisponibilidade.
+
+### Security
+
+- agente restringe origem, identidade do workflow, versão, upgrade, imagens,
+  socket, symlinks, paths, replay e downgrades antes de aplicar a stack;
+- rollback automático do Compose ocorre somente quando a release assinada o
+  declara seguro; as demais falhas exigem recuperação com snapshot preservado.
+
 ## [1.0.1] - 2026-07-21
 
 ### Added
@@ -131,6 +162,7 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 - ambiente PostgreSQL do CI alinhado ao arquivo de teste e asserções de
   mensagens independentes do idioma configurado.
 
-[Unreleased]: https://github.com/lrqnet/NetKeep/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/lrqnet/NetKeep/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/lrqnet/NetKeep/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/lrqnet/NetKeep/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/lrqnet/NetKeep/releases/tag/v1.0.0

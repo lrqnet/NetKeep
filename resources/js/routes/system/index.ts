@@ -4,9 +4,10 @@ import {
     type RouteDefinition,
     type RouteFormDefinition,
 } from './../../wayfinder';
+import dangerousFeatures from './dangerous-features';
 /**
  * @see \App\Http\Controllers\SystemSettingsController::index
- * @see Http/Controllers/SystemSettingsController.php:18
+ * @see Http/Controllers/SystemSettingsController.php:26
  * @route '/system'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -21,7 +22,7 @@ index.definition = {
 
 /**
  * @see \App\Http\Controllers\SystemSettingsController::index
- * @see Http/Controllers/SystemSettingsController.php:18
+ * @see Http/Controllers/SystemSettingsController.php:26
  * @route '/system'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -30,7 +31,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\SystemSettingsController::index
- * @see Http/Controllers/SystemSettingsController.php:18
+ * @see Http/Controllers/SystemSettingsController.php:26
  * @route '/system'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -40,7 +41,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\SystemSettingsController::index
- * @see Http/Controllers/SystemSettingsController.php:18
+ * @see Http/Controllers/SystemSettingsController.php:26
  * @route '/system'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -50,7 +51,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\SystemSettingsController::index
- * @see Http/Controllers/SystemSettingsController.php:18
+ * @see Http/Controllers/SystemSettingsController.php:26
  * @route '/system'
  */
 const indexForm = (
@@ -62,7 +63,7 @@ const indexForm = (
 
 /**
  * @see \App\Http\Controllers\SystemSettingsController::index
- * @see Http/Controllers/SystemSettingsController.php:18
+ * @see Http/Controllers/SystemSettingsController.php:26
  * @route '/system'
  */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -72,7 +73,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\SystemSettingsController::index
- * @see Http/Controllers/SystemSettingsController.php:18
+ * @see Http/Controllers/SystemSettingsController.php:26
  * @route '/system'
  */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -89,7 +90,7 @@ index.form = indexForm;
 
 /**
  * @see \App\Http\Controllers\SystemSettingsController::update
- * @see Http/Controllers/SystemSettingsController.php:26
+ * @see Http/Controllers/SystemSettingsController.php:51
  * @route '/system'
  */
 export const update = (
@@ -106,7 +107,7 @@ update.definition = {
 
 /**
  * @see \App\Http\Controllers\SystemSettingsController::update
- * @see Http/Controllers/SystemSettingsController.php:26
+ * @see Http/Controllers/SystemSettingsController.php:51
  * @route '/system'
  */
 update.url = (options?: RouteQueryOptions) => {
@@ -115,7 +116,7 @@ update.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\SystemSettingsController::update
- * @see Http/Controllers/SystemSettingsController.php:26
+ * @see Http/Controllers/SystemSettingsController.php:51
  * @route '/system'
  */
 update.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -125,7 +126,7 @@ update.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
 
 /**
  * @see \App\Http\Controllers\SystemSettingsController::update
- * @see Http/Controllers/SystemSettingsController.php:26
+ * @see Http/Controllers/SystemSettingsController.php:51
  * @route '/system'
  */
 const updateForm = (
@@ -142,7 +143,7 @@ const updateForm = (
 
 /**
  * @see \App\Http\Controllers\SystemSettingsController::update
- * @see Http/Controllers/SystemSettingsController.php:26
+ * @see Http/Controllers/SystemSettingsController.php:51
  * @route '/system'
  */
 updateForm.put = (
@@ -162,6 +163,7 @@ update.form = updateForm;
 const system = {
     index: Object.assign(index, index),
     update: Object.assign(update, update),
+    dangerousFeatures: Object.assign(dangerousFeatures, dangerousFeatures),
 };
 
 export default system;

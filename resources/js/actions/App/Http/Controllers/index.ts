@@ -1,4 +1,6 @@
 import LocaleController from './LocaleController';
+import RestoreRequestController from './RestoreRequestController';
+import TlsActivationController from './TlsActivationController';
 import Internal from './Internal';
 import SetupController from './SetupController';
 import DashboardController from './DashboardController';
@@ -14,10 +16,19 @@ import UserController from './UserController';
 import AuditController from './AuditController';
 import UpdateController from './UpdateController';
 import SystemSettingsController from './SystemSettingsController';
+import DangerousFeatureController from './DangerousFeatureController';
 import Settings from './Settings';
 
 const Controllers = {
     LocaleController: Object.assign(LocaleController, LocaleController),
+    RestoreRequestController: Object.assign(
+        RestoreRequestController,
+        RestoreRequestController,
+    ),
+    TlsActivationController: Object.assign(
+        TlsActivationController,
+        TlsActivationController,
+    ),
     Internal: Object.assign(Internal, Internal),
     SetupController: Object.assign(SetupController, SetupController),
     DashboardController: Object.assign(
@@ -56,6 +67,10 @@ const Controllers = {
     SystemSettingsController: Object.assign(
         SystemSettingsController,
         SystemSettingsController,
+    ),
+    DangerousFeatureController: Object.assign(
+        DangerousFeatureController,
+        DangerousFeatureController,
     ),
     Settings: Object.assign(Settings, Settings),
 };

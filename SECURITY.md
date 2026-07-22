@@ -49,16 +49,20 @@ garantia passa a ser condicional.
 - Oxidized e sandbox não expõem API;
 - equipamentos exigem aprovação de destino, credencial, driver e host key;
 - DNS e conexões de saída bloqueiam classes especiais e serviços internos;
-- login HTTP/IP, Telnet, Ruby raw e WUD ficam desativados;
+- login HTTP/IP, Telnet, Ruby raw e atualização automática ficam desativados;
 - app, worker, scheduler e motores são não root, sem capabilities e com
   filesystem somente leitura;
+- somente o updater sem rede recebe o socket Docker e aceita exclusivamente
+  manifestos oficiais assinados e verificados offline;
 - backups são criptografados antes de tocar disco ou S3;
 - restauração prepara banco temporário e preserva rollback.
 
 ## Dependências e imagens
 
 Imagens-base e Actions são fixadas por digest ou SHA. Releases produzem SBOM,
-provenance e assinaturas Cosign para NetKeep e NetKeep-Oxidized.
+provenance e assinaturas Cosign para NetKeep, NetKeep-Oxidized e
+NetKeep-Updater. O Compose e o manifesto de atualização também são anexados à
+release, e o manifesto recebe assinatura keyless com bundle Sigstore.
 
 Auditorias de dependências e Trivy publicam relatórios e SARIF. Por decisão do
 projeto, CVEs altas ou críticas restantes não bloqueiam automaticamente uma

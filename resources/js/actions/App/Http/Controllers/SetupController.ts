@@ -6,7 +6,7 @@ import {
 } from './../../../../wayfinder';
 /**
  * @see \App\Http\Controllers\SetupController::show
- * @see Http/Controllers/SetupController.php:18
+ * @see Http/Controllers/SetupController.php:20
  * @route '/setup'
  */
 export const show = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -21,7 +21,7 @@ show.definition = {
 
 /**
  * @see \App\Http\Controllers\SetupController::show
- * @see Http/Controllers/SetupController.php:18
+ * @see Http/Controllers/SetupController.php:20
  * @route '/setup'
  */
 show.url = (options?: RouteQueryOptions) => {
@@ -30,7 +30,7 @@ show.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\SetupController::show
- * @see Http/Controllers/SetupController.php:18
+ * @see Http/Controllers/SetupController.php:20
  * @route '/setup'
  */
 show.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -40,7 +40,7 @@ show.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\SetupController::show
- * @see Http/Controllers/SetupController.php:18
+ * @see Http/Controllers/SetupController.php:20
  * @route '/setup'
  */
 show.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -50,7 +50,7 @@ show.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\SetupController::show
- * @see Http/Controllers/SetupController.php:18
+ * @see Http/Controllers/SetupController.php:20
  * @route '/setup'
  */
 const showForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -60,7 +60,7 @@ const showForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\SetupController::show
- * @see Http/Controllers/SetupController.php:18
+ * @see Http/Controllers/SetupController.php:20
  * @route '/setup'
  */
 showForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -70,7 +70,7 @@ showForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\SetupController::show
- * @see Http/Controllers/SetupController.php:18
+ * @see Http/Controllers/SetupController.php:20
  * @route '/setup'
  */
 showForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -87,7 +87,7 @@ show.form = showForm;
 
 /**
  * @see \App\Http\Controllers\SetupController::store
- * @see Http/Controllers/SetupController.php:32
+ * @see Http/Controllers/SetupController.php:34
  * @route '/setup'
  */
 export const store = (
@@ -104,7 +104,7 @@ store.definition = {
 
 /**
  * @see \App\Http\Controllers\SetupController::store
- * @see Http/Controllers/SetupController.php:32
+ * @see Http/Controllers/SetupController.php:34
  * @route '/setup'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -113,7 +113,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\SetupController::store
- * @see Http/Controllers/SetupController.php:32
+ * @see Http/Controllers/SetupController.php:34
  * @route '/setup'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -123,7 +123,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\SetupController::store
- * @see Http/Controllers/SetupController.php:32
+ * @see Http/Controllers/SetupController.php:34
  * @route '/setup'
  */
 const storeForm = (
@@ -135,7 +135,7 @@ const storeForm = (
 
 /**
  * @see \App\Http\Controllers\SetupController::store
- * @see Http/Controllers/SetupController.php:32
+ * @see Http/Controllers/SetupController.php:34
  * @route '/setup'
  */
 storeForm.post = (

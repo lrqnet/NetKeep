@@ -19,3 +19,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile.oxidized
+    updater:
+        build:
+            context: .
+            dockerfile: Dockerfile.updater

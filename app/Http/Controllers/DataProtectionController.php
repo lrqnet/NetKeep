@@ -20,6 +20,7 @@ class DataProtectionController extends Controller
     public function index(): Response
     {
         $destinations = BackupDestination::query()
+            ->where('is_system', false)
             ->with('latestArchive')
             ->orderBy('name')
             ->get()
@@ -107,6 +108,7 @@ class DataProtectionController extends Controller
 
     public function update(Request $request, BackupDestination $destination, AuditLogger $audit): RedirectResponse
     {
+        abort_if($destination->is_system, 404);
         $data = $request->validate([
             'enabled' => ['required', 'boolean'],
         ]);
@@ -123,6 +125,7 @@ class DataProtectionController extends Controller
 
     public function runBackup(BackupDestination $destination, AuditLogger $audit): RedirectResponse
     {
+        abort_if($destination->is_system, 404);
         abort_unless(in_array($destination->type, ['s3', 'local'], true) && $destination->enabled, 422);
         $destination->markRunStatus(BackupDestinationRunStatus::Queued);
         RunFullBackup::dispatch($destination->id);

@@ -3,7 +3,10 @@
 namespace App\Http\Middleware;
 
 use App\Enums\SupportedLocale;
+use App\Enums\UserRole;
 use App\Models\Organization;
+use App\Models\UpdateReleaseState;
+use App\Services\ReleaseVersion;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -61,9 +64,30 @@ class HandleInertiaRequests extends Middleware
                 'version' => $version,
                 'source_url' => $sourceUrl,
                 'source_version_url' => "{$sourceUrl}/tree/{$sourceRef}",
+                'update' => $request->user()?->role === UserRole::Owner
+                    ? $this->updateSummary()
+                    : null,
             ],
             'unsafeHttpIpLogin' => (bool) $request->attributes->get('netkeep_unsafe_http_ip', false),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+        ];
+    }
+
+    /** @return array{available:bool,version:?string} */
+    private function updateSummary(): array
+    {
+        $state = UpdateReleaseState::query()->first();
+        if (! $state) {
+            return ['available' => false, 'version' => null];
+        }
+
+        return [
+            'available' => filled($state->available_version)
+                && ReleaseVersion::compare(
+                    (string) $state->available_version,
+                    (string) config('netkeep.version'),
+                ) > 0,
+            'version' => $state->available_version,
         ];
     }
 }

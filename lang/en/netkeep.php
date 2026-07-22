@@ -79,7 +79,7 @@ return [
         'http_ip_login_blocked' => 'HTTP login by IP is blocked in safe mode. Use the canonical HTTPS address.',
         'dangerous_feature_enabled' => 'Dangerous feature enabled. Safe-mode guarantees are now conditional.',
         'dangerous_feature_disabled' => 'Dangerous feature disabled.',
-        'automatic_updates_disabled' => 'WUD updates are disabled in safe mode.',
+        'automatic_updates_disabled' => 'Automatic updates require explicit risk acceptance.',
     ],
     'integrations' => [
         'url_credentials' => 'The URL cannot contain credentials.',
@@ -133,6 +133,11 @@ return [
         'policy_saved' => 'Update policy saved.',
         'none_available' => 'No compatible update is available.',
         'queued' => 'The pre-update backup and update were queued.',
+        'check_queued' => 'The update check was queued.',
+        'already_running' => 'Another update operation is already running.',
+        'not_installable' => 'This release cannot be installed from the current version.',
+        'release_changed' => 'The available release changed. Review it before continuing.',
+        'confirm_version' => 'Type the exact target version to confirm this major update.',
     ],
     'catalog' => [
         'invalid_type' => 'Invalid catalog type.',
@@ -160,6 +165,7 @@ return [
         'backup_failed' => 'The encrypted backup failed.',
         'update_started' => 'The NetKeep update has started.',
         'update_failed' => 'The NetKeep update failed.',
+        'update_available' => 'NetKeep :version is available. The installed version is :current_version.',
         'device_recovered' => 'Device :device recovered.',
         'device_failed' => 'Collection failed for device :device.',
         'device_changed' => 'The configuration for device :device changed.',

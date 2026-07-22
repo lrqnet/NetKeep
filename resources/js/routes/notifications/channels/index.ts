@@ -7,7 +7,7 @@ import {
 } from './../../../wayfinder';
 /**
  * @see \App\Http\Controllers\NotificationChannelController::store
- * @see Http/Controllers/NotificationChannelController.php:43
+ * @see Http/Controllers/NotificationChannelController.php:44
  * @route '/notifications/channels'
  */
 export const store = (
@@ -24,7 +24,7 @@ store.definition = {
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::store
- * @see Http/Controllers/NotificationChannelController.php:43
+ * @see Http/Controllers/NotificationChannelController.php:44
  * @route '/notifications/channels'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -33,7 +33,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::store
- * @see Http/Controllers/NotificationChannelController.php:43
+ * @see Http/Controllers/NotificationChannelController.php:44
  * @route '/notifications/channels'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -43,7 +43,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::store
- * @see Http/Controllers/NotificationChannelController.php:43
+ * @see Http/Controllers/NotificationChannelController.php:44
  * @route '/notifications/channels'
  */
 const storeForm = (
@@ -55,7 +55,7 @@ const storeForm = (
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::store
- * @see Http/Controllers/NotificationChannelController.php:43
+ * @see Http/Controllers/NotificationChannelController.php:44
  * @route '/notifications/channels'
  */
 storeForm.post = (
@@ -69,7 +69,7 @@ store.form = storeForm;
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::update
- * @see Http/Controllers/NotificationChannelController.php:80
+ * @see Http/Controllers/NotificationChannelController.php:103
  * @route '/notifications/channels/{channel}'
  */
 export const update = (
@@ -91,7 +91,7 @@ update.definition = {
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::update
- * @see Http/Controllers/NotificationChannelController.php:80
+ * @see Http/Controllers/NotificationChannelController.php:103
  * @route '/notifications/channels/{channel}'
  */
 update.url = (
@@ -132,7 +132,7 @@ update.url = (
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::update
- * @see Http/Controllers/NotificationChannelController.php:80
+ * @see Http/Controllers/NotificationChannelController.php:103
  * @route '/notifications/channels/{channel}'
  */
 update.patch = (
@@ -149,7 +149,7 @@ update.patch = (
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::update
- * @see Http/Controllers/NotificationChannelController.php:80
+ * @see Http/Controllers/NotificationChannelController.php:103
  * @route '/notifications/channels/{channel}'
  */
 const updateForm = (
@@ -171,7 +171,7 @@ const updateForm = (
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::update
- * @see Http/Controllers/NotificationChannelController.php:80
+ * @see Http/Controllers/NotificationChannelController.php:103
  * @route '/notifications/channels/{channel}'
  */
 updateForm.patch = (
@@ -195,7 +195,7 @@ update.form = updateForm;
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::test
- * @see Http/Controllers/NotificationChannelController.php:96
+ * @see Http/Controllers/NotificationChannelController.php:119
  * @route '/notifications/channels/{channel}/test'
  */
 export const test = (
@@ -217,7 +217,7 @@ test.definition = {
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::test
- * @see Http/Controllers/NotificationChannelController.php:96
+ * @see Http/Controllers/NotificationChannelController.php:119
  * @route '/notifications/channels/{channel}/test'
  */
 test.url = (
@@ -258,7 +258,7 @@ test.url = (
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::test
- * @see Http/Controllers/NotificationChannelController.php:96
+ * @see Http/Controllers/NotificationChannelController.php:119
  * @route '/notifications/channels/{channel}/test'
  */
 test.post = (
@@ -275,7 +275,7 @@ test.post = (
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::test
- * @see Http/Controllers/NotificationChannelController.php:96
+ * @see Http/Controllers/NotificationChannelController.php:119
  * @route '/notifications/channels/{channel}/test'
  */
 const testForm = (
@@ -292,7 +292,7 @@ const testForm = (
 
 /**
  * @see \App\Http\Controllers\NotificationChannelController::test
- * @see Http/Controllers/NotificationChannelController.php:96
+ * @see Http/Controllers/NotificationChannelController.php:119
  * @route '/notifications/channels/{channel}/test'
  */
 testForm.post = (

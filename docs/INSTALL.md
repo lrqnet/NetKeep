@@ -15,13 +15,13 @@ painel somente das redes administrativas e uma rotina externa de backup.
 ## Instalar uma versão
 
 Baixe sempre o Compose anexado a uma release. Esse arquivo fixa por digest as
-imagens `netkeep`, `netkeep-oxidized`, PostgreSQL e WUD. As imagens próprias
+imagens `netkeep`, `netkeep-oxidized`, `netkeep-updater` e PostgreSQL. As imagens próprias
 também são espelhadas no GHCR.
 
 ```bash
 mkdir -p /opt/netkeep
 cd /opt/netkeep
-curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.1/compose.yaml
+curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.2/compose.yaml
 docker compose up -d --wait
 docker compose ps
 ```
@@ -33,7 +33,7 @@ O primeiro `up`:
    `netkeep_recovery_secrets`;
 2. cria um usuário PostgreSQL não privilegiado para a aplicação;
 3. inicializa repositórios, executa migrations e materializa configurações;
-4. inicia web, worker, scheduler, Oxidized e o sandbox isolado;
+4. inicia web, worker, scheduler, Oxidized, sandbox e o updater isolado;
 5. publica somente 80/443. PostgreSQL e as APIs dos motores não são publicados.
 
 Consulte o token de posse sem procurar dentro do volume e sem expô-lo em logs:
@@ -90,7 +90,7 @@ curl -fsS http://127.0.0.1/up
 docker compose exec app php artisan about
 ```
 
-`postgres`, `app`, `worker`, `scheduler`, `oxidized` e `sandbox` devem ficar
+`postgres`, `app`, `worker`, `scheduler`, `oxidized`, `sandbox` e `updater` devem ficar
 saudáveis. `init` e `database-init` devem aparecer como `Exited (0)`, pois são
 serviços de execução única concluídos com sucesso. Reiniciar a pilha não
 regenera segredos existentes.
@@ -116,13 +116,14 @@ docker compose exec postgres sh -c \
 - `sandbox_git`: histórico descartável de testes;
 - `backup_data`: arquivos completos locais;
 - `restore_inbox`: uploads e estado transacional de restauração;
+- `update_exchange`: pedidos atômicos, heartbeat e estados do updater;
 - `caddy_data` e `caddy_config`: certificados e estado do Caddy.
 
 Não remova volumes durante uma atualização.
 
-## Perfis opcionais
+## Serviços privilegiados e opcionais
 
 O serviço `recovery` só inicia com `--profile recovery` e não recebe o socket
-Docker. O WUD só existe no profile `dangerous-auto-update`. Habilitá-lo exige
-aceite no painel, backup anterior e compreensão de que acesso ao socket Docker
-equivale a acesso root no host.
+Docker. O `updater` inicia por padrão, não possui rede nem porta e é o único
+serviço com o socket Docker. Esse acesso equivale a root no host; o agente só
+aceita Compose e manifestos oficiais assinados e nunca recebe comandos HTTP.

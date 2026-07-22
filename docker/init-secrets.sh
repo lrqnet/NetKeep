@@ -10,10 +10,11 @@ SANDBOX_DIR=/var/lib/netkeep/sandbox
 STORAGE_DIR=/var/lib/netkeep/storage
 BACKUP_DIR=/var/lib/netkeep/backups
 RESTORE_DIR=/var/lib/netkeep/restore-inbox
+UPDATE_DIR=/var/lib/netkeep/updates
 CACHE_DIR=/var/lib/netkeep/bootstrap-cache
 CADDY_DATA_DIR=/var/lib/netkeep/caddy-data
 CADDY_CONFIG_DIR=/var/lib/netkeep/caddy-config
-mkdir -p "$SECRET_DIR" "$RECOVERY_SECRET_DIR" "$CLAIM_DIR" "$OXIDIZED_DIR/model" "$OXIDIZED_DIR/.ssh" "$OXIDIZED_DIR/repository" "$SANDBOX_DIR/model" "$SANDBOX_DIR/.ssh" "$SANDBOX_DIR/repository" "$STORAGE_DIR/app/public" "$STORAGE_DIR/framework/cache" "$STORAGE_DIR/framework/sessions" "$STORAGE_DIR/framework/views" "$STORAGE_DIR/logs" "$BACKUP_DIR" "$RESTORE_DIR" "$CACHE_DIR" "$CADDY_DATA_DIR" "$CADDY_CONFIG_DIR"
+mkdir -p "$SECRET_DIR" "$RECOVERY_SECRET_DIR" "$CLAIM_DIR" "$OXIDIZED_DIR/model" "$OXIDIZED_DIR/.ssh" "$OXIDIZED_DIR/repository" "$SANDBOX_DIR/model" "$SANDBOX_DIR/.ssh" "$SANDBOX_DIR/repository" "$STORAGE_DIR/app/public" "$STORAGE_DIR/framework/cache" "$STORAGE_DIR/framework/sessions" "$STORAGE_DIR/framework/views" "$STORAGE_DIR/logs" "$BACKUP_DIR" "$RESTORE_DIR" "$UPDATE_DIR/queue" "$UPDATE_DIR/requests" "$UPDATE_DIR/status" "$CACHE_DIR" "$CADDY_DATA_DIR" "$CADDY_CONFIG_DIR"
 touch "$CADDY_CONFIG_DIR/netkeep-canonical.caddy"
 touch "$CADDY_CONFIG_DIR/netkeep-global.caddy"
 rm -f "$CACHE_DIR"/*.php
@@ -308,12 +309,15 @@ rm -f "$OXIDIZED_DIR/pid" "$OXIDIZED_DIR/crash"
 rm -f "$SANDBOX_DIR/pid" "$SANDBOX_DIR/crash"
 
 chown -R 30000:30000 "$OXIDIZED_DIR" "$SANDBOX_DIR"
-chown -R 20000:20000 "$STORAGE_DIR" "$BACKUP_DIR" "$RESTORE_DIR" "$CACHE_DIR" "$CADDY_DATA_DIR" "$CADDY_CONFIG_DIR"
+chown -R 20000:20000 "$STORAGE_DIR" "$BACKUP_DIR" "$RESTORE_DIR" "$UPDATE_DIR" "$CACHE_DIR" "$CADDY_DATA_DIR" "$CADDY_CONFIG_DIR"
+find "$UPDATE_DIR" -type d -exec chmod 2770 {} \;
+find "$UPDATE_DIR" -type f -exec chmod 0660 {} \;
 chown -R root:20000 "$SECRET_DIR"
 chown -R root:20000 "$RECOVERY_SECRET_DIR"
 chown -R root:20000 "$CLAIM_DIR"
 chmod 0750 "$SECRET_DIR" "$RECOVERY_SECRET_DIR"
 chmod 0770 "$CLAIM_DIR"
+chmod 0770 "$UPDATE_DIR" "$UPDATE_DIR/queue" "$UPDATE_DIR/requests" "$UPDATE_DIR/status"
 chmod 2770 "$OXIDIZED_DIR" "$SANDBOX_DIR" "$OXIDIZED_DIR/model" "$OXIDIZED_DIR/.ssh" "$OXIDIZED_DIR/repository" "$SANDBOX_DIR/model" "$SANDBOX_DIR/.ssh" "$SANDBOX_DIR/repository"
 find "$OXIDIZED_DIR/repository" "$SANDBOX_DIR/repository" -type d -exec chmod 2770 {} +
 find "$OXIDIZED_DIR/repository" "$SANDBOX_DIR/repository" -type f -exec chmod 0660 {} +

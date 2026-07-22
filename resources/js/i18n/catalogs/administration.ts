@@ -470,9 +470,9 @@ export const administrationMessages = defineMessages({
         es: 'El tráfico y las credenciales no están protegidos por HTTPS. Esta sesión separada expira en cinco minutos y no se puede recordar.',
     },
     'system.dangerous.automatic_updates': {
-        en: 'WUD automatic updates',
-        pt_BR: 'Atualizações automáticas com WUD',
-        es: 'Actualizaciones automáticas con WUD',
+        en: 'Integrated automatic updates',
+        pt_BR: 'Atualizações automáticas integradas',
+        es: 'Actualizaciones automáticas integradas',
     },
     'system.dangerous.unreviewed_drivers': {
         en: 'Unreviewed Oxidized drivers',
@@ -550,21 +550,11 @@ export const administrationMessages = defineMessages({
         es: 'Propietario',
     },
     'updates.description': {
-        en: 'Only versions from the same major line are accepted. A full backup completes before every update.',
-        pt_BR: 'Somente versões da mesma linha principal são aceitas. Um backup completo é concluído antes de qualquer atualização.',
-        es: 'Solo se aceptan versiones de la misma línea principal. Se completa un respaldo total antes de cada actualización.',
+        en: 'Detect official releases independently and apply signed updates with an encrypted recovery snapshot.',
+        pt_BR: 'Detecte releases oficiais de forma independente e aplique atualizações assinadas com snapshot criptografado de recuperação.',
+        es: 'Detecta versiones oficiales de forma independiente y aplica actualizaciones firmadas con una copia cifrada de recuperación.',
     },
     'updates.state': { en: 'Status', pt_BR: 'Estado', es: 'Estado' },
-    'updates.connected': {
-        en: 'WUD connected',
-        pt_BR: 'WUD conectado',
-        es: 'WUD conectado',
-    },
-    'updates.profile_disabled': {
-        en: 'Profile disabled',
-        pt_BR: 'Perfil desativado',
-        es: 'Perfil desactivado',
-    },
     'updates.current_version': {
         en: 'Current version',
         pt_BR: 'Versão atual',
@@ -575,15 +565,136 @@ export const administrationMessages = defineMessages({
         pt_BR: 'Disponível',
         es: 'Disponible',
     },
-    'updates.enable_hint': {
-        en: 'Start with the command below to enable update checks and triggers.',
-        pt_BR: 'Inicie com o comando abaixo para habilitar a consulta e o gatilho.',
-        es: 'Inicia con el siguiente comando para habilitar la consulta y el disparador.',
+    'updates.available_badge': {
+        en: 'Update available',
+        pt_BR: 'Atualização disponível',
+        es: 'Actualización disponible',
     },
-    'updates.backup_update': {
-        en: 'Back up and update',
-        pt_BR: 'Fazer backup e atualizar',
-        es: 'Respaldar y actualizar',
+    'updates.sidebar_available': {
+        en: 'v{{version}} available',
+        pt_BR: 'v{{version}} disponível',
+        es: 'v{{version}} disponible',
+    },
+    'updates.sidebar_open': {
+        en: 'Review and update NetKeep',
+        pt_BR: 'Revisar e atualizar o NetKeep',
+        es: 'Revisar y actualizar NetKeep',
+    },
+    'updates.status_current': {
+        en: 'Up to date',
+        pt_BR: 'Atualizado',
+        es: 'Actualizado',
+    },
+    'updates.status_available': {
+        en: 'Update available',
+        pt_BR: 'Atualização disponível',
+        es: 'Actualización disponible',
+    },
+    'updates.status_checking': {
+        en: 'Checking',
+        pt_BR: 'Verificando',
+        es: 'Verificando',
+    },
+    'updates.status_unavailable': {
+        en: 'Check unavailable',
+        pt_BR: 'Consulta indisponível',
+        es: 'Consulta no disponible',
+    },
+    'updates.status_updating': {
+        en: 'Updating',
+        pt_BR: 'Atualizando',
+        es: 'Actualizando',
+    },
+    'updates.status_reconnecting': {
+        en: 'Reconnecting',
+        pt_BR: 'Reconectando',
+        es: 'Reconectando',
+    },
+    'updates.status_recovery_required': {
+        en: 'Recovery required',
+        pt_BR: 'Recuperação necessária',
+        es: 'Recuperación necesaria',
+    },
+    'updates.status_succeeded': {
+        en: 'Completed',
+        pt_BR: 'Concluída',
+        es: 'Completada',
+    },
+    'updates.status_failed': { en: 'Failed', pt_BR: 'Falhou', es: 'Falló' },
+    'updates.last_checked': {
+        en: 'Last attempt: {{date}}',
+        pt_BR: 'Última tentativa: {{date}}',
+        es: 'Último intento: {{date}}',
+    },
+    'updates.check_failed_title': {
+        en: 'The latest check failed',
+        pt_BR: 'A última consulta falhou',
+        es: 'La última consulta falló',
+    },
+    'updates.check_failed_description': {
+        en: 'NetKeep could not reach GitHub. The last known release result was preserved.',
+        pt_BR: 'O NetKeep não conseguiu acessar o GitHub. O último resultado conhecido foi preservado.',
+        es: 'NetKeep no pudo acceder a GitHub. Se conservó el último resultado conocido.',
+    },
+    'updates.last_success_preserved': {
+        en: 'Last successful check: {{date}}.',
+        pt_BR: 'Última consulta bem-sucedida: {{date}}.',
+        es: 'Última consulta exitosa: {{date}}.',
+    },
+    'updates.major_release': {
+        en: 'Major release',
+        pt_BR: 'Release principal',
+        es: 'Versión principal',
+    },
+    'updates.compatible_release': {
+        en: 'Compatible release',
+        pt_BR: 'Release compatível',
+        es: 'Versión compatible',
+    },
+    'updates.rollback_supported': {
+        en: 'Compose rollback supported',
+        pt_BR: 'Rollback do Compose suportado',
+        es: 'Rollback de Compose compatible',
+    },
+    'updates.released_at': {
+        en: 'Published {{date}}',
+        pt_BR: 'Publicada em {{date}}',
+        es: 'Publicada el {{date}}',
+    },
+    'updates.release_notes': {
+        en: 'View release notes',
+        pt_BR: 'Ver notas da release',
+        es: 'Ver notas de la versión',
+    },
+    'updates.updater_offline_title': {
+        en: 'Updater agent is unavailable',
+        pt_BR: 'O agente de atualização está indisponível',
+        es: 'El agente de actualización no está disponible',
+    },
+    'updates.updater_offline_description': {
+        en: 'Detection continues to work, but installation is blocked until the default updater service is healthy.',
+        pt_BR: 'A detecção continua funcionando, mas a instalação fica bloqueada até o serviço padrão do updater estar saudável.',
+        es: 'La detección sigue funcionando, pero la instalación queda bloqueada hasta que el servicio updater esté operativo.',
+    },
+    'updates.check_now': {
+        en: 'Check now',
+        pt_BR: 'Verificar agora',
+        es: 'Verificar ahora',
+    },
+    'updates.update_now': {
+        en: 'Update now',
+        pt_BR: 'Atualizar agora',
+        es: 'Actualizar ahora',
+    },
+    'updates.host_steps_required': {
+        en: 'This release requires external host steps and cannot be installed from the panel.',
+        pt_BR: 'Esta release exige etapas externas no host e não pode ser instalada pelo painel.',
+        es: 'Esta versión requiere pasos externos en el host y no puede instalarse desde el panel.',
+    },
+    'updates.not_installable': {
+        en: 'This release does not declare support for the installed version.',
+        pt_BR: 'Esta release não declara suporte à versão instalada.',
+        es: 'Esta versión no declara compatibilidad con la versión instalada.',
     },
     'updates.auto_policy': {
         en: 'Automatic policy',
@@ -596,9 +707,51 @@ export const administrationMessages = defineMessages({
         es: 'Actualizar automáticamente',
     },
     'updates.auto_hint': {
-        en: 'Only patches and minor releases from the installed major version, always after a backup.',
-        pt_BR: 'Apenas patch/minor da versão principal instalada, sempre após backup.',
-        es: 'Solo parches y versiones menores de la versión principal instalada, siempre después de un respaldo.',
+        en: 'Off by default. Only signed patch and minor releases from the installed major version are eligible.',
+        pt_BR: 'Desligada por padrão. Somente releases patch e minor assinadas da versão principal instalada são elegíveis.',
+        es: 'Desactivada de forma predeterminada. Solo se admiten versiones patch y minor firmadas de la versión principal instalada.',
+    },
+    'updates.socket_risk_title': {
+        en: 'Host-level update privilege',
+        pt_BR: 'Privilégio de atualização no host',
+        es: 'Privilegio de actualización en el host',
+    },
+    'updates.socket_risk_description': {
+        en: 'The isolated updater is the only service with Docker socket access, which is equivalent to root on the host. It has no network and accepts only signed official manifests.',
+        pt_BR: 'O updater isolado é o único serviço com acesso ao socket Docker, equivalente a root no host. Ele não possui rede e aceita apenas manifestos oficiais assinados.',
+        es: 'El updater aislado es el único servicio con acceso al socket Docker, equivalente a root en el host. No tiene red y solo acepta manifiestos oficiales firmados.',
+    },
+    'updates.accept_risk': {
+        en: 'Review and accept the risk in System settings',
+        pt_BR: 'Revisar e aceitar o risco nas Configurações do sistema',
+        es: 'Revisar y aceptar el riesgo en Configuración del sistema',
+    },
+    'updates.days': {
+        en: 'Allowed days',
+        pt_BR: 'Dias permitidos',
+        es: 'Días permitidos',
+    },
+    'updates.day_1': { en: 'Mon', pt_BR: 'Seg', es: 'Lun' },
+    'updates.day_2': { en: 'Tue', pt_BR: 'Ter', es: 'Mar' },
+    'updates.day_3': { en: 'Wed', pt_BR: 'Qua', es: 'Mié' },
+    'updates.day_4': { en: 'Thu', pt_BR: 'Qui', es: 'Jue' },
+    'updates.day_5': { en: 'Fri', pt_BR: 'Sex', es: 'Vie' },
+    'updates.day_6': { en: 'Sat', pt_BR: 'Sáb', es: 'Sáb' },
+    'updates.day_7': { en: 'Sun', pt_BR: 'Dom', es: 'Dom' },
+    'updates.window_start': {
+        en: 'Window starts',
+        pt_BR: 'Início da janela',
+        es: 'Inicio de la ventana',
+    },
+    'updates.window_end': {
+        en: 'Window ends',
+        pt_BR: 'Fim da janela',
+        es: 'Fin de la ventana',
+    },
+    'updates.timezone_hint': {
+        en: 'The window uses the company timezone: {{timezone}}.',
+        pt_BR: 'A janela usa o fuso da empresa: {{timezone}}.',
+        es: 'La ventana usa la zona horaria de la empresa: {{timezone}}.',
     },
     'updates.save_policy': {
         en: 'Save policy',
@@ -606,13 +759,129 @@ export const administrationMessages = defineMessages({
         es: 'Guardar política',
     },
     'updates.backup_destination': {
-        en: 'Pre-update backup destination',
-        pt_BR: 'Destino do backup prévio',
-        es: 'Destino del respaldo previo',
+        en: 'Additional backup destination',
+        pt_BR: 'Destino adicional de backup',
+        es: 'Destino adicional de respaldo',
     },
     'updates.select_destination': {
         en: 'Select a destination',
         pt_BR: 'Selecione um destino',
         es: 'Selecciona un destino',
+    },
+    'updates.local_snapshot_only': {
+        en: 'Encrypted local recovery snapshot only',
+        pt_BR: 'Somente snapshot local criptografado',
+        es: 'Solo copia local cifrada de recuperación',
+    },
+    'updates.destination_hint': {
+        en: 'A local encrypted snapshot is always created. This destination receives an additional copy.',
+        pt_BR: 'Um snapshot local criptografado sempre é criado. Este destino recebe uma cópia adicional.',
+        es: 'Siempre se crea una copia local cifrada. Este destino recibe una copia adicional.',
+    },
+    'updates.operation_title': {
+        en: 'Updating v{{from}} to v{{to}}',
+        pt_BR: 'Atualizando v{{from}} para v{{to}}',
+        es: 'Actualizando v{{from}} a v{{to}}',
+    },
+    'updates.step_backup': { en: 'Backup', pt_BR: 'Backup', es: 'Respaldo' },
+    'updates.step_validation': {
+        en: 'Validation',
+        pt_BR: 'Validação',
+        es: 'Validación',
+    },
+    'updates.step_download': {
+        en: 'Download',
+        pt_BR: 'Download',
+        es: 'Descarga',
+    },
+    'updates.step_application': {
+        en: 'Application',
+        pt_BR: 'Aplicação',
+        es: 'Aplicación',
+    },
+    'updates.step_restart': {
+        en: 'Restart',
+        pt_BR: 'Reinício',
+        es: 'Reinicio',
+    },
+    'updates.step_verification': {
+        en: 'Verification',
+        pt_BR: 'Verificação',
+        es: 'Verificación',
+    },
+    'updates.failed_title': {
+        en: 'The update was not completed',
+        pt_BR: 'A atualização não foi concluída',
+        es: 'La actualización no se completó',
+    },
+    'updates.failed_description': {
+        en: 'NetKeep preserved the encrypted recovery snapshot and restored the previous Compose when supported.',
+        pt_BR: 'O NetKeep preservou o snapshot criptografado de recuperação e restaurou o Compose anterior quando suportado.',
+        es: 'NetKeep conservó la copia cifrada de recuperación y restauró el Compose anterior cuando era compatible.',
+    },
+    'updates.recovery_required_title': {
+        en: 'Manual recovery is required',
+        pt_BR: 'A recuperação manual é necessária',
+        es: 'Se requiere recuperación manual',
+    },
+    'updates.recovery_required_description': {
+        en: 'Do not delete volumes or the preserved snapshot. Follow the recovery guide from the host.',
+        pt_BR: 'Não exclua volumes nem o snapshot preservado. Siga o guia de recuperação pelo host.',
+        es: 'No elimines volúmenes ni la copia conservada. Sigue la guía de recuperación desde el host.',
+    },
+    'updates.confirm_title': {
+        en: 'Confirm NetKeep update',
+        pt_BR: 'Confirmar atualização do NetKeep',
+        es: 'Confirmar actualización de NetKeep',
+    },
+    'updates.confirm_description': {
+        en: 'Services will restart after all images and signatures have been validated.',
+        pt_BR: 'Os serviços serão reiniciados após todas as imagens e assinaturas serem validadas.',
+        es: 'Los servicios se reiniciarán después de validar todas las imágenes y firmas.',
+    },
+    'updates.target_version': {
+        en: 'Target version',
+        pt_BR: 'Versão de destino',
+        es: 'Versión de destino',
+    },
+    'updates.compatibility': {
+        en: 'Compatibility',
+        pt_BR: 'Compatibilidade',
+        es: 'Compatibilidad',
+    },
+    'updates.estimated_downtime': {
+        en: 'Estimated downtime',
+        pt_BR: 'Indisponibilidade estimada',
+        es: 'Tiempo de inactividad estimado',
+    },
+    'updates.minutes': {
+        en: 'About {{count}} min',
+        pt_BR: 'Cerca de {{count}} min',
+        es: 'Aproximadamente {{count}} min',
+    },
+    'updates.snapshot_title': {
+        en: 'Mandatory encrypted snapshot',
+        pt_BR: 'Snapshot criptografado obrigatório',
+        es: 'Copia cifrada obligatoria',
+    },
+    'updates.snapshot_description': {
+        en: 'Database, configuration history, models, branding and required keys are captured before installation.',
+        pt_BR: 'Banco, histórico de configurações, modelos, identidade visual e chaves necessárias são capturados antes da instalação.',
+        es: 'La base de datos, el historial de configuraciones, los modelos, la identidad visual y las claves necesarias se capturan antes de la instalación.',
+    },
+    'updates.type_version': {
+        en: 'Type {{version}} to confirm the major update',
+        pt_BR: 'Digite {{version}} para confirmar a atualização principal',
+        es: 'Escribe {{version}} para confirmar la actualización principal',
+    },
+    'updates.accept_update_risk': {
+        en: 'I understand that services will restart and that I must keep the recovery snapshot and Docker volumes.',
+        pt_BR: 'Entendo que os serviços serão reiniciados e que devo preservar o snapshot de recuperação e os volumes Docker.',
+        es: 'Entiendo que los servicios se reiniciarán y que debo conservar la copia de recuperación y los volúmenes Docker.',
+    },
+    'updates.start_update': {
+        en: 'Start update',
+        pt_BR: 'Iniciar atualização',
+        es: 'Iniciar actualización',
     },
 });

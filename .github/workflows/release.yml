@@ -116,13 +116,69 @@ jobs:
           cosign sign --yes "ghcr.io/lrqnet/netkeep-oxidized@${DIGEST}"
           cosign sign --yes "docker.io/lrqnet/netkeep-oxidized@${DIGEST}"
 
+  updater-image:
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+      - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051
+        with:
+          images: |
+            ghcr.io/lrqnet/netkeep-updater
+            docker.io/lrqnet/netkeep-updater
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest,enable=${{ !contains(github.ref_name, '-') }}
+      - id: build
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
+        with:
+          context: .
+          file: Dockerfile.updater
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          provenance: mode=max
+          sbom: true
+          cache-from: type=gha,scope=netkeep-updater
+          cache-to: type=gha,mode=max,scope=netkeep-updater
+      - uses: sigstore/cosign-installer@f713795cb21599bc4e5c4b58cbad1da852d7eeb9
+        with:
+          cosign-release: v3.0.6
+      - name: Sign NetKeep updater image
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          cosign sign --yes "ghcr.io/lrqnet/netkeep-updater@${DIGEST}"
+          cosign sign --yes "docker.io/lrqnet/netkeep-updater@${DIGEST}"
+
   release-compose:
     needs:
       - netkeep-image
       - oxidized-image
+      - updater-image
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
@@ -131,6 +187,7 @@ jobs:
         env:
           APP_DIGEST: ${{ needs.netkeep-image.outputs.digest }}
           OXIDIZED_DIGEST: ${{ needs.oxidized-image.outputs.digest }}
+          UPDATER_DIGEST: ${{ needs.updater-image.outputs.digest }}
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           test "v$(sed -n 's/.*netkeep:\([0-9][0-9.]*\).*/\1/p' compose.yaml | head -1)" = "${GITHUB_REF_NAME}"
@@ -138,13 +195,43 @@ jobs:
           sed \
             -e "s#docker.io/lrqnet/netkeep:${VERSION}#docker.io/lrqnet/netkeep@${APP_DIGEST}#g" \
             -e "s#docker.io/lrqnet/netkeep-oxidized:0.37.0-r1#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g" \
+            -e "s#docker.io/lrqnet/netkeep-updater:${VERSION}#docker.io/lrqnet/netkeep-updater@${UPDATER_DIGEST}#g" \
             compose.yaml > dist/compose.yaml
           grep -q "docker.io/lrqnet/netkeep@sha256:" dist/compose.yaml
           grep -q "docker.io/lrqnet/netkeep-oxidized@sha256:" dist/compose.yaml
+          grep -q "docker.io/lrqnet/netkeep-updater@sha256:" dist/compose.yaml
           docker compose -f dist/compose.yaml config --quiet
+      - name: Create signed update manifest
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          COMPOSE_SHA="$(sha256sum dist/compose.yaml | cut -d' ' -f1)"
+          IMAGES="$(docker compose -f dist/compose.yaml config --images | sort -u | jq -R . | jq -s .)"
+          jq -n \
+            --arg version "${VERSION}" \
+            --arg compose_sha "sha256:${COMPOSE_SHA}" \
+            --argjson images "${IMAGES}" \
+            '{
+              schema: 1,
+              version: $version,
+              minimum_source_version: "1.0.0",
+              manual_source_majors: [1],
+              automatic_eligible: true,
+              rollback_safe: true,
+              requires_host_steps: false,
+              estimated_downtime_seconds: 300,
+              compose_sha256: $compose_sha,
+              images: $images
+            }' > dist/update-manifest.json
+      - uses: sigstore/cosign-installer@f713795cb21599bc4e5c4b58cbad1da852d7eeb9
+        with:
+          cosign-release: v3.0.6
+      - name: Sign update manifest
+        run: cosign sign-blob --yes --bundle dist/update-manifest.sigstore.json dist/update-manifest.json
       - uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65
         with:
           generate_release_notes: true
           files: |
             dist/compose.yaml
+            dist/update-manifest.json
+            dist/update-manifest.sigstore.json
             THIRD_PARTY_NOTICES

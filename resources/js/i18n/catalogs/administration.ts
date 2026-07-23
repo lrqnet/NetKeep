@@ -884,4 +884,249 @@ export const administrationMessages = defineMessages({
         pt_BR: 'Iniciar atualização',
         es: 'Iniciar actualización',
     },
+    'updates.confirm_password_label': {
+        en: 'Confirm your password',
+        pt_BR: 'Confirme sua senha',
+        es: 'Confirma tu contraseña',
+    },
+    'updates.confirm_password_hint': {
+        en: 'After your identity is confirmed, this exact update request will be submitted once.',
+        pt_BR: 'Após confirmar sua identidade, esta solicitação exata de atualização será enviada uma única vez.',
+        es: 'Después de confirmar tu identidad, esta solicitud exacta de actualización se enviará una sola vez.',
+    },
+    'updates.confirming_identity': {
+        en: 'Confirming identity',
+        pt_BR: 'Confirmando identidade',
+        es: 'Confirmando identidad',
+    },
+    'updates.submitting_operation': {
+        en: 'Submitting update',
+        pt_BR: 'Enviando atualização',
+        es: 'Enviando actualización',
+    },
+    'updates.request_received_title': {
+        en: 'Update request received',
+        pt_BR: 'Solicitação de atualização recebida',
+        es: 'Solicitud de actualización recibida',
+    },
+    'updates.request_received_description': {
+        en: 'NetKeep recorded the operation and is waiting for the worker to start the encrypted recovery snapshot.',
+        pt_BR: 'O NetKeep registrou a operação e aguarda o worker iniciar o snapshot criptografado de recuperação.',
+        es: 'NetKeep registró la operación y espera que el worker inicie la copia cifrada de recuperación.',
+    },
+    'updates.global_running': {
+        en: 'Updating v{{from}} to v{{to}}',
+        pt_BR: 'Atualizando v{{from}} para v{{to}}',
+        es: 'Actualizando v{{from}} a v{{to}}',
+    },
+    'updates.global_reconnecting': {
+        en: 'The update is running. Reconnecting to NetKeep.',
+        pt_BR: 'A atualização está em andamento. Reconectando ao NetKeep.',
+        es: 'La actualización está en curso. Reconectando con NetKeep.',
+    },
+    'updates.global_stalled': {
+        en: 'The update has not reported progress within the expected time.',
+        pt_BR: 'A atualização não informou progresso no tempo esperado.',
+        es: 'La actualización no informó progreso en el tiempo esperado.',
+    },
+    'updates.global_succeeded': {
+        en: 'NetKeep v{{version}} was installed successfully.',
+        pt_BR: 'O NetKeep v{{version}} foi instalado com sucesso.',
+        es: 'NetKeep v{{version}} se instaló correctamente.',
+    },
+    'updates.global_failed': {
+        en: 'The NetKeep update was not completed.',
+        pt_BR: 'A atualização do NetKeep não foi concluída.',
+        es: 'La actualización de NetKeep no se completó.',
+    },
+    'updates.global_recovery_required': {
+        en: 'The update requires manual recovery.',
+        pt_BR: 'A atualização exige recuperação manual.',
+        es: 'La actualización requiere recuperación manual.',
+    },
+    'updates.view_progress': {
+        en: 'View progress',
+        pt_BR: 'Ver progresso',
+        es: 'Ver progreso',
+    },
+    'updates.elapsed': {
+        en: 'Elapsed: {{duration}}',
+        pt_BR: 'Decorrido: {{duration}}',
+        es: 'Transcurrido: {{duration}}',
+    },
+    'updates.duration_seconds': {
+        en: '{{count}} sec',
+        pt_BR: '{{count}} s',
+        es: '{{count}} s',
+    },
+    'updates.duration_minutes': {
+        en: '{{count}} min',
+        pt_BR: '{{count}} min',
+        es: '{{count}} min',
+    },
+    'updates.duration_hours_minutes': {
+        en: '{{hours}} h {{minutes}} min',
+        pt_BR: '{{hours}} h {{minutes}} min',
+        es: '{{hours}} h {{minutes}} min',
+    },
+    'updates.elapsed_label': {
+        en: 'Elapsed time',
+        pt_BR: 'Tempo decorrido',
+        es: 'Tiempo transcurrido',
+    },
+    'updates.last_progress': {
+        en: 'Last progress',
+        pt_BR: 'Último progresso',
+        es: 'Último progreso',
+    },
+    'updates.expected_duration': {
+        en: 'What to expect',
+        pt_BR: 'O que esperar',
+        es: 'Qué esperar',
+    },
+    'updates.operation_finished': {
+        en: 'Operation finished',
+        pt_BR: 'Operação finalizada',
+        es: 'Operación finalizada',
+    },
+    'updates.expect_queued': {
+        en: 'Usually starts within 1 minute',
+        pt_BR: 'Normalmente inicia em até 1 minuto',
+        es: 'Normalmente comienza en hasta 1 minuto',
+    },
+    'updates.expect_backing_up': {
+        en: 'Duration depends on stored data and the optional external destination',
+        pt_BR: 'A duração depende dos dados armazenados e do destino externo opcional',
+        es: 'La duración depende de los datos almacenados y del destino externo opcional',
+    },
+    'updates.expect_validating': {
+        en: 'Signature and Compose validation usually take up to 5 minutes',
+        pt_BR: 'A validação da assinatura e do Compose normalmente leva até 5 minutos',
+        es: 'La validación de la firma y de Compose normalmente tarda hasta 5 minutos',
+    },
+    'updates.expect_downloading': {
+        en: 'Image downloads can take up to 30 minutes on a slow connection',
+        pt_BR: 'O download das imagens pode levar até 30 minutos em uma conexão lenta',
+        es: 'La descarga de imágenes puede tardar hasta 30 minutos con una conexión lenta',
+    },
+    'updates.expect_applying': {
+        en: 'Services are being replaced and checked; temporary unavailability is expected',
+        pt_BR: 'Os serviços estão sendo substituídos e verificados; indisponibilidade temporária é esperada',
+        es: 'Los servicios se están reemplazando y verificando; se espera indisponibilidad temporal',
+    },
+    'updates.expect_restarting': {
+        en: 'Waiting for the new services and health checks',
+        pt_BR: 'Aguardando os novos serviços e as verificações de saúde',
+        es: 'Esperando los nuevos servicios y las verificaciones de salud',
+    },
+    'updates.reconnecting_title': {
+        en: 'Reconnecting after service restart',
+        pt_BR: 'Reconectando após o reinício dos serviços',
+        es: 'Reconectando después del reinicio de los servicios',
+    },
+    'updates.reconnecting_description': {
+        en: 'Keep this page open. Progress is preserved on the server and will reappear when NetKeep is available.',
+        pt_BR: 'Mantenha esta página aberta. O progresso está preservado no servidor e reaparecerá quando o NetKeep estiver disponível.',
+        es: 'Mantén esta página abierta. El progreso se conserva en el servidor y reaparecerá cuando NetKeep esté disponible.',
+    },
+    'updates.stalled_title': {
+        en: 'Progress is taking longer than expected',
+        pt_BR: 'O progresso está demorando mais que o esperado',
+        es: 'El progreso está tardando más de lo esperado',
+    },
+    'updates.stalled_description': {
+        en: 'Do not start another update or remove volumes. Review the updater and worker health from the host before taking action.',
+        pt_BR: 'Não inicie outra atualização nem remova volumes. Verifique a saúde do updater e do worker pelo host antes de agir.',
+        es: 'No inicies otra actualización ni elimines volúmenes. Revisa la salud del updater y del worker desde el host antes de actuar.',
+    },
+    'updates.succeeded_title': {
+        en: 'Update completed',
+        pt_BR: 'Atualização concluída',
+        es: 'Actualización completada',
+    },
+    'updates.succeeded_description': {
+        en: 'NetKeep v{{version}} is running. This confirmation remains visible until you dismiss it.',
+        pt_BR: 'O NetKeep v{{version}} está em execução. Esta confirmação permanecerá visível até ser dispensada.',
+        es: 'NetKeep v{{version}} está en ejecución. Esta confirmación permanecerá visible hasta que la descartes.',
+    },
+    'updates.acknowledge': {
+        en: 'Dismiss status',
+        pt_BR: 'Dispensar estado',
+        es: 'Descartar estado',
+    },
+    'updates.error_reference': {
+        en: 'Reference: {{code}}',
+        pt_BR: 'Referência: {{code}}',
+        es: 'Referencia: {{code}}',
+    },
+    'updates.error_preparation': {
+        en: 'The encrypted recovery snapshot or request preparation failed before installation.',
+        pt_BR: 'O snapshot criptografado de recuperação ou a preparação da solicitação falhou antes da instalação.',
+        es: 'La copia cifrada de recuperación o la preparación de la solicitud falló antes de la instalación.',
+    },
+    'updates.error_request': {
+        en: 'The updater rejected the prepared request because its files or metadata were invalid.',
+        pt_BR: 'O updater rejeitou a solicitação preparada porque os arquivos ou metadados eram inválidos.',
+        es: 'El updater rechazó la solicitud preparada porque sus archivos o metadatos no eran válidos.',
+    },
+    'updates.error_source': {
+        en: 'The installed version or update policy does not match this release.',
+        pt_BR: 'A versão instalada ou a política de atualização não corresponde a esta release.',
+        es: 'La versión instalada o la política de actualización no corresponde a esta versión.',
+    },
+    'updates.error_manifest': {
+        en: 'The signed manifest does not match the release Compose or target version.',
+        pt_BR: 'O manifesto assinado não corresponde ao Compose da release ou à versão de destino.',
+        es: 'El manifiesto firmado no corresponde al Compose de la versión o a la versión de destino.',
+    },
+    'updates.error_signature': {
+        en: 'The official Sigstore signature could not be verified. Nothing was applied.',
+        pt_BR: 'A assinatura oficial do Sigstore não pôde ser verificada. Nada foi aplicado.',
+        es: 'No se pudo verificar la firma oficial de Sigstore. No se aplicó nada.',
+    },
+    'updates.error_compose': {
+        en: 'The release Compose could not be validated, preserved or published safely.',
+        pt_BR: 'O Compose da release não pôde ser validado, preservado ou publicado com segurança.',
+        es: 'El Compose de la versión no pudo validarse, conservarse o publicarse de forma segura.',
+    },
+    'updates.error_isolation': {
+        en: 'The release would weaken updater isolation or Docker socket restrictions.',
+        pt_BR: 'A release enfraqueceria o isolamento do updater ou as restrições do socket Docker.',
+        es: 'La versión debilitaría el aislamiento del updater o las restricciones del socket Docker.',
+    },
+    'updates.error_image': {
+        en: 'The release references an untrusted or unexpected container image.',
+        pt_BR: 'A release referencia uma imagem de container não confiável ou inesperada.',
+        es: 'La versión referencia una imagen de contenedor no confiable o inesperada.',
+    },
+    'updates.error_download': {
+        en: 'One or more container images could not be downloaded.',
+        pt_BR: 'Não foi possível baixar uma ou mais imagens de container.',
+        es: 'No se pudieron descargar una o más imágenes de contenedor.',
+    },
+    'updates.error_health': {
+        en: 'The new containers did not reach the expected healthy state in time.',
+        pt_BR: 'Os novos containers não atingiram o estado saudável esperado a tempo.',
+        es: 'Los nuevos contenedores no alcanzaron a tiempo el estado saludable esperado.',
+    },
+    'updates.error_rolled_back': {
+        en: 'The update failed and NetKeep restored the previous Compose successfully.',
+        pt_BR: 'A atualização falhou e o NetKeep restaurou o Compose anterior com sucesso.',
+        es: 'La actualización falló y NetKeep restauró correctamente el Compose anterior.',
+    },
+    'updates.error_rollback': {
+        en: 'The update and automatic rollback both failed. Manual recovery is required.',
+        pt_BR: 'A atualização e o rollback automático falharam. A recuperação manual é necessária.',
+        es: 'La actualización y el rollback automático fallaron. Se requiere recuperación manual.',
+    },
+    'updates.error_recovery': {
+        en: 'This failure cannot be rolled back automatically. Preserve the snapshot and follow the recovery guide.',
+        pt_BR: 'Esta falha não pode ser revertida automaticamente. Preserve o snapshot e siga o guia de recuperação.',
+        es: 'Esta falla no puede revertirse automáticamente. Conserva la copia y sigue la guía de recuperación.',
+    },
+    'updates.error_generic': {
+        en: 'The update stopped safely, but no more specific public reason is available.',
+        pt_BR: 'A atualização foi interrompida com segurança, mas não há um motivo público mais específico.',
+        es: 'La actualización se detuvo de forma segura, pero no hay un motivo público más específico.',
+    },
 });

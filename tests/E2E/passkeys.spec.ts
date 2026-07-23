@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { gotoWithTlsRetry } from './support/navigation';
 
 test('registers and signs in with a passkey', async ({
     browserName,
@@ -10,7 +11,7 @@ test('registers and signs in with a passkey', async ({
     );
 
     await context.credentials.install();
-    await page.goto('/settings/security');
+    await gotoWithTlsRetry(page, '/settings/security');
     await page.getByRole('button', { name: 'Add passkey' }).click();
     await page.getByLabel('Passkey name').fill('NetKeep E2E passkey');
     await page.getByRole('button', { name: 'Register passkey' }).click();
@@ -24,7 +25,7 @@ test('registers and signs in with a passkey', async ({
     const menu = page.locator('[data-test="sidebar-menu-button"]');
     await expect(menu).toBeVisible();
     await context.clearCookies();
-    await page.goto('/login');
+    await gotoWithTlsRetry(page, '/login');
     await page.getByRole('button', { name: 'Sign in with a passkey' }).click();
     await expect(page).toHaveURL(/\/dashboard$/);
 });

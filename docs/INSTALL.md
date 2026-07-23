@@ -21,7 +21,7 @@ também são espelhadas no GHCR.
 ```bash
 mkdir -p /opt/netkeep
 cd /opt/netkeep
-curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.3/compose.yaml
+curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.5/compose.yaml
 docker compose up -d --wait
 docker compose ps
 ```

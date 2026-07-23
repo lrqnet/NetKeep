@@ -13,8 +13,10 @@ use App\Models\UpdateReleaseState;
 use App\Services\AuditLogger;
 use App\Services\DangerousFeatureService;
 use App\Services\ReleaseVersion;
+use App\Services\UpdateOperationPresenter;
 use App\Services\UpdateOperationService;
 use App\Services\UpdaterHeartbeatService;
+use App\Support\UserInputLimits;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,18 +27,22 @@ use Inertia\Response;
 
 class UpdateController extends Controller
 {
-    public function index(DangerousFeatureService $dangerous, UpdaterHeartbeatService $updater): Response
-    {
+    public function index(
+        DangerousFeatureService $dangerous,
+        UpdaterHeartbeatService $updater,
+        UpdateOperationPresenter $presenter,
+    ): Response {
         $organization = Organization::query()->firstOrFail();
         $release = UpdateReleaseState::query()->firstOrCreate(['organization_id' => $organization->id]);
         $operation = UpdateOperation::query()
             ->where('organization_id', $organization->id)
+            ->whereNull('acknowledged_at')
             ->latest('requested_at')
             ->first();
 
         return Inertia::render('updates/index', [
             'release' => $this->releasePayload($release),
-            'operation' => $operation ? $this->operationPayload($operation) : null,
+            'operation' => $operation ? $presenter->payload($operation) : null,
             'updater' => $updater->status(),
             'settings' => [
                 'auto_update' => $dangerous->enabled(DangerousFeature::AutomaticUpdates)
@@ -116,6 +122,7 @@ class UpdateController extends Controller
     public function run(Request $request, UpdateOperationService $operations, AuditLogger $audit): RedirectResponse
     {
         $data = $request->validate([
+            'request_id' => ['required', 'uuid'],
             'to_version' => ['required', 'string', 'max:32'],
             'destination_id' => [
                 'nullable',
@@ -127,6 +134,17 @@ class UpdateController extends Controller
             'accepted' => ['required', 'accepted'],
             'confirmation' => ['nullable', 'string', 'max:64'],
         ]);
+        if ((int) $request->session()->get('auth.password_confirmed_at', 0) < now()->subMinutes(5)->timestamp) {
+            throw ValidationException::withMessages([
+                'reauthentication' => __('netkeep.updates.reauthentication_required'),
+            ]);
+        }
+        $expectedVersion = ReleaseVersion::normalize($data['to_version']);
+        if ($expectedVersion === null) {
+            throw ValidationException::withMessages([
+                'to_version' => __('netkeep.updates.release_changed'),
+            ]);
+        }
         $organization = Organization::query()->firstOrFail();
         $release = UpdateReleaseState::query()->where('organization_id', $organization->id)->firstOrFail();
         if ($release->compatibility === ReleaseCompatibility::MajorUpgrade
@@ -137,18 +155,32 @@ class UpdateController extends Controller
             UpdateTrigger::Manual,
             $request->user(),
             filled($data['destination_id'] ?? null) ? (int) $data['destination_id'] : null,
-            ReleaseVersion::normalize($data['to_version']),
+            $expectedVersion,
+            $data['request_id'],
         );
-        $audit->record('update.queued', $operation, [
-            'from' => $operation->from_version,
-            'to' => $operation->to_version,
-            'backup_destination_id' => $operation->backup_destination_id,
-        ], $request);
+        if ($operation->wasRecentlyCreated) {
+            $audit->record('update.queued', $operation, [
+                'from' => $operation->from_version,
+                'to' => $operation->to_version,
+                'backup_destination_id' => $operation->backup_destination_id,
+            ], $request);
+        }
 
-        return back()->with('success', __('netkeep.updates.queued'));
+        return to_route('updates.index')->with('success', __('netkeep.updates.queued'));
     }
 
-    public function operation(string $operation): JsonResponse
+    public function reauthenticate(Request $request, AuditLogger $audit): RedirectResponse
+    {
+        $request->validate([
+            'password' => ['required', 'string', 'max:'.UserInputLimits::PASSWORD, 'current_password:web'],
+        ]);
+        $request->session()->put('auth.password_confirmed_at', time());
+        $audit->record('update.reauthenticated', request: $request);
+
+        return back();
+    }
+
+    public function operation(string $operation, UpdateOperationPresenter $presenter): JsonResponse
     {
         $organization = Organization::query()->firstOrFail();
         $record = UpdateOperation::query()
@@ -156,7 +188,33 @@ class UpdateController extends Controller
             ->where('uuid', $operation)
             ->firstOrFail();
 
-        return response()->json($this->operationPayload($record));
+        return response()
+            ->json($presenter->payload($record))
+            ->header('Cache-Control', 'no-store, private')
+            ->header('Pragma', 'no-cache');
+    }
+
+    public function acknowledge(string $operation, Request $request, AuditLogger $audit): RedirectResponse
+    {
+        $organization = Organization::query()->firstOrFail();
+        $record = UpdateOperation::query()
+            ->where('organization_id', $organization->id)
+            ->where('uuid', $operation)
+            ->firstOrFail();
+        if ($record->status->active()) {
+            throw ValidationException::withMessages([
+                'operation' => __('netkeep.updates.operation_active'),
+            ]);
+        }
+        if ($record->acknowledged_at !== null) {
+            return back();
+        }
+        $record->update(['acknowledged_at' => now()]);
+        $audit->record('update.status_acknowledged', $record, [
+            'status' => $record->status->value,
+        ], $request);
+
+        return back();
     }
 
     /** @return array<string, mixed> */
@@ -181,23 +239,6 @@ class UpdateController extends Controller
             'last_attempt_at' => $release->last_attempt_at?->toIso8601String(),
             'last_success_at' => $release->last_success_at?->toIso8601String(),
             'last_error_code' => $release->last_error_code,
-        ];
-    }
-
-    /** @return array<string, mixed> */
-    private function operationPayload(UpdateOperation $operation): array
-    {
-        return [
-            'uuid' => $operation->uuid,
-            'trigger' => $operation->trigger->value,
-            'status' => $operation->status->value,
-            'from_version' => $operation->from_version,
-            'to_version' => $operation->to_version,
-            'compatibility' => $operation->compatibility->value,
-            'safe_error_code' => $operation->safe_error_code,
-            'requested_at' => $operation->requested_at->toIso8601String(),
-            'started_at' => $operation->started_at?->toIso8601String(),
-            'completed_at' => $operation->completed_at?->toIso8601String(),
         ];
     }
 }

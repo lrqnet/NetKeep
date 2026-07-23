@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import { gotoWithTlsRetry } from './support/navigation';
 
 const routes = [
     '/dashboard',
@@ -23,7 +24,7 @@ for (const route of routes) {
     test(`${route} renders without serious accessibility violations`, async ({
         page,
     }) => {
-        const response = await page.goto(route);
+        const response = await gotoWithTlsRetry(page, route);
 
         expect(response?.ok()).toBeTruthy();
         await expect(page.locator('main')).toBeVisible();
@@ -84,7 +85,7 @@ for (const route of [
     test(`${route} produces a review screenshot`, async ({
         page,
     }, testInfo) => {
-        await page.goto(route);
+        await gotoWithTlsRetry(page, route);
         await expect(page.locator('main')).toBeVisible();
         await testInfo.attach(
             `${testInfo.project.name}-${route.slice(1).replaceAll('/', '-')}`,

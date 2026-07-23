@@ -31,6 +31,7 @@ class PrepareUpdateOperation implements ShouldQueue
         $operation->update([
             'status' => UpdateOperationStatus::BackingUp,
             'started_at' => now(),
+            'last_progress_at' => now(),
         ]);
         $snapshots->create($operation);
         if ($operation->backup_destination_id) {
@@ -42,7 +43,10 @@ class PrepareUpdateOperation implements ShouldQueue
                 ->firstOrFail();
             $backups->create($destination);
         }
-        $operation->update(['status' => UpdateOperationStatus::Validating]);
+        $operation->update([
+            'status' => UpdateOperationStatus::Validating,
+            'last_progress_at' => now(),
+        ]);
         $exchange->prepare($operation->refresh());
     }
 
@@ -52,6 +56,7 @@ class PrepareUpdateOperation implements ShouldQueue
             'status' => UpdateOperationStatus::Failed->value,
             'safe_error_code' => 'update_prepare_failed',
             'completed_at' => now(),
+            'last_progress_at' => now(),
         ]);
     }
 }

@@ -53,6 +53,27 @@ wait_for_healthy() {
     return 1
 }
 
+wait_for_https() {
+    local attempts="${1:-30}"
+
+    for _ in $(seq 1 "$attempts"); do
+        if curl \
+            --fail \
+            --insecure \
+            --max-time 5 \
+            --silent \
+            --show-error \
+            "${NETKEEP_E2E_BASE_URL}/up" >/dev/null; then
+            return 0
+        fi
+        sleep 2
+    done
+
+    "${compose[@]}" ps app
+    "${compose[@]}" logs --no-color --tail 150 app
+    return 1
+}
+
 "${compose[@]}" down --volumes --remove-orphans
 if [[ "${NETKEEP_E2E_BUILD:-true}" == 'false' ]]; then
     "${compose[@]}" up --detach --no-build --wait
@@ -67,10 +88,15 @@ fi
 export NETKEEP_INSTALLATION_TOKEN
 NETKEEP_INSTALLATION_TOKEN="$("${compose[@]}" exec --no-TTY app php artisan netkeep:installation-token)"
 
+npx playwright test --project=setup
+"${compose[@]}" restart app
+wait_for_healthy app
+wait_for_https
+
 if [[ "$mode" == "all" ]]; then
-    npm run test:e2e:all
+    npm run test:e2e:all -- --no-deps
 else
-    npm run test:e2e:chromium
+    npm run test:e2e:chromium -- --no-deps
 fi
 
 diagnostic_status="$(

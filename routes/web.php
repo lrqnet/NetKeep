@@ -207,13 +207,20 @@ Route::middleware('auth')->group(function (): void {
         Route::put('/updates/settings', [UpdateController::class, 'settings'])
             ->middleware(['role:owner', 'password.confirm'])
             ->name('updates.settings');
+        Route::post('/updates/reauthenticate', [UpdateController::class, 'reauthenticate'])
+            ->middleware(['role:owner', 'throttle:update-reauthentication'])
+            ->name('updates.reauthenticate');
         Route::post('/updates/run', [UpdateController::class, 'run'])
-            ->middleware(['role:owner', 'password.confirm', 'throttle:3,10'])
+            ->middleware(['role:owner', 'throttle:update-run'])
             ->name('updates.run');
         Route::get('/updates/operations/{operation}', [UpdateController::class, 'operation'])
-            ->middleware(['role:owner', 'throttle:120,1'])
+            ->middleware(['role:owner', 'throttle:update-operation-status'])
             ->whereUuid('operation')
             ->name('updates.operations.show');
+        Route::post('/updates/operations/{operation}/acknowledge', [UpdateController::class, 'acknowledge'])
+            ->middleware(['role:owner', 'throttle:update-operation-status'])
+            ->whereUuid('operation')
+            ->name('updates.operations.acknowledge');
 
         Route::get('/system', [SystemSettingsController::class, 'index'])
             ->middleware('role:owner,administrator')

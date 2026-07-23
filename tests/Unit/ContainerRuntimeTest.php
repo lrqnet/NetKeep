@@ -31,7 +31,8 @@ class ContainerRuntimeTest extends TestCase
         $this->assertStringContainsString('trap stop_scheduler INT TERM', $script);
         $this->assertStringContainsString('kill -TERM "$child_pid"', $script);
         $this->assertStringContainsString('run_child php artisan schedule:run --no-interaction', $script);
-        $this->assertStringContainsString('run_child sleep 60', $script);
+        $this->assertStringContainsString('run_child sleep 10', $script);
+        $this->assertStringContainsString('run_child sleep 1', $script);
     }
 
     public function test_restore_e2e_restarts_services_in_dependency_order(): void
@@ -164,16 +165,28 @@ class ContainerRuntimeTest extends TestCase
     {
         $root = dirname(__DIR__, 2);
         $compose = file_get_contents($root.'/compose.yaml');
+        $preflight = file_get_contents($root.'/scripts/release-preflight.sh');
         $workflow = file_get_contents($root.'/.github/workflows/release.yml');
 
         $this->assertIsString($compose);
+        $this->assertIsString($preflight);
         $this->assertIsString($workflow);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep:1.0.3', $compose);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep-updater:1.0.3', $compose);
-        $this->assertSame(2, substr_count($compose, 'docker.io/lrqnet/netkeep-oxidized:0.37.0-r2'));
-        $this->assertStringContainsString('tags: type=raw,value=0.37.0-r2', $workflow);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep:1.0.5', $compose);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep-updater:1.0.5', $compose);
+        $this->assertSame(2, substr_count($compose, 'docker.io/lrqnet/netkeep-oxidized:0.37.0-r3'));
+        $this->assertStringContainsString('tags: type=raw,value=0.37.0-r3', $workflow);
+        $this->assertSame(3, substr_count($workflow, 'needs: preflight'));
+        $this->assertStringContainsString('sh scripts/release-preflight.sh', $workflow);
+        $this->assertStringContainsString('Reject previously published immutable tags', $workflow);
+        $this->assertStringContainsString('gh release view "${GITHUB_REF_NAME}"', $workflow);
+        $this->assertStringContainsString('test "${RELEASE_SHA}" = "${MAIN_SHA}"', $preflight);
+        $this->assertStringContainsString('test "${TAG_TYPE}" = \'tag\'', $preflight);
         $this->assertStringContainsString(
-            's#docker.io/lrqnet/netkeep-oxidized:0.37.0-r2#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g',
+            "grep -Eq '^v[0-9]+\\.[0-9]+\\.[0-9]+$'",
+            $preflight,
+        );
+        $this->assertStringContainsString(
+            's#docker.io/lrqnet/netkeep-oxidized:0.37.0-r3#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g',
             $workflow,
         );
     }

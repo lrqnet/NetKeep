@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { gotoWithTlsRetry } from './support/navigation';
 
 test('runs an isolated diagnostic and exposes only the protected trace', async ({
     page,
@@ -6,7 +7,7 @@ test('runs an isolated diagnostic and exposes only the protected trace', async (
     test.skip(testInfo.project.name !== 'chromium');
     test.setTimeout(120_000);
 
-    await page.goto('/devices');
+    await gotoWithTlsRetry(page, '/devices');
     const deviceRow = page.getByRole('row').filter({ hasText: 'E2E Router' });
     const editHref = await deviceRow
         .locator('a[href$="/edit"]')
@@ -16,7 +17,7 @@ test('runs an isolated diagnostic and exposes only the protected trace', async (
     const deviceId = editHref?.match(/^\/devices\/(\d+)\/edit$/)?.[1];
 
     expect(deviceId).toBeTruthy();
-    await page.goto(editHref as string);
+    await gotoWithTlsRetry(page, editHref as string);
     await page.getByRole('tab', { name: 'Collections' }).click();
     await expect(page.getByText('Collection history')).toBeVisible();
     await page.getByLabel('Type DIAGNOSTIC to confirm').fill('DIAGNOSTIC');
@@ -73,7 +74,7 @@ test('runs an isolated diagnostic and exposes only the protected trace', async (
     expect(trace.headers()['cache-control']).toContain('no-store');
     await expect(page.locator('pre')).toContainText('NETKEEP-E2E');
 
-    await page.goto('/devices');
+    await gotoWithTlsRetry(page, '/devices');
     const collectionRow = page
         .getByRole('row')
         .filter({ hasText: 'E2E Router' });

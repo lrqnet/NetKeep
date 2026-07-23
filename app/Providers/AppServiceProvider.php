@@ -100,5 +100,20 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinutes(10, 3)->by(hash('sha256', 'device-diagnostics|'.$identifier));
         });
+        RateLimiter::for('update-reauthentication', function (Request $request): Limit {
+            $identifier = (string) $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinutes(10, 6)->by(hash('sha256', 'update-reauthentication|'.$identifier));
+        });
+        RateLimiter::for('update-run', function (Request $request): Limit {
+            $identifier = (string) $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinutes(10, 3)->by(hash('sha256', 'update-run|'.$identifier));
+        });
+        RateLimiter::for('update-operation-status', function (Request $request): Limit {
+            $identifier = (string) $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute(120)->by(hash('sha256', 'update-operation-status|'.$identifier));
+        });
     }
 }

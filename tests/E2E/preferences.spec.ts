@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
+import { gotoWithTlsRetry } from './support/navigation';
 
 async function openUserMenu(page: Page) {
     const menu = page.locator('[data-test="sidebar-menu-button"]');
@@ -20,8 +21,7 @@ async function changeLanguage(
     await page.getByRole('menuitem', { name: currentLanguage }).click();
     const response = page.waitForResponse(
         (item) =>
-            item.url().endsWith('/locale') &&
-            item.request().method() === 'PUT',
+            item.url().endsWith('/locale') && item.request().method() === 'PUT',
     );
     await page.getByRole('menuitem', { name: nextLanguage }).click();
     expect([302, 303]).toContain((await response).status());
@@ -30,7 +30,7 @@ async function changeLanguage(
 test('persists English, Portuguese and Spanish preferences', async ({
     page,
 }) => {
-    await page.goto('/dashboard');
+    await gotoWithTlsRetry(page, '/dashboard');
 
     await changeLanguage(page, 'English', 'Português');
     await expect(page.locator('html')).toHaveAttribute('lang', 'pt-BR');
@@ -47,7 +47,7 @@ test('persists English, Portuguese and Spanish preferences', async ({
 });
 
 test('persists light and dark themes', async ({ page }) => {
-    await page.goto('/settings/appearance');
+    await gotoWithTlsRetry(page, '/settings/appearance');
 
     await page.locator('[data-appearance="dark"]').click();
     await expect(page.locator('html')).toHaveClass(/dark/);

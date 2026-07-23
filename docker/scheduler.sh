@@ -25,8 +25,10 @@ run_child() {
 trap stop_scheduler INT TERM
 
 while true; do
-    if [ ! -f "$MARKER" ]; then
-        run_child php artisan schedule:run --no-interaction
+    if [ -f "$MARKER" ]; then
+        run_child sleep 10
+        continue
     fi
-    run_child sleep 60
+    run_child php artisan schedule:run --no-interaction
+    run_child sleep 1
 done

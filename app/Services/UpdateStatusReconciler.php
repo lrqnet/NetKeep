@@ -48,6 +48,7 @@ class UpdateStatusReconciler
                 'status' => $status,
                 'safe_error_code' => $errorCode,
                 'completed_at' => $status->active() ? null : now(),
+                'last_progress_at' => now(),
             ]);
             File::delete($path);
             $count++;

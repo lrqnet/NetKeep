@@ -64,6 +64,12 @@ repetição E2E, pressão de I/O no runtime encerrou o pipe de saída do
 a descartar sua saída, recebeu regressão dedicada e a repetição completa passou
 com 25 cenários, integrações, backup e restauração saudáveis.
 
+A execução no GitHub também revelou uma janela transitória do handshake TLS
+após o reinício deliberado do app. O harness agora confirma o endpoint HTTPS e
+repete somente `ERR_SSL_PROTOCOL_ERROR` com espera progressiva. Qualquer outro
+erro continua encerrando o teste imediatamente. A execução local limpa passou
+com o setup, os 25 cenários Chromium, integrações, backup e restauração.
+
 ## Achados residuais de upstream
 
 O scan de imagens informa achados altos, sem críticos, em componentes oficiais

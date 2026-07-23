@@ -140,6 +140,9 @@ return [
         'not_installable' => 'Esta release não pode ser instalada a partir da versão atual.',
         'release_changed' => 'A release disponível mudou. Revise-a antes de continuar.',
         'confirm_version' => 'Digite a versão de destino exata para confirmar esta atualização principal.',
+        'reauthentication_required' => 'Confirme sua senha novamente antes de iniciar a atualização.',
+        'request_conflict' => 'Este identificador de solicitação já está associado a outra operação.',
+        'operation_active' => 'Uma atualização ativa não pode ser dispensada.',
     ],
     'catalog' => [
         'invalid_type' => 'Tipo de catálogo inválido.',

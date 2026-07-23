@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property int $id
  * @property string $uuid
+ * @property string|null $request_id
+ * @property int|null $requested_by
  * @property int|null $backup_destination_id
  * @property UpdateOperationStatus $status
  * @property UpdateTrigger $trigger
@@ -23,6 +25,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property CarbonImmutable $requested_at
  * @property CarbonImmutable|null $started_at
  * @property CarbonImmutable|null $completed_at
+ * @property CarbonImmutable|null $last_progress_at
+ * @property CarbonImmutable|null $acknowledged_at
+ * @property CarbonImmutable|null $updated_at
  */
 class UpdateOperation extends Model
 {
@@ -38,6 +43,8 @@ class UpdateOperation extends Model
             'requested_at' => 'immutable_datetime',
             'started_at' => 'immutable_datetime',
             'completed_at' => 'immutable_datetime',
+            'last_progress_at' => 'immutable_datetime',
+            'acknowledged_at' => 'immutable_datetime',
         ];
     }
 

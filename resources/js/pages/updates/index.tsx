@@ -1,7 +1,8 @@
-import { Form, Head, Link, router } from '@inertiajs/react';
+import { Form, Head, Link, router, useForm } from '@inertiajs/react';
 import {
     AlertTriangle,
     Check,
+    CheckCircle2,
     Circle,
     Clock3,
     ExternalLink,
@@ -10,6 +11,7 @@ import {
     ShieldCheck,
 } from 'lucide-react';
 import { useEffect, useId, useMemo, useState } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
 import InputError from '@/components/input-error';
 import { PageHeader } from '@/components/page-header';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -27,8 +29,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { useUpdateOperationElapsed } from '@/hooks/use-update-operation-elapsed';
 import { useI18n } from '@/i18n';
 import { cn } from '@/lib/utils';
+import PasswordInput from '@/components/password-input';
+import { activeUpdateStatuses } from '@/types/updates';
+import type { UpdateOperation, UpdateOperationStatus } from '@/types/updates';
 
 type Destination = { id: number; name: string; type: string };
 
@@ -50,30 +56,6 @@ type Release = {
     last_error_code: string | null;
 };
 
-type OperationStatus =
-    | 'queued'
-    | 'backing_up'
-    | 'validating'
-    | 'downloading'
-    | 'applying'
-    | 'restarting'
-    | 'succeeded'
-    | 'failed'
-    | 'recovery_required';
-
-type Operation = {
-    uuid: string;
-    trigger: 'manual' | 'automatic';
-    status: OperationStatus;
-    from_version: string;
-    to_version: string;
-    compatibility: 'same_major' | 'major_upgrade' | 'unsupported';
-    safe_error_code: string | null;
-    requested_at: string;
-    started_at: string | null;
-    completed_at: string | null;
-};
-
 type Settings = {
     auto_update: boolean;
     automatic_updates_accepted: boolean;
@@ -84,16 +66,7 @@ type Settings = {
     timezone: string;
 };
 
-const activeStatuses: OperationStatus[] = [
-    'queued',
-    'backing_up',
-    'validating',
-    'downloading',
-    'applying',
-    'restarting',
-];
-
-const operationProgress: Record<OperationStatus, number> = {
+const operationProgress: Record<UpdateOperationStatus, number> = {
     queued: 0,
     backing_up: 0,
     validating: 1,
@@ -113,24 +86,21 @@ export default function UpdatesIndex({
     destinations,
 }: {
     release: Release;
-    operation: Operation | null;
+    operation: UpdateOperation | null;
     updater: { online: boolean; checked_at: string | null };
     settings: Settings;
     destinations: Destination[];
 }) {
     const { t, formatDateTime } = useI18n();
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [polledOperation, setPolledOperation] = useState<Operation | null>(
-        null,
-    );
+    const [polledOperation, setPolledOperation] =
+        useState<UpdateOperation | null>(null);
     const [reconnecting, setReconnecting] = useState(false);
     const currentOperation =
-        polledOperation?.uuid === operation?.uuid
-            ? polledOperation
-            : (operation ?? polledOperation);
+        polledOperation?.uuid === operation?.uuid ? polledOperation : operation;
     const active =
         currentOperation !== null &&
-        activeStatuses.includes(currentOperation.status);
+        activeUpdateStatuses.includes(currentOperation.status);
     const operationUuid = currentOperation?.uuid;
 
     useEffect(() => {
@@ -167,7 +137,7 @@ export default function UpdatesIndex({
                     throw new Error('operation_unavailable');
                 }
 
-                const next = (await response.json()) as Operation;
+                const next = (await response.json()) as UpdateOperation;
 
                 if (cancelled) {
                     return;
@@ -175,12 +145,6 @@ export default function UpdatesIndex({
 
                 setReconnecting(false);
                 setPolledOperation(next);
-
-                if (next.status === 'succeeded') {
-                    window.setTimeout(() => {
-                        window.location.assign('/dashboard');
-                    }, 1500);
-                }
             } catch {
                 if (!cancelled) {
                     setReconnecting(true);
@@ -235,9 +199,7 @@ export default function UpdatesIndex({
                 />
 
                 {currentOperation &&
-                    (active ||
-                        currentOperation.status === 'recovery_required' ||
-                        currentOperation.status === 'failed') && (
+                    currentOperation.acknowledged_at === null && (
                         <OperationProgress
                             operation={currentOperation}
                             reconnecting={reconnecting}
@@ -466,10 +428,11 @@ function OperationProgress({
     operation,
     reconnecting,
 }: {
-    operation: Operation;
+    operation: UpdateOperation;
     reconnecting: boolean;
 }) {
-    const { t } = useI18n();
+    const { t, formatDateTime } = useI18n();
+    const elapsed = useUpdateOperationElapsed(operation);
     const steps = [
         'backup',
         'validation',
@@ -480,12 +443,17 @@ function OperationProgress({
     ] as const;
     const progress = operationProgress[operation.status];
     const failed = ['failed', 'recovery_required'].includes(operation.status);
+    const terminal = failed || operation.status === 'succeeded';
 
     return (
         <Card
             className={cn(
-                operation.status === 'recovery_required' && 'border-red-500/60',
+                (operation.status === 'recovery_required' ||
+                    operation.stalled) &&
+                    'border-red-500/60',
             )}
+            role="status"
+            aria-live="polite"
         >
             <CardHeader>
                 <CardTitle className="flex flex-wrap items-center justify-between gap-2">
@@ -501,7 +469,9 @@ function OperationProgress({
                                 ? 'reconnecting'
                                 : operation.status === 'recovery_required'
                                   ? 'recovery_required'
-                                  : activeStatuses.includes(operation.status)
+                                  : activeUpdateStatuses.includes(
+                                          operation.status,
+                                      )
                                     ? 'updating'
                                     : operation.status
                         }
@@ -509,6 +479,47 @@ function OperationProgress({
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+                <div className="grid gap-3 rounded-lg border p-4 text-sm sm:grid-cols-3">
+                    <div>
+                        <p className="text-xs text-muted-foreground">
+                            {t('updates.elapsed_label')}
+                        </p>
+                        <p className="mt-1 font-medium">{elapsed}</p>
+                    </div>
+                    <div>
+                        <p className="text-xs text-muted-foreground">
+                            {t('updates.last_progress')}
+                        </p>
+                        <p className="mt-1 font-medium">
+                            {formatDateTime(operation.last_progress_at)}
+                        </p>
+                    </div>
+                    <div>
+                        <p className="text-xs text-muted-foreground">
+                            {t('updates.expected_duration')}
+                        </p>
+                        <p className="mt-1 font-medium">
+                            {terminal
+                                ? t('updates.operation_finished')
+                                : t(
+                                      `updates.expect_${operation.status}` as Parameters<
+                                          typeof t
+                                      >[0],
+                                  )}
+                        </p>
+                    </div>
+                </div>
+                {operation.status === 'queued' && (
+                    <Alert className="border-primary/30 bg-primary/5">
+                        <CheckCircle2 />
+                        <AlertTitle>
+                            {t('updates.request_received_title')}
+                        </AlertTitle>
+                        <AlertDescription>
+                            {t('updates.request_received_description')}
+                        </AlertDescription>
+                    </Alert>
+                )}
                 <ol className="grid gap-3 md:grid-cols-6">
                     {steps.map((step, index) => {
                         const complete =
@@ -538,12 +549,45 @@ function OperationProgress({
                         );
                     })}
                 </ol>
+                {reconnecting && (
+                    <Alert>
+                        <RefreshCw />
+                        <AlertTitle>
+                            {t('updates.reconnecting_title')}
+                        </AlertTitle>
+                        <AlertDescription>
+                            {t('updates.reconnecting_description')}
+                        </AlertDescription>
+                    </Alert>
+                )}
+                {operation.stalled && (
+                    <Alert variant="destructive">
+                        <AlertTriangle />
+                        <AlertTitle>{t('updates.stalled_title')}</AlertTitle>
+                        <AlertDescription>
+                            {t('updates.stalled_description')}
+                        </AlertDescription>
+                    </Alert>
+                )}
                 {operation.status === 'failed' && (
                     <Alert variant="destructive">
                         <AlertTriangle />
                         <AlertTitle>{t('updates.failed_title')}</AlertTitle>
                         <AlertDescription>
-                            {t('updates.failed_description')}
+                            <p>{t('updates.failed_description')}</p>
+                            <p className="mt-2 font-medium">
+                                {updateErrorMessage(
+                                    operation.safe_error_code,
+                                    t,
+                                )}
+                            </p>
+                            {operation.safe_error_code && (
+                                <p className="mt-1 font-mono text-xs">
+                                    {t('updates.error_reference', {
+                                        code: operation.safe_error_code,
+                                    })}
+                                </p>
+                            )}
                         </AlertDescription>
                     </Alert>
                 )}
@@ -558,9 +602,79 @@ function OperationProgress({
                         </AlertDescription>
                     </Alert>
                 )}
+                {operation.status === 'succeeded' && (
+                    <Alert className="border-emerald-500/40 bg-emerald-500/10">
+                        <CheckCircle2 />
+                        <AlertTitle>{t('updates.succeeded_title')}</AlertTitle>
+                        <AlertDescription>
+                            {t('updates.succeeded_description', {
+                                version: operation.to_version,
+                            })}
+                        </AlertDescription>
+                    </Alert>
+                )}
+                {terminal && (
+                    <div className="flex justify-end">
+                        <Form
+                            action={`/updates/operations/${operation.uuid}/acknowledge`}
+                            method="post"
+                            options={{ preserveScroll: true }}
+                        >
+                            {({ processing }) => (
+                                <Button
+                                    type="submit"
+                                    variant="outline"
+                                    disabled={processing}
+                                >
+                                    {processing && <Spinner />}
+                                    {t('updates.acknowledge')}
+                                </Button>
+                            )}
+                        </Form>
+                    </div>
+                )}
             </CardContent>
         </Card>
     );
+}
+
+function updateErrorMessage(
+    code: string | null,
+    t: ReturnType<typeof useI18n>['t'],
+): string {
+    const categories: Record<string, string> = {
+        update_prepare_failed: 'preparation',
+        update_file_invalid: 'request',
+        update_request_invalid: 'request',
+        update_trigger_invalid: 'request',
+        update_downgrade_rejected: 'source',
+        update_source_mismatch: 'source',
+        update_source_unknown: 'source',
+        update_source_unsupported: 'source',
+        update_automatic_rejected: 'source',
+        update_manifest_invalid: 'manifest',
+        update_manifest_version_invalid: 'manifest',
+        update_compose_digest_invalid: 'manifest',
+        update_signature_invalid: 'signature',
+        update_compose_invalid: 'compose',
+        update_compose_backup_failed: 'compose',
+        update_compose_publish_failed: 'compose',
+        update_updater_isolation_invalid: 'isolation',
+        update_socket_exposure_invalid: 'isolation',
+        update_image_untrusted: 'image',
+        update_images_mismatch: 'image',
+        update_image_pull_failed: 'download',
+        update_health_timeout: 'health',
+        update_container_state_invalid: 'health',
+        update_ports_unknown: 'health',
+        update_bind_mismatch: 'health',
+        update_rolled_back: 'rolled_back',
+        update_rollback_failed: 'rollback',
+        update_recovery_required: 'recovery',
+    };
+    const key = code ? (categories[code] ?? 'generic') : 'generic';
+
+    return t(`updates.error_${key}` as Parameters<typeof t>[0]);
 }
 
 function AutomaticPolicy({
@@ -714,6 +828,20 @@ function UpdateDialog({
     destinations: Destination[];
 }) {
     const { t } = useI18n();
+    const operationForm = useForm({
+        request_id: '',
+        to_version: release.candidate ?? '',
+        destination_id:
+            settings.destination_id === null
+                ? ''
+                : String(settings.destination_id),
+        accepted: false,
+        confirmation: '',
+    });
+    const reauthenticationForm = useForm({ password: '' });
+    const [phase, setPhase] = useState<
+        'idle' | 'reauthenticating' | 'submitting'
+    >('idle');
 
     if (!release.candidate) {
         return null;
@@ -721,9 +849,55 @@ function UpdateDialog({
 
     const candidate = release.candidate;
     const major = release.compatibility === 'major_upgrade';
+    const processing =
+        phase !== 'idle' ||
+        operationForm.processing ||
+        reauthenticationForm.processing;
+    const operationErrors = operationForm.errors as Record<
+        string,
+        string | undefined
+    >;
+    const submit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const requestId =
+            operationForm.data.request_id || window.crypto.randomUUID();
+        operationForm.setData('request_id', requestId);
+        operationForm.clearErrors();
+        reauthenticationForm.clearErrors();
+        setPhase('reauthenticating');
+        reauthenticationForm.post('/updates/reauthenticate', {
+            preserveScroll: true,
+            onSuccess: () => {
+                reauthenticationForm.reset('password');
+                setPhase('submitting');
+                operationForm.transform((data) => ({
+                    ...data,
+                    request_id: requestId,
+                    to_version: candidate,
+                }));
+                operationForm.post('/updates/run', {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        operationForm.reset();
+                        reauthenticationForm.reset();
+                        onOpenChange(false);
+                    },
+                    onFinish: () => setPhase('idle'),
+                });
+            },
+            onError: () => setPhase('idle'),
+        });
+    };
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog
+            open={open}
+            onOpenChange={(next) => {
+                if (!processing) {
+                    onOpenChange(next);
+                }
+            }}
+        >
             <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
                 <DialogHeader>
                     <DialogTitle>{t('updates.confirm_title')}</DialogTitle>
@@ -731,108 +905,146 @@ function UpdateDialog({
                         {t('updates.confirm_description')}
                     </DialogDescription>
                 </DialogHeader>
-                <Form action="/updates/run" method="post" className="space-y-5">
-                    {({ processing, errors }) => (
-                        <>
-                            <input
-                                type="hidden"
-                                name="to_version"
-                                value={candidate}
+                <form className="space-y-5" onSubmit={submit}>
+                    <div className="grid grid-cols-2 gap-4 rounded-lg border p-4">
+                        <VersionValue
+                            label={t('updates.current_version')}
+                            value={`v${release.current.replace(/^v/, '')}`}
+                        />
+                        <VersionValue
+                            label={t('updates.target_version')}
+                            value={`v${candidate.replace(/^v/, '')}`}
+                        />
+                    </div>
+                    <dl className="grid gap-3 text-sm sm:grid-cols-2">
+                        <div>
+                            <dt className="text-muted-foreground">
+                                {t('updates.compatibility')}
+                            </dt>
+                            <dd className="font-medium">
+                                {major
+                                    ? t('updates.major_release')
+                                    : t('updates.compatible_release')}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt className="text-muted-foreground">
+                                {t('updates.estimated_downtime')}
+                            </dt>
+                            <dd className="font-medium">
+                                {t('updates.minutes', {
+                                    count: Math.ceil(
+                                        release.estimated_downtime_seconds / 60,
+                                    ),
+                                })}
+                            </dd>
+                        </div>
+                    </dl>
+                    <Alert>
+                        <ShieldCheck />
+                        <AlertTitle>{t('updates.snapshot_title')}</AlertTitle>
+                        <AlertDescription>
+                            {t('updates.snapshot_description')}
+                        </AlertDescription>
+                    </Alert>
+                    <DestinationSelect
+                        destinations={destinations}
+                        defaultValue={settings.destination_id}
+                        value={operationForm.data.destination_id}
+                        onChange={(value) =>
+                            operationForm.setData('destination_id', value)
+                        }
+                        optional
+                        error={operationForm.errors.destination_id}
+                    />
+                    {major && (
+                        <div className="space-y-1.5">
+                            <Label htmlFor="update-confirmation">
+                                {t('updates.type_version', {
+                                    version: candidate,
+                                })}
+                            </Label>
+                            <Input
+                                id="update-confirmation"
+                                name="confirmation"
+                                maxLength={64}
+                                autoComplete="off"
+                                value={operationForm.data.confirmation}
+                                onChange={(event) =>
+                                    operationForm.setData(
+                                        'confirmation',
+                                        event.target.value,
+                                    )
+                                }
                             />
-                            <div className="grid grid-cols-2 gap-4 rounded-lg border p-4">
-                                <VersionValue
-                                    label={t('updates.current_version')}
-                                    value={`v${release.current.replace(/^v/, '')}`}
-                                />
-                                <VersionValue
-                                    label={t('updates.target_version')}
-                                    value={`v${candidate.replace(/^v/, '')}`}
-                                />
-                            </div>
-                            <dl className="grid gap-3 text-sm sm:grid-cols-2">
-                                <div>
-                                    <dt className="text-muted-foreground">
-                                        {t('updates.compatibility')}
-                                    </dt>
-                                    <dd className="font-medium">
-                                        {major
-                                            ? t('updates.major_release')
-                                            : t('updates.compatible_release')}
-                                    </dd>
-                                </div>
-                                <div>
-                                    <dt className="text-muted-foreground">
-                                        {t('updates.estimated_downtime')}
-                                    </dt>
-                                    <dd className="font-medium">
-                                        {t('updates.minutes', {
-                                            count: Math.ceil(
-                                                release.estimated_downtime_seconds /
-                                                    60,
-                                            ),
-                                        })}
-                                    </dd>
-                                </div>
-                            </dl>
-                            <Alert>
-                                <ShieldCheck />
-                                <AlertTitle>
-                                    {t('updates.snapshot_title')}
-                                </AlertTitle>
-                                <AlertDescription>
-                                    {t('updates.snapshot_description')}
-                                </AlertDescription>
-                            </Alert>
-                            <DestinationSelect
-                                destinations={destinations}
-                                defaultValue={settings.destination_id}
-                                optional
-                                error={errors.destination_id}
+                            <InputError
+                                message={operationForm.errors.confirmation}
                             />
-                            {major && (
-                                <div className="space-y-1.5">
-                                    <Label htmlFor="update-confirmation">
-                                        {t('updates.type_version', {
-                                            version: candidate,
-                                        })}
-                                    </Label>
-                                    <Input
-                                        id="update-confirmation"
-                                        name="confirmation"
-                                        maxLength={64}
-                                        autoComplete="off"
-                                    />
-                                    <InputError message={errors.confirmation} />
-                                </div>
-                            )}
-                            <label className="flex items-start gap-3 rounded-lg border p-4 text-sm">
-                                <input
-                                    className="mt-1"
-                                    type="checkbox"
-                                    name="accepted"
-                                    value="1"
-                                    required
-                                />
-                                <span>{t('updates.accept_update_risk')}</span>
-                            </label>
-                            <InputError message={errors.accepted} />
-                            <InputError message={errors.update} />
-                            <DialogFooter>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => onOpenChange(false)}
-                                >
-                                    {t('common.cancel')}
-                                </Button>
-                                <Button type="submit" disabled={processing}>
-                                    {processing ? <Spinner /> : <ShieldCheck />}
-                                    {t('updates.start_update')}
-                                </Button>
-                            </DialogFooter>
-                        </>
+                        </div>
                     )}
-                </Form>
+                    <label className="flex items-start gap-3 rounded-lg border p-4 text-sm">
+                        <input
+                            className="mt-1"
+                            type="checkbox"
+                            checked={operationForm.data.accepted}
+                            onChange={(event) =>
+                                operationForm.setData(
+                                    'accepted',
+                                    event.target.checked,
+                                )
+                            }
+                            required
+                        />
+                        <span>{t('updates.accept_update_risk')}</span>
+                    </label>
+                    <InputError message={operationForm.errors.accepted} />
+                    <div className="space-y-1.5 rounded-lg border border-primary/30 bg-primary/5 p-4">
+                        <Label htmlFor="update-password">
+                            {t('updates.confirm_password_label')}
+                        </Label>
+                        <PasswordInput
+                            id="update-password"
+                            name="password"
+                            value={reauthenticationForm.data.password}
+                            onChange={(event) =>
+                                reauthenticationForm.setData(
+                                    'password',
+                                    event.target.value,
+                                )
+                            }
+                            maxLength={128}
+                            autoComplete="current-password"
+                            required
+                        />
+                        <p className="text-xs text-foreground/80">
+                            {t('updates.confirm_password_hint')}
+                        </p>
+                        <InputError
+                            message={reauthenticationForm.errors.password}
+                        />
+                    </div>
+                    <InputError message={operationForm.errors.request_id} />
+                    <InputError message={operationErrors.reauthentication} />
+                    <InputError message={operationErrors.update} />
+                    <DialogFooter>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => onOpenChange(false)}
+                            disabled={processing}
+                        >
+                            {t('common.cancel')}
+                        </Button>
+                        <Button type="submit" disabled={processing}>
+                            {processing ? <Spinner /> : <ShieldCheck />}
+                            {phase === 'reauthenticating'
+                                ? t('updates.confirming_identity')
+                                : phase === 'submitting'
+                                  ? t('updates.submitting_operation')
+                                  : t('updates.start_update')}
+                        </Button>
+                    </DialogFooter>
+                </form>
             </DialogContent>
         </Dialog>
     );
@@ -841,11 +1053,15 @@ function UpdateDialog({
 function DestinationSelect({
     destinations,
     defaultValue,
+    value,
+    onChange,
     optional,
     error,
 }: {
     destinations: Destination[];
     defaultValue: number | null;
+    value?: string;
+    onChange?: (value: string) => void;
     optional?: boolean;
     error?: string;
 }) {
@@ -858,7 +1074,13 @@ function DestinationSelect({
             <select
                 id={id}
                 name="destination_id"
-                defaultValue={defaultValue ?? ''}
+                {...(value === undefined
+                    ? { defaultValue: defaultValue ?? '' }
+                    : {
+                          value,
+                          onChange: (event: ChangeEvent<HTMLSelectElement>) =>
+                              onChange?.(event.target.value),
+                      })}
                 required={!optional}
                 className="h-9 w-full rounded-md border bg-background px-3 text-sm"
             >

@@ -171,14 +171,22 @@ class ContainerRuntimeTest extends TestCase
         $this->assertIsString($compose);
         $this->assertIsString($preflight);
         $this->assertIsString($workflow);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep:1.0.5', $compose);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep-updater:1.0.5', $compose);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep:1.0.6', $compose);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep-updater:1.0.6', $compose);
         $this->assertSame(2, substr_count($compose, 'docker.io/lrqnet/netkeep-oxidized:0.37.0-r3'));
         $this->assertStringContainsString('tags: type=raw,value=0.37.0-r3', $workflow);
         $this->assertSame(3, substr_count($workflow, 'needs: preflight'));
         $this->assertStringContainsString('sh scripts/release-preflight.sh', $workflow);
         $this->assertStringContainsString('Reject previously published immutable tags', $workflow);
         $this->assertStringContainsString('gh release view "${GITHUB_REF_NAME}"', $workflow);
+        $this->assertStringContainsString(
+            'refs/tags/${GITHUB_REF_NAME}^{}',
+            $workflow,
+        );
+        $this->assertStringNotContainsString(
+            'git cat-file -t "${GITHUB_REF}"',
+            $workflow,
+        );
         $this->assertStringContainsString('test "${RELEASE_SHA}" = "${MAIN_SHA}"', $preflight);
         $this->assertStringContainsString('test "${TAG_TYPE}" = \'tag\'', $preflight);
         $this->assertStringContainsString(

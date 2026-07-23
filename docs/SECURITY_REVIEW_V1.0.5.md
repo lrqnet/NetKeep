@@ -54,6 +54,8 @@ releases públicas nunca são movidas ou sobrescritas.
 - Playwright Chromium: 26 cenários, incluindo reautenticação única,
   idempotência, navegação, reload, reinício real do app, persistência do
   resultado, reconhecimento explícito, acessibilidade, temas e três idiomas;
+  o harness reinicia o app com a configuração TLS final e valida HTTPS entre
+  a instalação e os cenários autenticados;
 - integrações simuladas e backup/restauração: quatro testes e 18 asserções; R2
   real ignorado sem credenciais dedicadas;
 - testes e formatação Go do updater, reporter, controller do sandbox e

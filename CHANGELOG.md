@@ -47,6 +47,8 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 - falhas conhecidas agora exibem categorias seguras, referência estável e
   orientação de recuperação sem revelar detalhes internos;
 - contraste do texto auxiliar da reautenticação atende ao mínimo WCAG 2 AA;
+- jornada E2E reinicia o app após a ativação inicial do TLS e confirma o
+  endpoint HTTPS antes de iniciar os cenários autenticados;
 - jobs que publicam imagens agora dependem do preflight, evitando nova
   publicação quando tag, commit, Compose, documentação ou registries divergem.
 

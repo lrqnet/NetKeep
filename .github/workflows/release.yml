@@ -30,12 +30,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           REMOTE_MAIN="$(git ls-remote origin refs/heads/main | cut -f1)"
-          TAG_TYPE="$(git cat-file -t "${GITHUB_REF}")"
+          REMOTE_TAG="$(git ls-remote --tags origin "refs/tags/${GITHUB_REF_NAME}" | cut -f1)"
+          REMOTE_TAG_COMMIT="$(git ls-remote --tags origin "refs/tags/${GITHUB_REF_NAME}^{}" | cut -f1)"
+          test -n "${REMOTE_TAG}"
+          test -n "${REMOTE_TAG_COMMIT}"
+          test "${REMOTE_TAG}" != "${REMOTE_TAG_COMMIT}"
           sh scripts/release-preflight.sh \
             "${GITHUB_REF_NAME}" \
-            "${GITHUB_SHA}" \
+            "${REMOTE_TAG_COMMIT}" \
             "${REMOTE_MAIN}" \
-            "${TAG_TYPE}"
+            tag
           RELEASE_ERROR="$(mktemp)"
           if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>"${RELEASE_ERROR}"; then
             echo "GitHub release ${GITHUB_REF_NAME} already exists"

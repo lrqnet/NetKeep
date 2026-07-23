@@ -113,8 +113,8 @@ release; cada release deve documentar os riscos conhecidos. Configurações
 altas ou críticas não justificadas bloqueiam o CI. Isso não reduz a obrigação
 de atualizar dependências quando houver correção disponível.
 
-O relatório específico da v1.0.5 está em
-[`docs/SECURITY_REVIEW_V1.0.5.md`](docs/SECURITY_REVIEW_V1.0.5.md). As revisões
+O relatório específico da v1.0.6 está em
+[`docs/SECURITY_REVIEW_V1.0.6.md`](docs/SECURITY_REVIEW_V1.0.6.md). As revisões
 anteriores permanecem em `docs/SECURITY_REVIEW_V1.0.3.md` e
 `docs/SECURITY_REVIEW_V1.0.2.md`.
 

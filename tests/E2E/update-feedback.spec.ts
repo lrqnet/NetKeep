@@ -30,19 +30,19 @@ test('reauthenticates once and preserves update feedback across navigation and r
             ["organization_id" => $organization->id],
             [
                 "status" => "available",
-                "available_version" => "1.0.5",
+                "available_version" => "1.0.6",
                 "compatibility" => "same_major",
                 "assets" => [
                     "compose.yaml" => [
-                        "url" => "https://github.com/lrqnet/NetKeep/releases/download/v1.0.5/compose.yaml",
+                        "url" => "https://github.com/lrqnet/NetKeep/releases/download/v1.0.6/compose.yaml",
                         "size" => 1,
                     ],
                     "update-manifest.json" => [
-                        "url" => "https://github.com/lrqnet/NetKeep/releases/download/v1.0.5/update-manifest.json",
+                        "url" => "https://github.com/lrqnet/NetKeep/releases/download/v1.0.6/update-manifest.json",
                         "size" => 1,
                     ],
                     "update-manifest.sigstore.json" => [
-                        "url" => "https://github.com/lrqnet/NetKeep/releases/download/v1.0.5/update-manifest.sigstore.json",
+                        "url" => "https://github.com/lrqnet/NetKeep/releases/download/v1.0.6/update-manifest.sigstore.json",
                         "size" => 1,
                     ],
                 ],
@@ -101,7 +101,7 @@ test('reauthenticates once and preserves update feedback across navigation and r
 
         await gotoWithTlsRetry(page, '/dashboard');
         await expect(
-            page.getByText('Updating v1.0.3 to v1.0.5', { exact: true }),
+            page.getByText('Updating v1.0.3 to v1.0.6', { exact: true }),
         ).toBeVisible();
 
         compose('restart', 'app');
@@ -119,7 +119,7 @@ test('reauthenticates once and preserves update feedback across navigation and r
             .toBe(200);
         await page.reload();
         await expect(
-            page.getByText('Updating v1.0.3 to v1.0.5', { exact: true }),
+            page.getByText('Updating v1.0.3 to v1.0.6', { exact: true }),
         ).toBeVisible();
 
         appPhp(`
@@ -134,13 +134,13 @@ test('reauthenticates once and preserves update feedback across navigation and r
         `);
         await page.reload();
         await expect(
-            page.getByText('NetKeep v1.0.5 was installed successfully.', {
+            page.getByText('NetKeep v1.0.6 was installed successfully.', {
                 exact: true,
             }),
         ).toBeVisible();
         await page.reload();
         await expect(
-            page.getByText('NetKeep v1.0.5 was installed successfully.', {
+            page.getByText('NetKeep v1.0.6 was installed successfully.', {
                 exact: true,
             }),
         ).toBeVisible();

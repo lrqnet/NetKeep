@@ -36,8 +36,8 @@ O token fica somente no cofre de secrets do GitHub e não deve ser salvo em
 O workflow `.github/workflows/release.yml` é acionado por tags SemVer:
 
 ```bash
-git tag -a v1.0.5 -m "NetKeep v1.0.5"
-git push origin refs/tags/v1.0.5
+git tag -a v1.0.6 -m "NetKeep v1.0.6"
+git push origin refs/tags/v1.0.6
 ```
 
 O workflow:
@@ -61,20 +61,20 @@ O Compose nunca usa `latest`; a tag existe apenas para descoberta manual.
 ## Conferência
 
 ```bash
-docker pull lrqnet/netkeep:1.0.5
-docker image inspect lrqnet/netkeep:1.0.5
+docker pull lrqnet/netkeep:1.0.6
+docker image inspect lrqnet/netkeep:1.0.6
 cosign verify \
-  --certificate-identity='https://github.com/lrqnet/NetKeep/.github/workflows/release.yml@refs/tags/v1.0.5' \
+  --certificate-identity='https://github.com/lrqnet/NetKeep/.github/workflows/release.yml@refs/tags/v1.0.6' \
   --certificate-oidc-issuer='https://token.actions.githubusercontent.com' \
-  docker.io/lrqnet/netkeep:1.0.5
+  docker.io/lrqnet/netkeep:1.0.6
 
 cosign verify \
-  --certificate-identity='https://github.com/lrqnet/NetKeep/.github/workflows/release.yml@refs/tags/v1.0.5' \
+  --certificate-identity='https://github.com/lrqnet/NetKeep/.github/workflows/release.yml@refs/tags/v1.0.6' \
   --certificate-oidc-issuer='https://token.actions.githubusercontent.com' \
   docker.io/lrqnet/netkeep-oxidized:0.37.0-r3
 ```
 
-Verifique também `docker.io/lrqnet/netkeep-updater:1.0.5` com a mesma
+Verifique também `docker.io/lrqnet/netkeep-updater:1.0.6` com a mesma
 identidade e emissor.
 
 Se qualquer registry, assinatura ou criação da release falhar depois de uma
@@ -89,7 +89,7 @@ Em um servidor novo:
 ```bash
 mkdir -p /opt/netkeep
 cd /opt/netkeep
-curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.5/compose.yaml
+curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.6/compose.yaml
 docker compose up -d
 ```
 

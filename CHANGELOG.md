@@ -5,7 +5,7 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 
 ## [Unreleased]
 
-## [1.0.5] - 2026-07-23
+## [1.0.6] - 2026-07-23
 
 ### Added
 
@@ -50,8 +50,21 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 - jornada E2E reinicia o app após a ativação inicial do TLS, confirma o
   endpoint HTTPS e repete somente falhas transitórias do handshake antes de
   manter a navegação autenticada estritamente validada;
+- preflight valida a tag anotada e seu commit pela referência remota, sem
+  depender da referência local convertida pelo checkout do runner;
 - jobs que publicam imagens agora dependem do preflight, evitando nova
   publicação quando tag, commit, Compose, documentação ou registries divergem.
+
+## [1.0.5] - 2026-07-23
+
+### Withdrawn
+
+- a tag anotada aponta para o commit correto da `main`, mas o checkout do
+  runner substituiu a referência local pelo commit antes da validação;
+- o preflight bloqueou a execução antes de autenticar nos registries, construir
+  imagens ou criar GitHub Release e assets;
+- a tag foi preservada para manter a rastreabilidade. A v1.0.5 não é um destino
+  de instalação ou atualização; a correção segue na v1.0.6.
 
 ## [1.0.4] - 2026-07-23
 
@@ -64,7 +77,7 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 - a revisão `netkeep-oxidized:0.37.0-r2` foi republicada e não deve mais ser
   tratada como referência imutável;
 - a tag foi preservada para manter a rastreabilidade. A v1.0.4 não é um destino
-  de instalação ou atualização; a correção segue na v1.0.5.
+  de instalação ou atualização; a correção segue na v1.0.6.
 
 ## [1.0.3] - 2026-07-22
 
@@ -288,7 +301,8 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 - ambiente PostgreSQL do CI alinhado ao arquivo de teste e asserções de
   mensagens independentes do idioma configurado.
 
-[Unreleased]: https://github.com/lrqnet/NetKeep/compare/v1.0.5...HEAD
+[Unreleased]: https://github.com/lrqnet/NetKeep/compare/v1.0.6...HEAD
+[1.0.6]: https://github.com/lrqnet/NetKeep/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/lrqnet/NetKeep/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/lrqnet/NetKeep/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/lrqnet/NetKeep/compare/v1.0.2...v1.0.3

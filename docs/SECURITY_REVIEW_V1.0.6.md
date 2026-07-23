@@ -1,4 +1,4 @@
-# Revisão de segurança da v1.0.5
+# Revisão de segurança da v1.0.6
 
 Data da revisão: 23 de julho de 2026.
 
@@ -35,12 +35,18 @@ NetKeep, NetKeep-Oxidized e NetKeep-Updater.
 
 ## Cadeia de fornecimento
 
-App e updater são preparados para `1.0.5`, e a imagem derivada do Oxidized
+App e updater são preparados para `1.0.6`, e a imagem derivada do Oxidized
 recebe a revisão imutável `0.37.0-r3`. Um preflight obrigatório ocorre antes
 de qualquer job de publicação: exige tag SemVer anotada no commit atual da
 `main`, confere Compose, changelog, README e guias, rejeita GitHub Release
 existente e valida de forma fail-closed que as seis tags imutáveis ainda não
 existem no Docker Hub e GHCR.
+
+A tentativa v1.0.5 foi bloqueada antes da autenticação nos registries porque o
+checkout do runner converteu a referência local da tag anotada em referência
+direta ao commit. A validação passou a consultar a referência e o commit
+resolvido diretamente no remoto, exigindo a presença de `^{}` e rejeitando
+tags leves sem depender do estado local alterado pelo checkout.
 
 Os três jobs de imagem dependem do preflight. Qualquer publicação parcial torna
 a versão não repetível e exige uma nova versão patch; tags Git, imagens ou
@@ -99,7 +105,7 @@ substituir binários dentro das imagens de terceiros de forma ad hoc.
 
 Não foram encontrados segredos, configurações altas ou críticas nem
 vulnerabilidades críticas. Os achados altos são upstream, permanecem visíveis
-e não receberam nova exceção. A publicação da v1.0.5 continua condicionada aos
+e não receberam nova exceção. A publicação da v1.0.6 continua condicionada aos
 checks da pull request e da `main`, à avaliação das atualizações oficiais
 compatíveis em mudança separada e à conferência autenticada de assinaturas,
 digests, plataformas, SBOM, provenance e manifesto Sigstore.

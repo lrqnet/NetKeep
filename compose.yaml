@@ -1,7 +1,7 @@
 name: netkeep
 
 x-netkeep-image: &netkeep-image
-    image: ${NETKEEP_IMAGE:-docker.io/lrqnet/netkeep:1.0.5}
+    image: ${NETKEEP_IMAGE:-docker.io/lrqnet/netkeep:1.0.6}
 
 x-netkeep-environment: &netkeep-environment
     APP_ENV: production
@@ -364,7 +364,7 @@ services:
             - internal
 
     updater:
-        image: ${NETKEEP_UPDATER_IMAGE:-docker.io/lrqnet/netkeep-updater:1.0.5}
+        image: ${NETKEEP_UPDATER_IMAGE:-docker.io/lrqnet/netkeep-updater:1.0.6}
         restart: unless-stopped
         group_add:
             - '20000'

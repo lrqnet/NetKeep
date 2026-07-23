@@ -115,6 +115,27 @@ As categorias seguras conhecidas cobrem autenticação, conexão recusada,
 timeout de conexão, limite total da coleta, prompt não detectado, mudança de
 chave SSH, erro de driver e falha do motor.
 
+## Atualizações do NetKeep
+
+Somente o proprietário acessa **Atualizações**. A confirmação de senha ocorre
+em uma requisição separada; depois dela, o navegador envia exatamente um pedido
+com UUID idempotente. A senha não integra o payload final nem é mantida para
+retry. Reenvios do mesmo UUID recuperam a operação existente em vez de criar
+outro snapshot, job ou evento de auditoria.
+
+O estado fica no PostgreSQL e aparece na página e em um banner global enquanto
+o proprietário navega. Reload e reinício do contêiner `app` não apagam a
+operação. A interface mostra etapa, tempo decorrido, último progresso, duração
+esperada, reconexão e possível stall. O reconciliador consome estados atômicos
+do updater a cada dez segundos; a detecção de stall é informativa e nunca
+dispara outra operação automaticamente.
+
+Falhas exibem uma categoria sanitizada e uma referência estável. Não são
+mostrados logs, comandos, paths, respostas do daemon ou detalhes internos. O
+resultado de sucesso, falha ou recuperação necessária permanece visível até o
+proprietário usar **Dispensar status**. Reautenticação, criação e reconhecimento
+são auditados sem senha ou dados do manifesto.
+
 ## Recursos perigosos
 
 **Sistema > Recursos perigosos** concentra as exceções ao modo seguro:

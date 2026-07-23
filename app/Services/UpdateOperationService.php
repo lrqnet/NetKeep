@@ -21,10 +21,26 @@ class UpdateOperationService
         ?User $user,
         ?int $destinationId = null,
         ?string $expectedVersion = null,
+        ?string $requestId = null,
     ): UpdateOperation {
-        return Cache::lock('netkeep:update-operation', 30)->block(5, function () use ($trigger, $user, $destinationId, $expectedVersion): UpdateOperation {
-            $operation = DB::transaction(function () use ($trigger, $user, $destinationId, $expectedVersion): UpdateOperation {
+        $requestId ??= (string) Str::uuid();
+        $operation = Cache::lock('netkeep:update-operation', 30)->block(5, function () use ($trigger, $user, $destinationId, $expectedVersion, $requestId): UpdateOperation {
+            return DB::transaction(function () use ($trigger, $user, $destinationId, $expectedVersion, $requestId): UpdateOperation {
                 $organization = Organization::query()->lockForUpdate()->firstOrFail();
+                $existing = UpdateOperation::query()
+                    ->where('organization_id', $organization->id)
+                    ->where('request_id', $requestId)
+                    ->first();
+                if ($existing) {
+                    if ($existing->requested_by !== $user?->id
+                        || $existing->trigger !== $trigger
+                        || $existing->backup_destination_id !== $destinationId
+                        || ($expectedVersion !== null && ! hash_equals($existing->to_version, $expectedVersion))) {
+                        throw ValidationException::withMessages(['request_id' => __('netkeep.updates.request_conflict')]);
+                    }
+
+                    return $existing;
+                }
                 $active = UpdateOperation::query()
                     ->where('organization_id', $organization->id)
                     ->whereIn('status', collect(UpdateOperationStatus::cases())
@@ -53,6 +69,7 @@ class UpdateOperationService
 
                 return UpdateOperation::query()->create([
                     'uuid' => (string) Str::uuid(),
+                    'request_id' => $requestId,
                     'organization_id' => $organization->id,
                     'requested_by' => $user?->id,
                     'backup_destination_id' => $destinationId,
@@ -68,12 +85,14 @@ class UpdateOperationService
                         'estimated_downtime_seconds' => $release->estimated_downtime_seconds,
                     ],
                     'requested_at' => now(),
+                    'last_progress_at' => now(),
                 ]);
             });
-
-            PrepareUpdateOperation::dispatch($operation->id);
-
-            return $operation;
         });
+        if ($operation->wasRecentlyCreated) {
+            PrepareUpdateOperation::dispatch($operation->id);
+        }
+
+        return $operation;
     }
 }

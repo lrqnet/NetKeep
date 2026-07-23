@@ -5,8 +5,10 @@ namespace App\Http\Middleware;
 use App\Enums\SupportedLocale;
 use App\Enums\UserRole;
 use App\Models\Organization;
+use App\Models\UpdateOperation;
 use App\Models\UpdateReleaseState;
 use App\Services\ReleaseVersion;
+use App\Services\UpdateOperationPresenter;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -73,21 +75,25 @@ class HandleInertiaRequests extends Middleware
         ];
     }
 
-    /** @return array{available:bool,version:?string} */
+    /** @return array{available:bool,version:?string,operation:?array<string,mixed>} */
     private function updateSummary(): array
     {
         $state = UpdateReleaseState::query()->first();
-        if (! $state) {
-            return ['available' => false, 'version' => null];
-        }
+        $operation = UpdateOperation::query()
+            ->whereNull('acknowledged_at')
+            ->latest('requested_at')
+            ->first();
 
         return [
-            'available' => filled($state->available_version)
+            'available' => filled($state?->available_version)
                 && ReleaseVersion::compare(
                     (string) $state->available_version,
                     (string) config('netkeep.version'),
                 ) > 0,
-            'version' => $state->available_version,
+            'version' => $state?->available_version,
+            'operation' => $operation
+                ? app(UpdateOperationPresenter::class)->payload($operation)
+                : null,
         ];
     }
 }

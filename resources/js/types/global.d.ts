@@ -1,4 +1,5 @@
 import type { Auth } from '@/types/auth';
+import type { UpdateOperation } from '@/types/updates';
 
 declare module 'react' {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -38,6 +39,7 @@ declare module '@inertiajs/core' {
                 update: {
                     available: boolean;
                     version: string | null;
+                    operation: UpdateOperation | null;
                 } | null;
             };
             unsafeHttpIpLogin: boolean;

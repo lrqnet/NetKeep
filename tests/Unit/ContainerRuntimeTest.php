@@ -31,7 +31,8 @@ class ContainerRuntimeTest extends TestCase
         $this->assertStringContainsString('trap stop_scheduler INT TERM', $script);
         $this->assertStringContainsString('kill -TERM "$child_pid"', $script);
         $this->assertStringContainsString('run_child php artisan schedule:run --no-interaction', $script);
-        $this->assertStringContainsString('run_child sleep 60', $script);
+        $this->assertStringContainsString('run_child sleep 10', $script);
+        $this->assertStringContainsString('run_child sleep 1', $script);
     }
 
     public function test_restore_e2e_restarts_services_in_dependency_order(): void
@@ -168,10 +169,19 @@ class ContainerRuntimeTest extends TestCase
 
         $this->assertIsString($compose);
         $this->assertIsString($workflow);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep:1.0.3', $compose);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep-updater:1.0.3', $compose);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep:1.0.4', $compose);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep-updater:1.0.4', $compose);
         $this->assertSame(2, substr_count($compose, 'docker.io/lrqnet/netkeep-oxidized:0.37.0-r2'));
-        $this->assertStringContainsString('tags: type=raw,value=0.37.0-r2', $workflow);
+        $this->assertStringNotContainsString('tags: type=raw,value=0.37.0-r2', $workflow);
+        $this->assertStringContainsString(
+            'EXPECTED_DIGEST: sha256:2f8908b2911a87b2147e339fc8415c97c6a27086511ce9d5b1207f052a14cdaa',
+            $workflow,
+        );
+        $this->assertStringContainsString(
+            'SIGNATURE_IDENTITY: https://github.com/lrqnet/NetKeep/.github/workflows/release.yml@refs/tags/v1.0.3',
+            $workflow,
+        );
+        $this->assertStringContainsString('docker buildx imagetools inspect', $workflow);
         $this->assertStringContainsString(
             's#docker.io/lrqnet/netkeep-oxidized:0.37.0-r2#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g',
             $workflow,

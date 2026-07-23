@@ -5,6 +5,47 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-07-23
+
+### Added
+
+- estado durável da operação de atualização, com tempo decorrido, último
+  progresso, estimativa por etapa, detecção de stall, reconexão e resultado
+  terminal persistente até o reconhecimento do proprietário;
+- banner global exclusivo do proprietário para acompanhar a atualização fora
+  da página administrativa e após reload, navegação ou reinício da aplicação;
+- identificador UUID idempotente por pedido, impedindo duplicação da operação,
+  da fila e do evento de auditoria em reenvios da mesma solicitação.
+
+### Changed
+
+- reautenticação da atualização manual passa por endpoint explícito e o pedido
+  final é enviado uma única vez depois da confirmação da identidade;
+- reconciliação de estados do updater passa a cada dez segundos, com loop
+  contínuo do scheduler e pausa responsiva durante manutenção;
+- workflow de release verifica e reutiliza por digest e assinatura a imagem
+  imutável `netkeep-oxidized:0.37.0-r2`, sem reconstruir ou sobrescrever sua
+  tag quando apenas painel e updater mudam.
+
+### Security
+
+- senha confirmada nunca integra o payload final da atualização e a janela de
+  reautenticação de cinco minutos também é aplicada no backend;
+- buckets independentes limitam reautenticação, criação e consulta de estado
+  sem permitir que o polling bloqueie o reconhecimento terminal;
+- endpoint de estado é exclusivo do proprietário, responde `no-store` e
+  expõe apenas códigos de falha estáveis e mensagens traduzidas.
+
+### Fixed
+
+- confirmação de senha não perde mais o `POST /updates/run` ao retornar para a
+  página, evitando a falsa impressão de que a atualização foi iniciada;
+- progresso e sucesso deixam de desaparecer após navegação ou reinício, e o
+  resultado terminal só é ocultado por ação explícita e auditada;
+- falhas conhecidas agora exibem categorias seguras, referência estável e
+  orientação de recuperação sem revelar detalhes internos;
+- contraste do texto auxiliar da reautenticação atende ao mínimo WCAG 2 AA.
+
 ## [1.0.3] - 2026-07-22
 
 ### Added
@@ -227,7 +268,8 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 - ambiente PostgreSQL do CI alinhado ao arquivo de teste e asserções de
   mensagens independentes do idioma configurado.
 
-[Unreleased]: https://github.com/lrqnet/NetKeep/compare/v1.0.3...HEAD
+[Unreleased]: https://github.com/lrqnet/NetKeep/compare/v1.0.4...HEAD
+[1.0.4]: https://github.com/lrqnet/NetKeep/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/lrqnet/NetKeep/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/lrqnet/NetKeep/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/lrqnet/NetKeep/compare/v1.0.0...v1.0.1

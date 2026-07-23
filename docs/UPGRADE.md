@@ -7,12 +7,12 @@ socket Docker e sem depender do agente de atualização.
 ## Atualização manual para instalações sem updater
 
 Instalações v1.0.0 e v1.0.1 ainda não possuem o updater integrado. Faça uma
-última atualização manual diretamente para v1.0.3:
+última atualização manual diretamente para v1.0.4:
 
 ```bash
 cd /opt/netkeep
 docker compose exec app php artisan netkeep:backup
-curl -fsSLo compose.yaml.next https://github.com/lrqnet/NetKeep/releases/download/v1.0.3/compose.yaml
+curl -fsSLo compose.yaml.next https://github.com/lrqnet/NetKeep/releases/download/v1.0.4/compose.yaml
 docker compose -f compose.yaml.next config --quiet
 mv compose.yaml.next compose.yaml
 docker compose pull
@@ -30,8 +30,9 @@ A partir da v1.0.2, **Atualizações** permite:
 
 - verificar agora ou aguardar a consulta horária agendada;
 - revisar release, compatibilidade e indisponibilidade estimada;
-- iniciar atualização manual com confirmação de senha;
+- iniciar atualização manual com reautenticação explícita e pedido idempotente;
 - acompanhar backup, validação, download, aplicação, reinício e health check;
+- preservar progresso, falha e sucesso durante navegação, reload ou reinício;
 - configurar atualização automática opcional para patch e minor da major
   instalada, por dias e janela no fuso da empresa.
 
@@ -59,6 +60,25 @@ proprietário reautenticar e aceitar explicitamente esse risco.
 Quando o manifesto permite rollback e o health check falha, o Compose anterior
 é restaurado automaticamente. Caso contrário, a operação entra em
 `recovery_required`; preserve volumes e snapshot e siga o guia de restauração.
+
+## Mudanças do fluxo na v1.0.4
+
+A v1.0.4 adiciona `request_id`, último progresso e reconhecimento terminal às
+operações existentes. As migrations são executadas automaticamente e não
+alteram snapshots, histórico Git ou backups.
+
+Ao selecionar **Atualizar agora**, o navegador confirma a senha em uma
+requisição separada e envia o pedido final uma única vez. Fechar a página,
+navegar para outra área ou reiniciar o contêiner `app` não cancela nem duplica
+a operação. O banner global e a página **Atualizações** recuperam o estado do
+PostgreSQL. Falha ou sucesso permanecem visíveis até o proprietário usar
+**Dispensar status**.
+
+O reconciliador lê o volume `update_exchange` a cada dez segundos. Se uma etapa
+ultrapassar o limite esperado sem novo estado, a interface sinaliza possível
+travamento sem iniciar retry, rollback ou nova atualização automaticamente.
+Confirme o estado dos serviços e preserve o snapshot antes de qualquer ação
+manual.
 
 ## Mudanças de dados e sandbox na v1.0.3
 

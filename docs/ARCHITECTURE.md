@@ -61,6 +61,19 @@ O Compose completo é aplicado, os serviços recebem até dez minutos para ficar
 saudáveis e o rollback automático só ocorre quando a política assinada da
 release o declara seguro.
 
+O pedido manual usa duas requisições: a primeira confirma a senha e a segunda
+cria a operação com UUID idempotente, sem carregar a senha. A janela de cinco
+minutos é revalidada no backend. Estado, último progresso e reconhecimento
+terminal ficam no PostgreSQL; o presenter compartilhado apenas com o
+proprietário alimenta a página e o banner global. O endpoint de status usa
+`no-store`, categorias de erro estáveis e buckets de rate limit separados para
+que leituras frequentes não bloqueiem ações.
+
+O updater continua escrevendo somente arquivos de estado atômicos. O scheduler
+os reconcilia a cada dez segundos e atualiza o marcador de progresso. Limites
+por etapa sinalizam stall sem alterar o estado ou iniciar operação automática.
+Resultados terminais permanecem até reconhecimento explícito e auditado.
+
 ## Controle das coletas
 
 Oxidized opera com `interval: 0`, `retries: 0` e `next_adds_job: false`.

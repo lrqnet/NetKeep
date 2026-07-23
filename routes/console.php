@@ -18,7 +18,7 @@ Schedule::command('netkeep:backup')
 Schedule::command('netkeep:mirror-git')->everyFifteenMinutes()->withoutOverlapping()->onOneServer();
 Schedule::command('netkeep:check-updates')->everyFiveMinutes()->withoutOverlapping()->onOneServer();
 Schedule::command('netkeep:auto-update')->everyFiveMinutes()->withoutOverlapping()->onOneServer();
-Schedule::command('netkeep:reconcile-updates')->everyMinute()->withoutOverlapping()->onOneServer();
+Schedule::command('netkeep:reconcile-updates')->everyTenSeconds()->withoutOverlapping()->onOneServer();
 Schedule::command('netkeep:prune-backups')->dailyAt('03:30')->withoutOverlapping()->onOneServer();
 Schedule::command('netkeep:prune-collection-diagnostics')->hourly()->withoutOverlapping()->onOneServer();
 Schedule::command('queue:prune-batches --hours=72')->daily();

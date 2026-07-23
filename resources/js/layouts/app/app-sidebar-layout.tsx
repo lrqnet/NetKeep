@@ -5,6 +5,7 @@ import { AppShell } from '@/components/app-shell';
 import { AppSidebar } from '@/components/app-sidebar';
 import { AppSidebarHeader } from '@/components/app-sidebar-header';
 import { FlashMessages } from '@/components/flash-messages';
+import { UpdateOperationBanner } from '@/components/update-operation-banner';
 import { useI18n } from '@/i18n';
 import type { AppLayoutProps } from '@/types';
 
@@ -21,6 +22,7 @@ export default function AppSidebarLayout({
             <AppSidebar />
             <AppContent variant="sidebar" className="overflow-x-hidden">
                 <AppSidebarHeader breadcrumbs={breadcrumbs} />
+                <UpdateOperationBanner />
                 {unsafeHttpIpLogin && (
                     <div className="m-4 flex items-start gap-3 rounded-lg border border-red-500 bg-red-600 p-4 text-sm text-white md:mx-6">
                         <ShieldAlert className="mt-0.5 size-5 shrink-0" />

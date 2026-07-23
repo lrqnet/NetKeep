@@ -140,6 +140,9 @@ return [
         'not_installable' => 'This release cannot be installed from the current version.',
         'release_changed' => 'The available release changed. Review it before continuing.',
         'confirm_version' => 'Type the exact target version to confirm this major update.',
+        'reauthentication_required' => 'Confirm your password again before starting the update.',
+        'request_conflict' => 'This update request identifier is already associated with another operation.',
+        'operation_active' => 'An active update cannot be dismissed.',
     ],
     'catalog' => [
         'invalid_type' => 'Invalid catalog type.',

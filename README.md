@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-34d399" alt="AGPL-3.0 license"></a>
-  <a href="https://github.com/lrqnet/NetKeep/releases/tag/v1.0.4"><img src="https://img.shields.io/badge/release-v1.0.4-0f172a" alt="NetKeep v1.0.4"></a>
+  <a href="https://github.com/lrqnet/NetKeep/releases/tag/v1.0.5"><img src="https://img.shields.io/badge/release-v1.0.5-0f172a" alt="NetKeep v1.0.5"></a>
   <a href="https://hub.docker.com/r/lrqnet/netkeep"><img src="https://img.shields.io/badge/Docker-amd64%20%7C%20arm64-2496ed?logo=docker&logoColor=white" alt="Docker images for amd64 and arm64"></a>
   <a href="https://github.com/ytti/oxidized"><img src="https://img.shields.io/badge/Oxidized-0.37.0-475569" alt="Oxidized 0.37.0"></a>
 </p>
@@ -105,13 +105,13 @@ administrative networks are strongly recommended.
 
 ## Quick installation
 
-Create a directory, download the Compose file attached to the v1.0.4 release,
+Create a directory, download the Compose file attached to the v1.0.5 release,
 and start the stack:
 
 ```bash
 sudo mkdir -p /opt/netkeep
 cd /opt/netkeep
-sudo curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.4/compose.yaml
+sudo curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.5/compose.yaml
 sudo docker compose up -d --wait
 sudo docker compose ps
 ```

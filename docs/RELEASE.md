@@ -36,19 +36,21 @@ O token fica somente no cofre de secrets do GitHub e não deve ser salvo em
 O workflow `.github/workflows/release.yml` é acionado por tags SemVer:
 
 ```bash
-git tag -a v1.0.4 -m "NetKeep v1.0.4"
-git push origin v1.0.4
+git tag -a v1.0.5 -m "NetKeep v1.0.5"
+git push origin refs/tags/v1.0.5
 ```
 
 O workflow:
 
-1. autentica no GHCR com `GITHUB_TOKEN`;
-2. autentica no Docker Hub com os secrets;
-3. constrói NetKeep e NetKeep-Updater para `amd64` e `arm64`;
-4. publica as tags SemVer do painel e updater;
-5. verifica digest, plataformas e assinatura da imagem imutável
-   `netkeep-oxidized:0.37.0-r2` publicada pela v1.0.3, sem reconstruí-la;
-6. gera SBOM e provenance das novas imagens e assina seus digests nos dois
+1. confirma que a tag é anotada, aponta exatamente para a `main` remota e
+   corresponde às versões do Compose, changelog, README e guias;
+2. rejeita uma release existente ou qualquer tag imutável de imagem já
+   publicada, falhando antes de autenticar jobs de build;
+3. autentica no GHCR com `GITHUB_TOKEN` e no Docker Hub com os secrets;
+4. constrói NetKeep, NetKeep-Updater e NetKeep-Oxidized para `amd64` e `arm64`;
+5. publica as tags SemVer do painel e updater e a revisão imutável
+   `netkeep-oxidized:0.37.0-r3`;
+6. gera SBOM e provenance das imagens e assina seus digests nos dois
    registries;
 7. substitui as tags do Compose pelos digests publicados;
 8. cria a release no GitHub e anexa Compose, manifesto, bundle Sigstore e
@@ -59,21 +61,26 @@ O Compose nunca usa `latest`; a tag existe apenas para descoberta manual.
 ## Conferência
 
 ```bash
-docker pull lrqnet/netkeep:1.0.4
-docker image inspect lrqnet/netkeep:1.0.4
+docker pull lrqnet/netkeep:1.0.5
+docker image inspect lrqnet/netkeep:1.0.5
 cosign verify \
-  --certificate-identity='https://github.com/lrqnet/NetKeep/.github/workflows/release.yml@refs/tags/v1.0.4' \
+  --certificate-identity='https://github.com/lrqnet/NetKeep/.github/workflows/release.yml@refs/tags/v1.0.5' \
   --certificate-oidc-issuer='https://token.actions.githubusercontent.com' \
-  docker.io/lrqnet/netkeep:1.0.4
+  docker.io/lrqnet/netkeep:1.0.5
 
 cosign verify \
-  --certificate-identity='https://github.com/lrqnet/NetKeep/.github/workflows/release.yml@refs/tags/v1.0.3' \
+  --certificate-identity='https://github.com/lrqnet/NetKeep/.github/workflows/release.yml@refs/tags/v1.0.5' \
   --certificate-oidc-issuer='https://token.actions.githubusercontent.com' \
-  docker.io/lrqnet/netkeep-oxidized:0.37.0-r2
+  docker.io/lrqnet/netkeep-oxidized:0.37.0-r3
 ```
 
-Verifique também `docker.io/lrqnet/netkeep-updater:1.0.4` com a mesma
+Verifique também `docker.io/lrqnet/netkeep-updater:1.0.5` com a mesma
 identidade e emissor.
+
+Se qualquer registry, assinatura ou criação da release falhar depois de uma
+publicação parcial, não execute novamente o workflow, não mova a tag e não
+sobrescreva imagens versionadas. Audite Docker Hub, GHCR e GitHub Release e
+prepare a correção na próxima versão patch.
 
 ## Deploy ou atualização
 
@@ -82,7 +89,7 @@ Em um servidor novo:
 ```bash
 mkdir -p /opt/netkeep
 cd /opt/netkeep
-curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.4/compose.yaml
+curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.5/compose.yaml
 docker compose up -d
 ```
 
@@ -95,8 +102,7 @@ docker compose ps
 ```
 
 Publicar uma imagem não força atualização dos servidores. O workflow publica e
-assina as imagens versionadas, verifica a imagem Oxidized imutável, fixa os
-três digests no Compose, gera
+assina as imagens versionadas, fixa os três digests no Compose, gera
 `update-manifest.json`, assina o manifesto com Cosign keyless e anexa o bundle
 Sigstore. O painel só aplica esse conjunto depois do snapshot obrigatório e da
 verificação offline. Atualização automática fica desligada por padrão. O

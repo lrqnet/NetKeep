@@ -1,4 +1,4 @@
-# Revisão de segurança da v1.0.4
+# Revisão de segurança da v1.0.5
 
 Data da revisão: 23 de julho de 2026.
 
@@ -6,9 +6,9 @@ Data da revisão: 23 de julho de 2026.
 
 A revisão cobre a reautenticação de atualizações, idempotência do pedido,
 persistência e reconciliação do progresso, feedback global, reconhecimento do
-resultado, migração de operações existentes, rate limits e reutilização da
-imagem Oxidized imutável. Também inclui o filesystem, as dependências e as
-imagens NetKeep, NetKeep-Oxidized e NetKeep-Updater.
+resultado, migração de operações existentes, rate limits e controles da
+cadeia de publicação. Também inclui o filesystem, as dependências e as imagens
+NetKeep, NetKeep-Oxidized e NetKeep-Updater.
 
 ## Controles do fluxo de atualização
 
@@ -35,18 +35,21 @@ imagens NetKeep, NetKeep-Oxidized e NetKeep-Updater.
 
 ## Cadeia de fornecimento
 
-App e updater são preparados para `1.0.4`. A imagem
-`netkeep-oxidized:0.37.0-r2` não é reconstruída: o workflow exige o digest
-`sha256:2f8908b2911a87b2147e339fc8415c97c6a27086511ce9d5b1207f052a14cdaa`,
-as plataformas `linux/amd64` e `linux/arm64` e a assinatura emitida pelo
-workflow da tag `v1.0.3`. A verificação local reconfirmou digest e assinatura
-no Docker Hub; a release autenticada deverá repetir a conferência no Docker Hub
-e no GHCR antes de gerar o Compose.
+App e updater são preparados para `1.0.5`, e a imagem derivada do Oxidized
+recebe a revisão imutável `0.37.0-r3`. Um preflight obrigatório ocorre antes
+de qualquer job de publicação: exige tag SemVer anotada no commit atual da
+`main`, confere Compose, changelog, README e guias, rejeita GitHub Release
+existente e valida de forma fail-closed que as seis tags imutáveis ainda não
+existem no Docker Hub e GHCR.
+
+Os três jobs de imagem dependem do preflight. Qualquer publicação parcial torna
+a versão não repetível e exige uma nova versão patch; tags Git, imagens ou
+releases públicas nunca são movidas ou sobrescritas.
 
 ## Validações
 
 - Composer metadata válido, Pint em 270 arquivos e PHPStan sem erros;
-- PHPUnit: 201 testes, 942 asserções e cinco integrações opcionais ignoradas;
+- PHPUnit: 201 testes, 947 asserções e cinco integrações opcionais ignoradas;
 - PostgreSQL 18.4: todas as migrations e 154 testes Feature com 791 asserções;
 - Playwright Chromium: 26 cenários, incluindo reautenticação única,
   idempotência, navegação, reload, reinício real do app, persistência do
@@ -60,7 +63,7 @@ e no GHCR antes de gerar o Compose.
   três imagens por digests;
 - auditorias Composer e npm sem advisories de produção;
 - Trivy 0.70.0 do filesystem, configuração, segredos e três imagens;
-- três SBOMs CycloneDX 1.6 validadas, com 534 componentes no NetKeep, 276 no
+- três SBOMs CycloneDX 1.6 validadas, com 496 componentes no NetKeep, 276 no
   NetKeep-Oxidized e 422 no NetKeep-Updater.
 
 O scan de filesystem encontrou zero vulnerabilidades altas ou críticas nos
@@ -94,7 +97,7 @@ substituir binários dentro das imagens de terceiros de forma ad hoc.
 
 Não foram encontrados segredos, configurações altas ou críticas nem
 vulnerabilidades críticas. Os achados altos são upstream, permanecem visíveis
-e não receberam nova exceção. A publicação da v1.0.4 continua condicionada aos
+e não receberam nova exceção. A publicação da v1.0.5 continua condicionada aos
 checks da pull request e da `main`, à avaliação das atualizações oficiais
 compatíveis em mudança separada e à conferência autenticada de assinaturas,
 digests, plataformas, SBOM, provenance e manifesto Sigstore.

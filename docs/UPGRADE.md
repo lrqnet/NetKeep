@@ -7,12 +7,12 @@ socket Docker e sem depender do agente de atualização.
 ## Atualização manual para instalações sem updater
 
 Instalações v1.0.0 e v1.0.1 ainda não possuem o updater integrado. Faça uma
-última atualização manual diretamente para v1.0.4:
+última atualização manual diretamente para v1.0.5:
 
 ```bash
 cd /opt/netkeep
 docker compose exec app php artisan netkeep:backup
-curl -fsSLo compose.yaml.next https://github.com/lrqnet/NetKeep/releases/download/v1.0.4/compose.yaml
+curl -fsSLo compose.yaml.next https://github.com/lrqnet/NetKeep/releases/download/v1.0.5/compose.yaml
 docker compose -f compose.yaml.next config --quiet
 mv compose.yaml.next compose.yaml
 docker compose pull
@@ -61,9 +61,9 @@ Quando o manifesto permite rollback e o health check falha, o Compose anterior
 é restaurado automaticamente. Caso contrário, a operação entra em
 `recovery_required`; preserve volumes e snapshot e siga o guia de restauração.
 
-## Mudanças do fluxo na v1.0.4
+## Mudanças do fluxo na v1.0.5
 
-A v1.0.4 adiciona `request_id`, último progresso e reconhecimento terminal às
+A v1.0.5 adiciona `request_id`, último progresso e reconhecimento terminal às
 operações existentes. As migrations são executadas automaticamente e não
 alteram snapshots, histórico Git ou backups.
 
@@ -79,6 +79,10 @@ ultrapassar o limite esperado sem novo estado, a interface sinaliza possível
 travamento sem iniciar retry, rollback ou nova atualização automaticamente.
 Confirme o estado dos serviços e preserve o snapshot antes de qualquer ação
 manual.
+
+A tag v1.0.4 não possui release, Compose ou manifesto de atualização e não é
+um destino suportado. Instalações existentes devem atualizar diretamente para
+v1.0.5. Não use imagens isoladas da v1.0.4 nem tente reconstruir seus artefatos.
 
 ## Mudanças de dados e sandbox na v1.0.3
 

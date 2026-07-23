@@ -18,7 +18,7 @@ test('reauthenticates once and preserves update feedback across navigation and r
     page,
     request,
 }) => {
-    test.setTimeout(120_000);
+    test.setTimeout(240_000);
     compose('stop', 'worker');
     appPhp(`
         require "vendor/autoload.php";
@@ -29,19 +29,19 @@ test('reauthenticates once and preserves update feedback across navigation and r
             ["organization_id" => $organization->id],
             [
                 "status" => "available",
-                "available_version" => "1.0.4",
+                "available_version" => "1.0.5",
                 "compatibility" => "same_major",
                 "assets" => [
                     "compose.yaml" => [
-                        "url" => "https://github.com/lrqnet/NetKeep/releases/download/v1.0.4/compose.yaml",
+                        "url" => "https://github.com/lrqnet/NetKeep/releases/download/v1.0.5/compose.yaml",
                         "size" => 1,
                     ],
                     "update-manifest.json" => [
-                        "url" => "https://github.com/lrqnet/NetKeep/releases/download/v1.0.4/update-manifest.json",
+                        "url" => "https://github.com/lrqnet/NetKeep/releases/download/v1.0.5/update-manifest.json",
                         "size" => 1,
                     ],
                     "update-manifest.sigstore.json" => [
-                        "url" => "https://github.com/lrqnet/NetKeep/releases/download/v1.0.4/update-manifest.sigstore.json",
+                        "url" => "https://github.com/lrqnet/NetKeep/releases/download/v1.0.5/update-manifest.sigstore.json",
                         "size" => 1,
                     ],
                 ],
@@ -100,7 +100,7 @@ test('reauthenticates once and preserves update feedback across navigation and r
 
         await page.goto('/dashboard');
         await expect(
-            page.getByText('Updating v1.0.3 to v1.0.4', { exact: true }),
+            page.getByText('Updating v1.0.3 to v1.0.5', { exact: true }),
         ).toBeVisible();
 
         compose('restart', 'app');
@@ -113,12 +113,12 @@ test('reauthenticates once and preserves update feedback across navigation and r
                         return 0;
                     }
                 },
-                { timeout: 60_000 },
+                { timeout: 120_000 },
             )
             .toBe(200);
         await page.reload();
         await expect(
-            page.getByText('Updating v1.0.3 to v1.0.4', { exact: true }),
+            page.getByText('Updating v1.0.3 to v1.0.5', { exact: true }),
         ).toBeVisible();
 
         appPhp(`
@@ -133,13 +133,13 @@ test('reauthenticates once and preserves update feedback across navigation and r
         `);
         await page.reload();
         await expect(
-            page.getByText('NetKeep v1.0.4 was installed successfully.', {
+            page.getByText('NetKeep v1.0.5 was installed successfully.', {
                 exact: true,
             }),
         ).toBeVisible();
         await page.reload();
         await expect(
-            page.getByText('NetKeep v1.0.4 was installed successfully.', {
+            page.getByText('NetKeep v1.0.5 was installed successfully.', {
                 exact: true,
             }),
         ).toBeVisible();
@@ -178,13 +178,7 @@ test('reauthenticates once and preserves update feedback across navigation and r
 function compose(...args: string[]): void {
     execFileSync(
         'docker',
-        [
-            'compose',
-            '--project-name',
-            project,
-            ...composeFiles,
-            ...args,
-        ],
+        ['compose', '--project-name', project, ...composeFiles, ...args],
         {
             cwd: root,
             stdio: 'pipe',

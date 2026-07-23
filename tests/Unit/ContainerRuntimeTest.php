@@ -165,25 +165,28 @@ class ContainerRuntimeTest extends TestCase
     {
         $root = dirname(__DIR__, 2);
         $compose = file_get_contents($root.'/compose.yaml');
+        $preflight = file_get_contents($root.'/scripts/release-preflight.sh');
         $workflow = file_get_contents($root.'/.github/workflows/release.yml');
 
         $this->assertIsString($compose);
+        $this->assertIsString($preflight);
         $this->assertIsString($workflow);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep:1.0.4', $compose);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep-updater:1.0.4', $compose);
-        $this->assertSame(2, substr_count($compose, 'docker.io/lrqnet/netkeep-oxidized:0.37.0-r2'));
-        $this->assertStringNotContainsString('tags: type=raw,value=0.37.0-r2', $workflow);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep:1.0.5', $compose);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep-updater:1.0.5', $compose);
+        $this->assertSame(2, substr_count($compose, 'docker.io/lrqnet/netkeep-oxidized:0.37.0-r3'));
+        $this->assertStringContainsString('tags: type=raw,value=0.37.0-r3', $workflow);
+        $this->assertSame(3, substr_count($workflow, 'needs: preflight'));
+        $this->assertStringContainsString('sh scripts/release-preflight.sh', $workflow);
+        $this->assertStringContainsString('Reject previously published immutable tags', $workflow);
+        $this->assertStringContainsString('gh release view "${GITHUB_REF_NAME}"', $workflow);
+        $this->assertStringContainsString('test "${RELEASE_SHA}" = "${MAIN_SHA}"', $preflight);
+        $this->assertStringContainsString('test "${TAG_TYPE}" = \'tag\'', $preflight);
         $this->assertStringContainsString(
-            'EXPECTED_DIGEST: sha256:2f8908b2911a87b2147e339fc8415c97c6a27086511ce9d5b1207f052a14cdaa',
-            $workflow,
+            "grep -Eq '^v[0-9]+\\.[0-9]+\\.[0-9]+$'",
+            $preflight,
         );
         $this->assertStringContainsString(
-            'SIGNATURE_IDENTITY: https://github.com/lrqnet/NetKeep/.github/workflows/release.yml@refs/tags/v1.0.3',
-            $workflow,
-        );
-        $this->assertStringContainsString('docker buildx imagetools inspect', $workflow);
-        $this->assertStringContainsString(
-            's#docker.io/lrqnet/netkeep-oxidized:0.37.0-r2#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g',
+            's#docker.io/lrqnet/netkeep-oxidized:0.37.0-r3#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g',
             $workflow,
         );
     }

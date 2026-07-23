@@ -53,7 +53,7 @@ class BackupReconciler
                             'status' => DeviceStatus::Failing,
                             'last_error' => __('netkeep.devices.collection_failed_safe'),
                         ]);
-                        app(CollectionRunService::class)->fail($running, 'engine_reported_failure');
+                        app(CollectionRunService::class)->fail($running, 'engine_failure');
 
                         continue;
                     }
@@ -124,7 +124,7 @@ class BackupReconciler
                 foreach ($runs as $run) {
                     $deadline = $run->started_at?->addSeconds($run->device->timeout + 60);
                     if ($deadline?->isPast()) {
-                        app(CollectionRunService::class)->fail($run, 'collection_timeout');
+                        app(CollectionRunService::class)->fail($run, 'collection_timelimit');
                     }
                 }
             });

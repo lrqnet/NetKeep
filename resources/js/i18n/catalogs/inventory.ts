@@ -251,6 +251,422 @@ export const inventoryMessages = defineMessages({
         pt_BR: 'Dados do equipamento',
         es: 'Datos del equipo',
     },
+    'devices.sections': {
+        en: 'Device sections',
+        pt_BR: 'Seções do equipamento',
+        es: 'Secciones del equipo',
+    },
+    'devices.configuration_tab': {
+        en: 'Configuration',
+        pt_BR: 'Configuração',
+        es: 'Configuración',
+    },
+    'devices.collections_tab': {
+        en: 'Collections',
+        pt_BR: 'Coletas',
+        es: 'Recolecciones',
+    },
+    'collections.history': {
+        en: 'Collection history',
+        pt_BR: 'Histórico de coletas',
+        es: 'Historial de recolecciones',
+    },
+    'collections.details': {
+        en: 'Run details',
+        pt_BR: 'Detalhes da execução',
+        es: 'Detalles de la ejecución',
+    },
+    'collections.select_run': {
+        en: 'Select a run to view its safe timeline.',
+        pt_BR: 'Selecione uma execução para ver a timeline segura.',
+        es: 'Selecciona una ejecución para ver su línea de tiempo segura.',
+    },
+    'collections.empty': {
+        en: 'No collection runs match these filters.',
+        pt_BR: 'Nenhuma coleta corresponde a estes filtros.',
+        es: 'Ninguna recolección coincide con estos filtros.',
+    },
+    'collections.all': {
+        en: 'All',
+        pt_BR: 'Todos',
+        es: 'Todos',
+    },
+    'collections.status_filter': {
+        en: 'Status',
+        pt_BR: 'Status',
+        es: 'Estado',
+    },
+    'collections.origin_filter': {
+        en: 'Origin',
+        pt_BR: 'Origem',
+        es: 'Origen',
+    },
+    'collections.from': {
+        en: 'From',
+        pt_BR: 'De',
+        es: 'Desde',
+    },
+    'collections.to': {
+        en: 'To',
+        pt_BR: 'Até',
+        es: 'Hasta',
+    },
+    'collections.apply_filters': {
+        en: 'Apply filters',
+        pt_BR: 'Aplicar filtros',
+        es: 'Aplicar filtros',
+    },
+    'collections.load_error': {
+        en: 'Collection history could not be loaded. Try refreshing it.',
+        pt_BR: 'Não foi possível carregar o histórico de coletas. Tente atualizar.',
+        es: 'No se pudo cargar el historial de recolecciones. Intenta actualizarlo.',
+    },
+    'collections.stream_unavailable': {
+        en: 'Live updates are reconnecting. Use refresh if the status does not update.',
+        pt_BR: 'As atualizações ao vivo estão reconectando. Use atualizar se o status não mudar.',
+        es: 'Las actualizaciones en vivo se están reconectando. Usa actualizar si el estado no cambia.',
+    },
+    'collections.page': {
+        en: 'Page {{current}} of {{total}}',
+        pt_BR: 'Página {{current}} de {{total}}',
+        es: 'Página {{current}} de {{total}}',
+    },
+    'collections.attempt': {
+        en: 'Attempt {{number}}',
+        pt_BR: 'Tentativa {{number}}',
+        es: 'Intento {{number}}',
+    },
+    'collections.system_requester': {
+        en: 'System',
+        pt_BR: 'Sistema',
+        es: 'Sistema',
+    },
+    'collections.origin': {
+        en: 'Origin',
+        pt_BR: 'Origem',
+        es: 'Origen',
+    },
+    'collections.status_label': {
+        en: 'Status',
+        pt_BR: 'Status',
+        es: 'Estado',
+    },
+    'collections.requester': {
+        en: 'Requested by',
+        pt_BR: 'Solicitado por',
+        es: 'Solicitado por',
+    },
+    'collections.attempt_label': {
+        en: 'Attempt',
+        pt_BR: 'Tentativa',
+        es: 'Intento',
+    },
+    'collections.started': {
+        en: 'Started',
+        pt_BR: 'Início',
+        es: 'Inicio',
+    },
+    'collections.finished': {
+        en: 'Finished',
+        pt_BR: 'Término',
+        es: 'Fin',
+    },
+    'collections.duration': {
+        en: 'Duration',
+        pt_BR: 'Duração',
+        es: 'Duración',
+    },
+    'collections.seconds': {
+        en: '{{seconds}} seconds',
+        pt_BR: '{{seconds}} segundos',
+        es: '{{seconds}} segundos',
+    },
+    'collections.parent': {
+        en: 'Parent run',
+        pt_BR: 'Execução anterior',
+        es: 'Ejecución anterior',
+    },
+    'collections.engine_reference': {
+        en: 'Engine reference',
+        pt_BR: 'Referência do motor',
+        es: 'Referencia del motor',
+    },
+    'collections.timeline': {
+        en: 'Timeline',
+        pt_BR: 'Timeline',
+        es: 'Línea de tiempo',
+    },
+    'collections.refresh': {
+        en: 'Refresh run details',
+        pt_BR: 'Atualizar detalhes da execução',
+        es: 'Actualizar detalles de la ejecución',
+    },
+    'collections.diagnostic_title': {
+        en: 'Isolated diagnostic',
+        pt_BR: 'Diagnóstico isolado',
+        es: 'Diagnóstico aislado',
+    },
+    'collections.diagnostic_warning': {
+        en: 'The sandbox performs a new read-only connection and creates a raw trace that may contain full configuration and secrets. The encrypted trace expires after 24 hours. This action is audited and requires a recently confirmed password.',
+        pt_BR: 'O sandbox realiza uma nova conexão somente leitura e cria um trace bruto que pode conter configuração completa e segredos. O trace criptografado expira após 24 horas. Esta ação é auditada e exige senha confirmada recentemente.',
+        es: 'El sandbox realiza una nueva conexión de solo lectura y crea un trace bruto que puede contener la configuración completa y secretos. El trace cifrado vence después de 24 horas. Esta acción se audita y exige una contraseña confirmada recientemente.',
+    },
+    'collections.diagnostic_confirmation': {
+        en: 'Type DIAGNOSTIC to confirm',
+        pt_BR: 'Digite DIAGNOSTIC para confirmar',
+        es: 'Escribe DIAGNOSTIC para confirmar',
+    },
+    'collections.start_diagnostic': {
+        en: 'Start diagnostic',
+        pt_BR: 'Iniciar diagnóstico',
+        es: 'Iniciar diagnóstico',
+    },
+    'collections.raw_trace': {
+        en: 'Protected raw trace',
+        pt_BR: 'Trace bruto protegido',
+        es: 'Trace bruto protegido',
+    },
+    'collections.raw_trace_warning': {
+        en: 'This trace may reveal device configuration and credentials. View or download it only in a protected environment. Access is reauthenticated, audited, and never cached.',
+        pt_BR: 'Este trace pode revelar configuração e credenciais do equipamento. Visualize ou baixe apenas em ambiente protegido. O acesso exige nova autenticação, é auditado e nunca armazenado em cache.',
+        es: 'Este trace puede revelar la configuración y credenciales del equipo. Consúltalo o descárgalo solo en un entorno protegido. El acceso se reautentica, se audita y nunca se almacena en caché.',
+    },
+    'collections.expires': {
+        en: 'Expires {{time}}',
+        pt_BR: 'Expira em {{time}}',
+        es: 'Vence el {{time}}',
+    },
+    'collections.truncated': {
+        en: 'Truncated',
+        pt_BR: 'Truncado',
+        es: 'Truncado',
+    },
+    'collections.purged': {
+        en: 'Purged',
+        pt_BR: 'Expurgado',
+        es: 'Purgado',
+    },
+    'collections.view_trace': {
+        en: 'View trace',
+        pt_BR: 'Visualizar trace',
+        es: 'Ver trace',
+    },
+    'collections.download_trace': {
+        en: 'Download trace',
+        pt_BR: 'Baixar trace',
+        es: 'Descargar trace',
+    },
+    'collections.trace_title': {
+        en: 'Diagnostic trace · {{name}}',
+        pt_BR: 'Trace de diagnóstico · {{name}}',
+        es: 'Trace de diagnóstico · {{name}}',
+    },
+    'collections.trace_truncated_warning': {
+        en: 'The trace reached the 5 MiB security limit and was truncated.',
+        pt_BR: 'O trace atingiu o limite de segurança de 5 MiB e foi truncado.',
+        es: 'El trace alcanzó el límite de seguridad de 5 MiB y fue truncado.',
+    },
+    'collections.status.queued': {
+        en: 'Queued',
+        pt_BR: 'Na fila',
+        es: 'En cola',
+    },
+    'collections.status.dispatched': {
+        en: 'Dispatched',
+        pt_BR: 'Despachado',
+        es: 'Despachado',
+    },
+    'collections.status.running': {
+        en: 'Running',
+        pt_BR: 'Em execução',
+        es: 'En ejecución',
+    },
+    'collections.status.succeeded': {
+        en: 'Succeeded',
+        pt_BR: 'Concluído',
+        es: 'Completado',
+    },
+    'collections.status.failed': { en: 'Failed', pt_BR: 'Falhou', es: 'Falló' },
+    'collections.status.cooldown': {
+        en: 'Cooldown',
+        pt_BR: 'Aguardando',
+        es: 'En espera',
+    },
+    'collections.status.cancelled': {
+        en: 'Cancelled',
+        pt_BR: 'Cancelado',
+        es: 'Cancelado',
+    },
+    'collections.trigger.manual': {
+        en: 'Manual',
+        pt_BR: 'Manual',
+        es: 'Manual',
+    },
+    'collections.trigger.scheduled': {
+        en: 'Scheduled',
+        pt_BR: 'Agendada',
+        es: 'Programada',
+    },
+    'collections.trigger.retry': {
+        en: 'Retry',
+        pt_BR: 'Nova tentativa',
+        es: 'Reintento',
+    },
+    'collections.trigger.model_test': {
+        en: 'Model test',
+        pt_BR: 'Teste de modelo',
+        es: 'Prueba de modelo',
+    },
+    'collections.trigger.diagnostic': {
+        en: 'Diagnostic',
+        pt_BR: 'Diagnóstico',
+        es: 'Diagnóstico',
+    },
+    'collections.event.queued': {
+        en: 'Request queued',
+        pt_BR: 'Solicitação enfileirada',
+        es: 'Solicitud en cola',
+    },
+    'collections.event.dispatched': {
+        en: 'Worker dispatched',
+        pt_BR: 'Worker acionado',
+        es: 'Worker activado',
+    },
+    'collections.event.target_validation_started': {
+        en: 'Target validation started',
+        pt_BR: 'Validação do destino iniciada',
+        es: 'Validación del destino iniciada',
+    },
+    'collections.event.target_validation_passed': {
+        en: 'Target validation passed',
+        pt_BR: 'Destino validado',
+        es: 'Destino validado',
+    },
+    'collections.event.ssh_validation_passed': {
+        en: 'SSH host key validated',
+        pt_BR: 'Chave SSH validada',
+        es: 'Clave SSH validada',
+    },
+    'collections.event.started': {
+        en: 'Collection started',
+        pt_BR: 'Coleta iniciada',
+        es: 'Recolección iniciada',
+    },
+    'collections.event.engine_accepted': {
+        en: 'Engine accepted the request',
+        pt_BR: 'Motor aceitou a solicitação',
+        es: 'El motor aceptó la solicitud',
+    },
+    'collections.event.engine_succeeded': {
+        en: 'Engine completed the read',
+        pt_BR: 'Motor concluiu a leitura',
+        es: 'El motor completó la lectura',
+    },
+    'collections.event.configuration_stored': {
+        en: 'Configuration stored',
+        pt_BR: 'Configuração armazenada',
+        es: 'Configuración almacenada',
+    },
+    'collections.event.success': {
+        en: 'Run completed successfully',
+        pt_BR: 'Execução concluída com sucesso',
+        es: 'Ejecución completada correctamente',
+    },
+    'collections.event.failure': {
+        en: 'Run failed',
+        pt_BR: 'Execução falhou',
+        es: 'La ejecución falló',
+    },
+    'collections.event.cancelled': {
+        en: 'Run cancelled',
+        pt_BR: 'Execução cancelada',
+        es: 'Ejecución cancelada',
+    },
+    'collections.event.retry_scheduled': {
+        en: 'Retry scheduled',
+        pt_BR: 'Nova tentativa agendada',
+        es: 'Reintento programado',
+    },
+    'collections.event.trace_stored': {
+        en: 'Encrypted trace stored',
+        pt_BR: 'Trace criptografado armazenado',
+        es: 'Trace cifrado almacenado',
+    },
+    'collections.error.authentication_failed': {
+        en: 'Authentication failed.',
+        pt_BR: 'Falha de autenticação.',
+        es: 'Falló la autenticación.',
+    },
+    'collections.error.connection_refused': {
+        en: 'The device refused the connection.',
+        pt_BR: 'O equipamento recusou a conexão.',
+        es: 'El equipo rechazó la conexión.',
+    },
+    'collections.error.connection_timeout': {
+        en: 'The connection timed out.',
+        pt_BR: 'A conexão excedeu o tempo limite.',
+        es: 'La conexión agotó el tiempo de espera.',
+    },
+    'collections.error.collection_timelimit': {
+        en: 'The collection exceeded its total time limit.',
+        pt_BR: 'A coleta excedeu o limite total de tempo.',
+        es: 'La recolección superó el límite total de tiempo.',
+    },
+    'collections.error.prompt_not_detected': {
+        en: 'The expected device prompt was not detected.',
+        pt_BR: 'O prompt esperado do equipamento não foi detectado.',
+        es: 'No se detectó el prompt esperado del equipo.',
+    },
+    'collections.error.ssh_host_key_changed': {
+        en: 'The SSH host key changed.',
+        pt_BR: 'A chave de host SSH mudou.',
+        es: 'La clave de host SSH cambió.',
+    },
+    'collections.error.driver_error': {
+        en: 'The selected driver could not complete the read.',
+        pt_BR: 'O driver selecionado não concluiu a leitura.',
+        es: 'El driver seleccionado no completó la lectura.',
+    },
+    'collections.error.engine_failure': {
+        en: 'The collection engine reported a failure.',
+        pt_BR: 'O motor de coleta informou uma falha.',
+        es: 'El motor de recolección informó un fallo.',
+    },
+    'collections.error.sandbox_busy': {
+        en: 'The isolated diagnostic sandbox is busy. Try again shortly.',
+        pt_BR: 'O sandbox isolado de diagnóstico está ocupado. Tente novamente em instantes.',
+        es: 'El sandbox aislado de diagnóstico está ocupado. Inténtalo de nuevo en unos instantes.',
+    },
+    'collections.error.device_not_collectable': {
+        en: 'The device is no longer eligible for collection.',
+        pt_BR: 'O equipamento não está mais apto para coleta.',
+        es: 'El equipo ya no está habilitado para recolección.',
+    },
+    'collections.error.device_safety_changed': {
+        en: 'Device safety approval changed before collection.',
+        pt_BR: 'A aprovação de segurança do equipamento mudou antes da coleta.',
+        es: 'La aprobación de seguridad del equipo cambió antes de la recolección.',
+    },
+    'collections.error.target_validation_failed': {
+        en: 'The approved network target could not be validated.',
+        pt_BR: 'Não foi possível validar o destino de rede aprovado.',
+        es: 'No se pudo validar el destino de red aprobado.',
+    },
+    'collections.error.engine_rejected': {
+        en: 'The collection engine rejected the request.',
+        pt_BR: 'O motor de coleta rejeitou a solicitação.',
+        es: 'El motor de recolección rechazó la solicitud.',
+    },
+    'collections.error.engine_reported_failure': {
+        en: 'The collection engine reported a failure.',
+        pt_BR: 'O motor de coleta informou uma falha.',
+        es: 'El motor de recolección informó un fallo.',
+    },
+    'collections.error.collection_timeout': {
+        en: 'The collection exceeded its total time limit.',
+        pt_BR: 'A coleta excedeu o limite total de tempo.',
+        es: 'La recolección superó el límite total de tiempo.',
+    },
     'devices.hostname': {
         en: 'Hostname',
         pt_BR: 'Hostname',

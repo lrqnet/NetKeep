@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-34d399" alt="AGPL-3.0 license"></a>
-  <a href="https://github.com/lrqnet/NetKeep/releases/tag/v1.0.2"><img src="https://img.shields.io/badge/release-v1.0.2-0f172a" alt="NetKeep v1.0.2"></a>
+  <a href="https://github.com/lrqnet/NetKeep/releases/tag/v1.0.3"><img src="https://img.shields.io/badge/release-v1.0.3-0f172a" alt="NetKeep v1.0.3"></a>
   <a href="https://hub.docker.com/r/lrqnet/netkeep"><img src="https://img.shields.io/badge/Docker-amd64%20%7C%20arm64-2496ed?logo=docker&logoColor=white" alt="Docker images for amd64 and arm64"></a>
   <a href="https://github.com/ytti/oxidized"><img src="https://img.shields.io/badge/Oxidized-0.37.0-475569" alt="Oxidized 0.37.0"></a>
 </p>
@@ -40,6 +40,11 @@ history, notifications, and encrypted redundancy.
 - Oxidized isolated inside the Compose network with no host port exposed.
 - NetKeep-controlled persistent collection queue with deduplication, cooldowns,
   bounded retries, global limits, and per-site concurrency.
+- Per-device collection history with a role-safe event timeline, live SSE
+  updates, stable failure categories, retries, and request attribution.
+- Owner- or administrator-initiated diagnostics in the isolated sandbox, with
+  raw traces encrypted before persistent storage and automatically purged after
+  24 hours.
 - Administrative approval of destination, credential, driver, and SSH host key
   before any new device can be collected.
 - Devices, sites, groups, tags, vendors, physical models, drivers, and CSV
@@ -99,13 +104,13 @@ administrative networks are strongly recommended.
 
 ## Quick installation
 
-Create a directory, download the Compose file attached to the v1.0.2 release,
+Create a directory, download the Compose file attached to the v1.0.3 release,
 and start the stack:
 
 ```bash
 sudo mkdir -p /opt/netkeep
 cd /opt/netkeep
-sudo curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.2/compose.yaml
+sudo curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.3/compose.yaml
 sudo docker compose up -d --wait
 sudo docker compose ps
 ```
@@ -160,11 +165,13 @@ with a separate five-minute session.
    credential, and SSH fingerprint, then approve it.
 5. Run the first collection from the device page after reviewing the manual
    collection warning.
-6. Open the device configuration history to inspect versions, compare changes,
-   search, or download a
-   configuration.
-7. Configure operational channels under **Notifications**.
-8. Configure encrypted backups and private Git mirroring under
+6. Open **Collections** on the device page to follow the safe timeline, inspect
+   retries, and diagnose failures. A raw diagnostic is always manual, isolated,
+   reauthenticated, audited, and may expose credentials.
+7. Open the configuration history to inspect versions, compare changes,
+   search, or download a configuration.
+8. Configure operational channels under **Notifications**.
+9. Configure encrypted backups and private Git mirroring under
    **Data protection**.
 
 NetKeep never deletes historical configurations when a device is disabled or
@@ -186,6 +193,8 @@ soft-deleted.
   privileges; protect the installation directory and Docker host accordingly.
 - Treat short intervals, high timeouts, retries, and high concurrency as load
   on production equipment, not merely panel performance settings.
+- Treat diagnostic traces as credentials: view them only when necessary, never
+  attach them to public issues, and let the automatic 24-hour purge complete.
 - Test restoration regularly instead of treating an uploaded backup as proof
   of recoverability.
 

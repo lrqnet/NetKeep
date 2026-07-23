@@ -6,6 +6,7 @@ use App\Enums\CollectionRunStatus;
 use App\Enums\CollectionTrigger;
 use App\Enums\DeviceApprovalStatus;
 use App\Jobs\DispatchDeviceCollection;
+use App\Jobs\RunDeviceDiagnostic;
 use App\Models\CollectionRun;
 use App\Models\Device;
 use App\Models\Organization;
@@ -113,13 +114,19 @@ class CollectionOrchestrator
                     'dispatched_at' => now(),
                     'cooldown_until' => null,
                 ]);
+                app(CollectionRunEventService::class)->record($run, 'dispatched');
                 $siteCounts[$siteKey] = (int) ($siteCounts[$siteKey] ?? 0) + 1;
                 $dispatched[] = $run->id;
             }
         });
 
         foreach ($dispatched as $runId) {
-            DispatchDeviceCollection::dispatch($runId);
+            $run = CollectionRun::query()->find($runId);
+            if ($run?->trigger === CollectionTrigger::Diagnostic) {
+                RunDeviceDiagnostic::dispatch($runId);
+            } else {
+                DispatchDeviceCollection::dispatch($runId);
+            }
         }
 
         return count($dispatched);
@@ -144,7 +151,7 @@ class CollectionOrchestrator
                 foreach ($runs as $run) {
                     $deadline = $run->started_at?->addSeconds($run->device->timeout + 60);
                     if ($deadline?->isPast()) {
-                        app(CollectionRunService::class)->fail($run, 'collection_timeout');
+                        app(CollectionRunService::class)->fail($run, 'collection_timelimit');
                     }
                 }
             });

@@ -73,6 +73,41 @@ else
     npm run test:e2e:chromium
 fi
 
+diagnostic_status="$(
+    "${compose[@]}" exec --no-TTY postgres \
+        psql -U netkeep_admin -d netkeep -tAc \
+        "SELECT status FROM collection_runs WHERE trigger = 'diagnostic' ORDER BY id DESC LIMIT 1"
+)"
+artifact_path="$(
+    "${compose[@]}" exec --no-TTY postgres \
+        psql -U netkeep_admin -d netkeep -tAc \
+        "SELECT a.encrypted_path FROM collection_run_artifacts a JOIN collection_runs r ON r.id = a.collection_run_id WHERE r.trigger = 'diagnostic' ORDER BY r.id DESC LIMIT 1"
+)"
+
+test "$diagnostic_status" = 'succeeded'
+[[ "$artifact_path" =~ ^[0-9a-f-]{36}\.trace$ ]]
+"${compose[@]}" exec --no-TTY app \
+    sh -c 'test -f "/app/storage/app/private/collection-traces/$1" && ! grep -a -q "NETKEEP-E2E" "/app/storage/app/private/collection-traces/$1"' \
+    sh "$artifact_path"
+
+sandbox_clean=''
+for _ in $(seq 1 15); do
+    sandbox_clean="$(
+        "${compose[@]}" exec --no-TTY sandbox \
+            sh -c 'find /run/netkeep-diagnostics -mindepth 1 \( -type f -o -type l \) -print -quit'
+    )"
+    if [[ -z "$sandbox_clean" ]]; then
+        break
+    fi
+    sleep 2
+done
+
+test -z "$sandbox_clean"
+"${compose[@]}" exec --no-TTY sandbox \
+    sh -c 'test ! -e /run/netkeep-diagnostics/repository'
+"${compose[@]}" exec --no-TTY sandbox \
+    sh -c '! grep -R -a -q "NETKEEP-E2E" /home/oxidized/.config/oxidized 2>/dev/null'
+
 "${compose[@]}" exec --no-TTY app php artisan netkeep:dispatch-collections
 
 collection_status=''

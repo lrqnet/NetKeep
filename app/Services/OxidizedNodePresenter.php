@@ -15,12 +15,14 @@ class OxidizedNodePresenter
         $model = $device->customModel?->status === 'published'
             ? $device->customModel->slug
             : $device->oxidized_model;
+        $approvedAddress = collect($device->approved_resolved_addresses)
+            ->first(fn (string $address): bool => filter_var($address, FILTER_VALIDATE_IP) !== false);
 
         $removeSecrets = $device->remove_secrets ?? $device->group->remove_secrets ?? false;
 
         return array_filter([
             'name' => $device->uuid,
-            'ip' => $device->hostname ?: $device->ip_address,
+            'ip' => $approvedAddress ?: $device->ip_address ?: $device->hostname,
             'model' => $model,
             'group' => $device->device_group_id ? 'group-'.$device->device_group_id : 'default',
             'username' => $device->username_override ?: $credentials?->username,

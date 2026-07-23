@@ -9,6 +9,7 @@ use App\Models\Device;
 use App\Services\CustomModelPublisher;
 use App\Services\DangerousFeatureService;
 use App\Services\KnownHostsWriter;
+use App\Services\SandboxLock;
 use App\Services\SandboxOxidizedClient;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
@@ -31,7 +32,7 @@ class TestCustomModel implements ShouldQueue
 
     public function handle(CustomModelPublisher $publisher, SandboxOxidizedClient $oxidized): void
     {
-        Cache::lock('netkeep:model-sandbox', 420)->block(5, function () use ($publisher, $oxidized): void {
+        Cache::lock(SandboxLock::KEY, 420)->block(5, function () use ($publisher, $oxidized): void {
             $model = CustomModel::query()->findOrFail($this->modelId);
             $device = Device::query()->findOrFail($this->deviceId);
             if (

@@ -22,8 +22,17 @@ return [
         'manual_cooldown' => (int) env('NETKEEP_MANUAL_COLLECTION_COOLDOWN', 300),
         'retry_delays' => [60, 300, 900],
     ],
+    'diagnostics' => [
+        'trace_path' => env('NETKEEP_DIAGNOSTIC_TRACE_PATH', storage_path('app/private/collection-traces')),
+        'trace_max_bytes' => 5 * 1024 * 1024,
+        'trace_retention_hours' => 24,
+        'run_retention_days' => 30,
+        'stream_seconds' => 30,
+        'heartbeat_seconds' => 10,
+    ],
     'sandbox' => [
         'url' => env('OXIDIZED_SANDBOX_URL', 'http://sandbox:8888'),
+        'control_url' => env('OXIDIZED_SANDBOX_CONTROL_URL', 'http://sandbox:8890'),
         'config_path' => env('OXIDIZED_SANDBOX_CONFIG_PATH', storage_path('app/oxidized-sandbox')),
         'timeout' => (int) env('OXIDIZED_SANDBOX_HTTP_TIMEOUT', 10),
     ],

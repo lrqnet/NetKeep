@@ -19,9 +19,10 @@ LAN administrativa / Internet
                     |              |
               device_access    equipamentos aprovados
        |
-       +---- sandbox_internal -- Oxidized sandbox ---- Git isolado
-                                   |
-                            sandbox_device_access
+       +---- sandbox_internal -- Oxidized sandbox ---- Git/trace em tmpfs
+                    |              |
+                    |       sandbox_device_access
+                    +---- reporter ---- eventos/trace cifrado ---- PostgreSQL/storage
 
 Docker socket ---- updater sem rede ---- volume update_exchange ---- Laravel
 ```
@@ -83,6 +84,49 @@ proprietário ou administrador aprova destino, DNS resolvido, porta, transporte,
 credencial, driver e fingerprint SSH. Alterar qualquer um desses campos revoga
 a aprovação.
 
+### Eventos, SSE e diagnóstico isolado
+
+Cada transição material cria um `collection_run_event` com UUID idempotente,
+horário, origem, nível, código estável, mensagem sanitizada e contexto seguro.
+O reporter compilado na imagem derivada do Oxidized usa somente as variáveis
+oficiais dos hooks `node_success`, `node_fail` e `post_store` e envia JSON de no
+máximo 8 KiB para `POST /internal/oxidized/events`. Um `node_fail` pode encerrar
+a execução imediatamente; o sucesso continua sendo confirmado pelo
+reconciliador de status e Git.
+
+Os endpoints JSON e SSE usam o mesmo serializer por papel. Operador e leitor
+nunca recebem `technical_message`, contexto ou referência do motor. O cursor do
+SSE é o ID crescente do evento; heartbeats, duração limitada e contador por
+usuário evitam workers presos e streams ilimitados.
+
+O diagnóstico é uma nova execução com origem `diagnostic`, nunca uma reação
+automática a falhas. Ele compartilha a trava global do sandbox com testes de
+modelos, ativa `input.debug` apenas durante a execução e restaura configuração,
+modelo, seleção e processo em `finally`. Um controlador mínimo da imagem
+derivada reinicia somente o processo Oxidized do sandbox para carregar a
+configuração temporária e a restauração; sua API autenticada fica apenas na
+rede `sandbox_internal`, sem porta publicada. O repositório Git e os logs do
+sandbox ficam em `/run/netkeep-diagnostics`, um `tmpfs` sem execução. Nenhum
+commit ou registro de backup de produção é criado.
+
+O reporter envia o arquivo de debug em stream para
+`PUT /internal/oxidized/diagnostics/{deviceUuid}/trace`, apaga o plaintext após
+a tentativa e remove o Git efêmero depois do armazenamento. A aplicação limita
+o conteúdo a 5 MiB e usa XChaCha20-Poly1305 secretstream com chave HKDF separada
+por domínio a partir da `APP_KEY`. O UUID do artefato é dado autenticado; path,
+tipo de arquivo, checksum e versão de criptografia são validados antes de
+decifrar. O volume persistente recebe somente ciphertext.
+
+O token do reporter fica em arquivo protegido dentro das configurações dos
+motores. A aplicação exige comparação constante do token e `Host: app`; o
+Caddy bloqueia `/internal/oxidized/*` para qualquer outro host. Payloads,
+timestamps, UUIDs, replay entre equipamentos, traversal e symlinks são
+validados de forma fail-closed.
+
+Traces expiram em 24 horas. Execuções e eventos terminais expiram em 30 dias
+por cascade, enquanto FKs de `BackupRun` são apenas anuladas. Git, backups e
+auditoria permanecem fora dessa política.
+
 ## Limites de rede
 
 O endpoint `GET /internal/oxidized/nodes` exige token rotativo e retorna apenas
@@ -94,7 +138,8 @@ link-local, metadata, multicast, unspecified, IPv4 mapeado e nomes ou endereços
 dos serviços Compose. A resolução validada é fixada à conexão e repetida a cada
 uso. A proteção é aplicada a inventário, webhooks, Telegram, SMTP, S3 e Git.
 IPs públicos e privados de equipamentos são permitidos depois da aprovação
-administrativa.
+administrativa. O Oxidized recebe um IP literal da resolução aprovada e não
+refaz DNS, preservando o UUID como identidade estável do equipamento.
 
 SSH usa verificação de host. O fingerprint é apresentado antes da aprovação,
 materializado em `known_hosts` e qualquer mudança pausa a coleta e gera alerta.

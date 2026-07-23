@@ -22,19 +22,27 @@ class KnownHostsWriter
             ->orderBy('uuid')
             ->get()
             ->flatMap(function (Device $device): array {
-                $host = $device->hostname ?: $device->ip_address;
-                $prefix = $device->port === 22 ? $host : "[{$host}]:{$device->port}";
+                $hosts = collect([
+                    $device->hostname ?: $device->ip_address,
+                    ...($device->approved_resolved_addresses ?? []),
+                ])->filter(fn (string $host): bool => $host !== '')
+                    ->unique()
+                    ->values();
 
-                return collect(explode("\n", (string) $device->ssh_host_key))
-                    ->map(function (string $key) use ($prefix): string {
-                        $parts = preg_split('/\s+/', trim($key), 3);
+                return $hosts->flatMap(function (string $host) use ($device): array {
+                    $prefix = $device->port === 22 ? $host : "[{$host}]:{$device->port}";
 
-                        return is_array($parts) && count($parts) >= 3
-                            ? $prefix.' '.$parts[1].' '.$parts[2]
-                            : '';
-                    })
-                    ->filter()
-                    ->all();
+                    return collect(explode("\n", (string) $device->ssh_host_key))
+                        ->map(function (string $key) use ($prefix): string {
+                            $parts = preg_split('/\s+/', trim($key), 3);
+
+                            return is_array($parts) && count($parts) >= 3
+                                ? $prefix.' '.$parts[1].' '.$parts[2]
+                                : '';
+                        })
+                        ->filter()
+                        ->all();
+                })->all();
             })
             ->implode("\n");
 

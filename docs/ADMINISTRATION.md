@@ -74,6 +74,47 @@ desativados. Proprietário ou administrador deve conferir e aprovar:
 Mudanças nesses valores revogam automaticamente a aprovação e pausam coletas.
 Uma alteração de chave SSH nunca é aceita silenciosamente.
 
+## Histórico e diagnóstico por equipamento
+
+A tela de edição separa **Configuração** e **Coletas**. Todos os papéis podem
+consultar a lista paginada de 25 execuções, filtrar por status, origem e período
+e acompanhar a timeline segura. A lista informa solicitante, tentativa,
+horários, duração, execução anterior de um retry, motivo seguro e estado do
+trace. Referências do motor, mensagens técnicas e contexto interno aparecem
+somente para proprietário e administrador.
+
+Enquanto uma execução está ativa, o navegador acompanha eventos e status por
+SSE. O stream aceita `Last-Event-ID`, envia heartbeat a cada dez segundos,
+encerra em 30 segundos ou ao concluir e reconecta automaticamente. Há limite de
+dois streams simultâneos por usuário e execução. O botão de atualização é o
+fallback manual quando a conexão ao vivo estiver indisponível.
+
+Uma falha de produção registra timeline e categoria sanitizada, mas nunca cria
+trace bruto automaticamente. Para investigar, proprietário ou administrador
+deve confirmar a senha nos últimos cinco minutos, digitar `DIAGNOSTIC` e iniciar
+um novo diagnóstico. O pedido é rejeitado se o equipamento estiver desativado,
+sem aprovação técnica vigente ou com outra execução ativa. O sandbox revalida
+DNS, política de segurança e chave SSH e usa a credencial, driver e timeout
+atuais sem criar commit ou `BackupRun` de produção.
+
+O trace bruto pode conter configuração integral, senhas, tokens e comunidades.
+Ele é limitado a 5 MiB, criptografado em stream antes de tocar o volume
+persistente e expira após 24 horas. Visualização e download exigem nova
+confirmação de senha, são auditados e respondem com `no-store`. Nunca copie um
+trace para issue, chat ou armazenamento não protegido.
+
+Execuções e eventos terminais são removidos após 30 dias. Essa retenção não
+remove commits do Git, backups completos nem eventos de auditoria. A limpeza é
+agendada de hora em hora e também pode ser executada localmente:
+
+```bash
+docker compose exec app php artisan netkeep:prune-collection-diagnostics
+```
+
+As categorias seguras conhecidas cobrem autenticação, conexão recusada,
+timeout de conexão, limite total da coleta, prompt não detectado, mudança de
+chave SSH, erro de driver e falha do motor.
+
 ## Recursos perigosos
 
 **Sistema > Recursos perigosos** concentra as exceções ao modo seguro:

@@ -14,7 +14,7 @@ UPDATE_DIR=/var/lib/netkeep/updates
 CACHE_DIR=/var/lib/netkeep/bootstrap-cache
 CADDY_DATA_DIR=/var/lib/netkeep/caddy-data
 CADDY_CONFIG_DIR=/var/lib/netkeep/caddy-config
-mkdir -p "$SECRET_DIR" "$RECOVERY_SECRET_DIR" "$CLAIM_DIR" "$OXIDIZED_DIR/model" "$OXIDIZED_DIR/.ssh" "$OXIDIZED_DIR/repository" "$SANDBOX_DIR/model" "$SANDBOX_DIR/.ssh" "$SANDBOX_DIR/repository" "$STORAGE_DIR/app/public" "$STORAGE_DIR/framework/cache" "$STORAGE_DIR/framework/sessions" "$STORAGE_DIR/framework/views" "$STORAGE_DIR/logs" "$BACKUP_DIR" "$RESTORE_DIR" "$UPDATE_DIR/queue" "$UPDATE_DIR/requests" "$UPDATE_DIR/status" "$CACHE_DIR" "$CADDY_DATA_DIR" "$CADDY_CONFIG_DIR"
+mkdir -p "$SECRET_DIR" "$RECOVERY_SECRET_DIR" "$CLAIM_DIR" "$OXIDIZED_DIR/model" "$OXIDIZED_DIR/.ssh" "$OXIDIZED_DIR/repository" "$SANDBOX_DIR/model" "$SANDBOX_DIR/.ssh" "$STORAGE_DIR/app/public" "$STORAGE_DIR/framework/cache" "$STORAGE_DIR/framework/sessions" "$STORAGE_DIR/framework/views" "$STORAGE_DIR/logs" "$BACKUP_DIR" "$RESTORE_DIR" "$UPDATE_DIR/queue" "$UPDATE_DIR/requests" "$UPDATE_DIR/status" "$CACHE_DIR" "$CADDY_DATA_DIR" "$CADDY_CONFIG_DIR"
 touch "$CADDY_CONFIG_DIR/netkeep-canonical.caddy"
 touch "$CADDY_CONFIG_DIR/netkeep-global.caddy"
 rm -f "$CACHE_DIR"/*.php
@@ -52,6 +52,8 @@ POSTGRES_PASSWORD="$(tr -d '\n' < "$SECRET_DIR/postgres_password")"
 APP_KEY="$(tr -d '\n' < "$SECRET_DIR/app_key")"
 OXIDIZED_TOKEN="$(tr -d '\n' < "$SECRET_DIR/oxidized_token")"
 PASSKEY_SECRET="$(tr -d '\n' < "$SECRET_DIR/passkey_secret")"
+printf '%s\n' "$OXIDIZED_TOKEN" > "$OXIDIZED_DIR/.netkeep-token"
+printf '%s\n' "$OXIDIZED_TOKEN" > "$SANDBOX_DIR/.netkeep-token"
 
 {
     printf 'APP_NAME=NetKeep\n'
@@ -96,7 +98,7 @@ if [ ! -s "$SANDBOX_DIR/config" ]; then
         printf '%s\n' '    user: NetKeep Sandbox'
         printf '%s\n' '    email: netkeep@localhost'
         printf '%s\n' '    single_repo: true'
-        printf '%s\n' '    repo: /home/oxidized/.config/oxidized/repository'
+        printf '%s\n' '    repo: /run/netkeep-diagnostics/repository'
         printf '%s\n' 'source:'
         printf '%s\n' '  default: http'
         printf '%s\n' '  http:'
@@ -262,6 +264,14 @@ harden_engine_config() {
             print "    single_repo: true"
             next
         }
+        /^    repo:/ {
+            if (mode == "sandbox") {
+                print "    repo: /run/netkeep-diagnostics/repository"
+            } else {
+                print
+            }
+            next
+        }
         {
             print
         }
@@ -279,6 +289,53 @@ harden_engine_config() {
 
 harden_engine_config "$OXIDIZED_DIR/config" production
 harden_engine_config "$SANDBOX_DIR/config" sandbox
+
+install_reporter_hook() {
+    config="$1"
+    temporary="${config}.reporter.$$"
+    awk '
+        BEGIN { managed = 0; inserted = 0 }
+        {
+            if (managed) {
+                if ($0 ~ /^  [^ ]/ || $0 ~ /^[^ ]/) {
+                    managed = 0
+                } else {
+                    next
+                }
+            }
+            if ($0 == "  netkeep_reporter:") {
+                managed = 1
+                next
+            }
+            print
+            if ($0 == "hooks:") {
+                print "  netkeep_reporter:"
+                print "    type: exec"
+                print "    events: [node_success, node_fail, post_store]"
+                print "    cmd: /usr/local/bin/netkeep-oxidized-reporter"
+                print "    async: false"
+                print "    timeout: 30"
+                inserted = 1
+            }
+        }
+        END {
+            if (! inserted) {
+                print "hooks:"
+                print "  netkeep_reporter:"
+                print "    type: exec"
+                print "    events: [node_success, node_fail, post_store]"
+                print "    cmd: /usr/local/bin/netkeep-oxidized-reporter"
+                print "    async: false"
+                print "    timeout: 30"
+            }
+        }
+    ' "$config" > "$temporary"
+    chmod 0640 "$temporary"
+    mv "$temporary" "$config"
+}
+
+install_reporter_hook "$OXIDIZED_DIR/config"
+install_reporter_hook "$SANDBOX_DIR/config"
 
 prepare_repository() {
     repository="$1"
@@ -303,7 +360,6 @@ prepare_repository() {
 }
 
 prepare_repository "$OXIDIZED_DIR/repository" NetKeep
-prepare_repository "$SANDBOX_DIR/repository" "NetKeep Sandbox"
 
 rm -f "$OXIDIZED_DIR/pid" "$OXIDIZED_DIR/crash"
 rm -f "$SANDBOX_DIR/pid" "$SANDBOX_DIR/crash"
@@ -318,8 +374,8 @@ chown -R root:20000 "$CLAIM_DIR"
 chmod 0750 "$SECRET_DIR" "$RECOVERY_SECRET_DIR"
 chmod 0770 "$CLAIM_DIR"
 chmod 0770 "$UPDATE_DIR" "$UPDATE_DIR/queue" "$UPDATE_DIR/requests" "$UPDATE_DIR/status"
-chmod 2770 "$OXIDIZED_DIR" "$SANDBOX_DIR" "$OXIDIZED_DIR/model" "$OXIDIZED_DIR/.ssh" "$OXIDIZED_DIR/repository" "$SANDBOX_DIR/model" "$SANDBOX_DIR/.ssh" "$SANDBOX_DIR/repository"
-find "$OXIDIZED_DIR/repository" "$SANDBOX_DIR/repository" -type d -exec chmod 2770 {} +
-find "$OXIDIZED_DIR/repository" "$SANDBOX_DIR/repository" -type f -exec chmod 0660 {} +
-chmod 0640 "$SECRET_DIR"/* "$RECOVERY_SECRET_DIR"/* "$OXIDIZED_DIR/config" "$SANDBOX_DIR/config"
+chmod 2770 "$OXIDIZED_DIR" "$SANDBOX_DIR" "$OXIDIZED_DIR/model" "$OXIDIZED_DIR/.ssh" "$OXIDIZED_DIR/repository" "$SANDBOX_DIR/model" "$SANDBOX_DIR/.ssh"
+find "$OXIDIZED_DIR/repository" -type d -exec chmod 2770 {} +
+find "$OXIDIZED_DIR/repository" -type f -exec chmod 0660 {} +
+chmod 0640 "$SECRET_DIR"/* "$RECOVERY_SECRET_DIR"/* "$OXIDIZED_DIR/config" "$SANDBOX_DIR/config" "$OXIDIZED_DIR/.netkeep-token" "$SANDBOX_DIR/.netkeep-token"
 chmod 0660 "$CLAIM_DIR/installation_claim_token"

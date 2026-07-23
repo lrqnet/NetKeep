@@ -80,6 +80,13 @@ services:
         networks:
             device_access:
                 ipv4_address: 172.31.250.10
+            sandbox_device_access:
+
+    sandbox:
+        networks:
+            - sandbox_internal
+            - sandbox_device_access
+            - device_access
 
 networks:
     device_access:

@@ -5,6 +5,23 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-07-22
+
+### Added
+
+- aba **Coletas** por equipamento com paginação, filtros, origem, solicitante,
+  tentativas, duração, relação de retry e timeline segura acompanhada por SSE;
+- eventos idempotentes do ciclo de coleta e reporter mínimo em Go para os hooks
+  oficiais `node_success`, `node_fail` e `post_store` do Oxidized;
+- diagnóstico manual no sandbox isolado, exclusivo de proprietário e
+  administrador, com reautenticação, confirmação textual e trava compartilhada
+  com testes de modelos;
+- trace bruto do diagnóstico transmitido em stream, limitado a 5 MiB,
+  criptografado com chave derivada da `APP_KEY` e disponível para visualização
+  ou download auditados sem cache;
+- retenção automática de 24 horas para traces e 30 dias para execuções e
+  eventos terminais, sem alterar Git, backups ou auditoria.
+
 ### Changed
 
 - scanner Trivy agora bloqueia configurações altas e críticas não justificadas
@@ -16,9 +33,25 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
   removendo vulnerabilidades corrigidas no servidor SSH de teste;
 - bases FrankenPHP e Docker CLI atualizadas para revisões oficiais corrigidas,
   e o plugin Buildx não utilizado removido do updater.
+- repositório Git do sandbox passa a ser efêmero em `tmpfs`; o volume legado
+  `sandbox_git` permanece apenas declarado para não remover dados durante uma
+  atualização e não recebe novas configurações diagnósticas.
+
+### Security
+
+- detalhes técnicos e referências do motor são serializados apenas para
+  proprietário e administrador; operador e leitor recebem a timeline segura em
+  JSON e SSE sem campos técnicos;
+- falhas de produção nunca ativam captura bruta automática: o motivo é
+  sanitizado e o diagnóstico isolado precisa ser iniciado explicitamente;
+- reporter interno exige token, `Host: app`, payload limitado, UUID validado e
+  rejeita replay entre equipamentos, traversal e symlinks sem registrar
+  credenciais ou conteúdo bruto.
 
 ### Fixed
 
+- healthcheck do PostgreSQL descarta a saída do `pg_isready`, impedindo que um
+  pipe encerrado pelo runtime force recovery do banco sob pressão de I/O;
 - workflow de release atualizado para o instalador Cosign compatível com os
   bundles Sigstore publicados pelo Cosign 3.x, preservando a verificação do
   binário, das imagens e do manifesto de atualização;
@@ -194,7 +227,8 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 - ambiente PostgreSQL do CI alinhado ao arquivo de teste e asserções de
   mensagens independentes do idioma configurado.
 
-[Unreleased]: https://github.com/lrqnet/NetKeep/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/lrqnet/NetKeep/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/lrqnet/NetKeep/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/lrqnet/NetKeep/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/lrqnet/NetKeep/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/lrqnet/NetKeep/releases/tag/v1.0.0

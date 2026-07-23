@@ -9,8 +9,11 @@ use App\Models\Device;
 use App\Models\DeviceGroup;
 use App\Models\User;
 use App\Services\DeviceApprovalService;
+use App\Services\KnownHostsWriter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class OxidizedNodesTest extends TestCase
@@ -69,6 +72,64 @@ class OxidizedNodesTest extends TestCase
         $stored = DB::table('credential_profiles')->value('password');
         $this->assertNotSame('plain-test-secret', $stored);
         $this->assertStringNotContainsString('plain-test-secret', (string) $stored);
+    }
+
+    public function test_internal_source_pins_hostname_devices_to_the_approved_address(): void
+    {
+        config(['netkeep.oxidized.token' => 'internal-test-token']);
+        $device = Device::query()->create([
+            'name' => 'hostname-device',
+            'hostname' => 'router.example.test',
+            'ip_address' => '198.51.100.24',
+            'port' => 22,
+            'transport' => 'ssh',
+            'oxidized_model' => 'ios',
+            'enabled' => true,
+            'approval_status' => DeviceApprovalStatus::Approved,
+            'approved_resolved_addresses' => ['198.51.100.25'],
+        ]);
+        $device->update([
+            'approval_fingerprint' => app(DeviceApprovalService::class)->fingerprint($device),
+        ]);
+
+        $this->withHeader('X-NetKeep-Token', 'internal-test-token')
+            ->getJson('/internal/oxidized/nodes')
+            ->assertOk()
+            ->assertJsonPath('0.name', $device->uuid)
+            ->assertJsonPath('0.ip', '198.51.100.25');
+    }
+
+    public function test_known_hosts_contains_hostname_and_approved_address(): void
+    {
+        $device = Device::query()->create([
+            'name' => 'hostname-device',
+            'hostname' => 'router.example.test',
+            'ip_address' => '198.51.100.24',
+            'port' => 2222,
+            'transport' => 'ssh',
+            'oxidized_model' => 'ios',
+            'enabled' => true,
+            'approval_status' => DeviceApprovalStatus::Approved,
+            'approved_resolved_addresses' => ['198.51.100.25'],
+            'ssh_host_key' => 'router.example.test ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFictional',
+        ]);
+        $directory = storage_path('framework/testing/known-hosts-'.Str::uuid());
+
+        try {
+            app(KnownHostsWriter::class)->write($directory);
+            $content = File::get($directory.'/.ssh/known_hosts');
+
+            $this->assertStringContainsString(
+                '[router.example.test]:2222 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFictional',
+                $content,
+            );
+            $this->assertStringContainsString(
+                '[198.51.100.25]:2222 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFictional',
+                $content,
+            );
+        } finally {
+            File::deleteDirectory($directory);
+        }
     }
 
     public function test_internal_source_excludes_dangerous_drivers_when_the_feature_is_disabled(): void

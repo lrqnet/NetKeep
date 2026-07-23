@@ -96,7 +96,7 @@ jobs:
           images: |
             ghcr.io/lrqnet/netkeep-oxidized
             docker.io/lrqnet/netkeep-oxidized
-          tags: type=raw,value=0.37.0-r1
+          tags: type=raw,value=0.37.0-r2
       - id: build
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
         with:
@@ -198,7 +198,7 @@ jobs:
           mkdir -p dist
           sed \
             -e "s#docker.io/lrqnet/netkeep:${VERSION}#docker.io/lrqnet/netkeep@${APP_DIGEST}#g" \
-            -e "s#docker.io/lrqnet/netkeep-oxidized:0.37.0-r1#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g" \
+            -e "s#docker.io/lrqnet/netkeep-oxidized:0.37.0-r2#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g" \
             -e "s#docker.io/lrqnet/netkeep-updater:${VERSION}#docker.io/lrqnet/netkeep-updater@${UPDATER_DIGEST}#g" \
             compose.yaml > dist/compose.yaml
           grep -q "docker.io/lrqnet/netkeep@sha256:" dist/compose.yaml

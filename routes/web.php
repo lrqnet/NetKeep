@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\CollectionRunController;
+use App\Http\Controllers\CollectionTraceController;
 use App\Http\Controllers\ConfigurationController;
 use App\Http\Controllers\CredentialProfileController;
 use App\Http\Controllers\CustomModelController;
@@ -9,9 +11,12 @@ use App\Http\Controllers\DangerousFeatureController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataProtectionController;
 use App\Http\Controllers\DeviceController;
+use App\Http\Controllers\DeviceDiagnosticController;
 use App\Http\Controllers\IntegrationController;
 use App\Http\Controllers\Internal\CaddyDomainController;
+use App\Http\Controllers\Internal\OxidizedEventController;
 use App\Http\Controllers\Internal\OxidizedNodesController;
+use App\Http\Controllers\Internal\OxidizedTraceController;
 use App\Http\Controllers\Internal\SandboxNodesController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\NotificationChannelController;
@@ -56,6 +61,13 @@ Route::get('/internal/oxidized/nodes', OxidizedNodesController::class)
 Route::get('/internal/oxidized/sandbox-nodes', SandboxNodesController::class)
     ->middleware(['internal.token', 'throttle:120,1'])
     ->name('internal.oxidized.sandbox-nodes');
+Route::post('/internal/oxidized/events', OxidizedEventController::class)
+    ->middleware(['internal.oxidized.reporter', 'throttle:240,1'])
+    ->name('internal.oxidized.events');
+Route::put('/internal/oxidized/diagnostics/{deviceUuid}/trace', OxidizedTraceController::class)
+    ->whereUuid('deviceUuid')
+    ->middleware(['internal.oxidized.reporter', 'throttle:30,1'])
+    ->name('internal.oxidized.diagnostics.trace');
 
 Route::middleware('auth')->group(function (): void {
     Route::get('/setup', [SetupController::class, 'show'])->name('setup.show');
@@ -76,6 +88,9 @@ Route::middleware('auth')->group(function (): void {
         Route::post('/devices/{device}/force-collect', [DeviceController::class, 'forceCollect'])
             ->middleware(['role:owner,administrator', 'password.confirm', 'throttle:6,10'])
             ->name('devices.force-collect');
+        Route::post('/devices/{device}/diagnostics', DeviceDiagnosticController::class)
+            ->middleware(['role:owner,administrator', 'password.recent:5', 'throttle:device-diagnostics'])
+            ->name('devices.diagnostics');
         Route::post('/devices/{device}/approve', [DeviceController::class, 'approve'])
             ->middleware(['role:owner,administrator', 'password.confirm', 'throttle:10,1'])
             ->name('devices.approve');
@@ -92,6 +107,20 @@ Route::middleware('auth')->group(function (): void {
             ->name('configurations.download');
         Route::get('/devices/{device}/configuration/diff', [ConfigurationController::class, 'diff'])
             ->name('configurations.diff');
+
+        Route::get('/devices/{device}/collection-runs', [CollectionRunController::class, 'index'])
+            ->name('devices.collection-runs.index');
+        Route::get('/collection-runs/{run}/events', [CollectionRunController::class, 'events'])
+            ->name('collection-runs.events');
+        Route::get('/collection-runs/{run}/stream', [CollectionRunController::class, 'stream'])
+            ->middleware('throttle:120,1')
+            ->name('collection-runs.stream');
+        Route::get('/collection-runs/{run}/trace', [CollectionTraceController::class, 'show'])
+            ->middleware(['role:owner,administrator', 'password.recent:5'])
+            ->name('collection-runs.trace');
+        Route::get('/collection-runs/{run}/trace/download', [CollectionTraceController::class, 'download'])
+            ->middleware(['role:owner,administrator', 'password.recent:5', 'throttle:12,1'])
+            ->name('collection-runs.trace.download');
 
         Route::resource('credentials', CredentialProfileController::class)
             ->parameters(['credentials' => 'credential'])

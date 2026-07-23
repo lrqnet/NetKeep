@@ -9,6 +9,7 @@ use App\Models\CustomModel;
 use App\Models\Device;
 use App\Services\DangerousFeatureService;
 use App\Services\DeviceApprovalService;
+use App\Services\DeviceSafetyPolicy;
 use App\Services\OxidizedNodePresenter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
@@ -19,6 +20,7 @@ class SandboxNodesController extends Controller
         OxidizedNodePresenter $presenter,
         DeviceApprovalService $approval,
         DangerousFeatureService $dangerous,
+        DeviceSafetyPolicy $safety,
     ): JsonResponse {
         $selection = Cache::get('netkeep:sandbox-selection');
         $device = is_array($selection)
@@ -30,18 +32,20 @@ class SandboxNodesController extends Controller
                 ->first()
             : null;
         if ($device) {
-            $model = CustomModel::query()
+            $diagnostic = ($selection['mode'] ?? null) === 'diagnostic';
+            $model = $diagnostic ? null : CustomModel::query()
                 ->where('slug', (string) ($selection['model_slug'] ?? ''))
                 ->first();
             if (
-                ! $model
+                (! $diagnostic && ! $model)
                 || ! $approval->isCurrent($device)
+                || ($diagnostic && ! $safety->allows($device))
                 || (
                     $device->transport === 'telnet'
                     && ! $dangerous->enabled(DangerousFeature::Telnet)
                 )
                 || (
-                    $model->source === 'raw'
+                    $model?->source === 'raw'
                     && ! $dangerous->enabled(DangerousFeature::RawRuby)
                 )
             ) {

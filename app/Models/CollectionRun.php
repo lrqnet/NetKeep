@@ -6,6 +6,7 @@ use App\Enums\CollectionRunStatus;
 use App\Enums\CollectionTrigger;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -31,6 +32,11 @@ class CollectionRun extends Model
         static::creating(function (CollectionRun $run): void {
             $run->uuid ??= (string) Str::uuid();
         });
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
     }
 
     protected function casts(): array
@@ -63,5 +69,17 @@ class CollectionRun extends Model
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    /** @return HasMany<CollectionRunEvent, $this> */
+    public function events(): HasMany
+    {
+        return $this->hasMany(CollectionRunEvent::class);
+    }
+
+    /** @return HasMany<CollectionRunArtifact, $this> */
+    public function artifacts(): HasMany
+    {
+        return $this->hasMany(CollectionRunArtifact::class);
     }
 }

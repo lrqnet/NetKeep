@@ -1,6 +1,7 @@
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { expect, test as setup } from '@playwright/test';
+import { gotoWithTlsRetry } from './support/navigation';
 
 const authFile = 'playwright/.auth/owner.json';
 
@@ -15,7 +16,7 @@ setup('installs NetKeep and creates the first owner', async ({ page }) => {
     expect(baseURL).toBeTruthy();
     expect(bootstrapURL).toBeTruthy();
 
-    await page.goto(bootstrapURL as string);
+    await gotoWithTlsRetry(page, bootstrapURL as string);
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 
     await page.getByRole('button', { name: 'Change language' }).click();
@@ -40,7 +41,7 @@ setup('installs NetKeep and creates the first owner', async ({ page }) => {
     await englishResponse;
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 
-    await page.goto(`${bootstrapURL}/register`);
+    await gotoWithTlsRetry(page, `${bootstrapURL}/register`);
     await page.getByLabel('Server installation token').fill(token as string);
     await page.getByLabel('Name').fill('NetKeep E2E Owner');
     await page.getByLabel('Email address').fill('owner@netkeep.example');
@@ -71,7 +72,7 @@ setup('installs NetKeep and creates the first owner', async ({ page }) => {
     await expect(page).toHaveURL(/\/dashboard$/, { timeout: 30_000 });
     await expect(page.locator('main')).toBeVisible();
 
-    await page.goto('/user/confirm-password');
+    await gotoWithTlsRetry(page, '/user/confirm-password');
     await page
         .getByLabel('Password', { exact: true })
         .fill('NetKeep-E2E-2026!');
@@ -83,14 +84,14 @@ setup('installs NetKeep and creates the first owner', async ({ page }) => {
     await page.getByRole('button', { name: 'Confirm password' }).click();
     expect([302, 303]).toContain((await confirmationResponse).status());
 
-    await page.goto('/credentials');
+    await gotoWithTlsRetry(page, '/credentials');
     await page.getByLabel('Profile name').fill('E2E SSH');
     await page.getByLabel('Username').fill('netkeep');
     await page.getByLabel('Password', { exact: true }).fill('e2e');
     await page.getByRole('button', { name: 'Save encrypted' }).click();
     await expect(page.getByText('E2E SSH', { exact: true })).toBeVisible();
 
-    await page.goto('/devices');
+    await gotoWithTlsRetry(page, '/devices');
     await page.getByLabel('Name', { exact: true }).fill('E2E Router');
     await page.getByLabel('IP address').fill('172.31.250.10');
     await page
@@ -106,7 +107,7 @@ setup('installs NetKeep and creates the first owner', async ({ page }) => {
         .locator('a[href$="/edit"]')
         .getAttribute('href');
     expect(editHref).toMatch(/^\/devices\/\d+\/edit$/);
-    await page.goto(editHref as string);
+    await gotoWithTlsRetry(page, editHref as string);
     await page.getByLabel('Hostname').fill('device-simulator');
     const updateResponse = page.waitForResponse(
         (response) =>
@@ -116,7 +117,7 @@ setup('installs NetKeep and creates the first owner', async ({ page }) => {
     await page.getByRole('button', { name: 'Save changes' }).click();
     expect([302, 303]).toContain((await updateResponse).status());
 
-    await page.goto('/devices');
+    await gotoWithTlsRetry(page, '/devices');
     deviceRow = page.getByRole('row').filter({ hasText: 'E2E Router' });
     await expect(deviceRow).toBeVisible();
     const approvalResponse = page.waitForResponse(

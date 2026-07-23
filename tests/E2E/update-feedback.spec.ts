@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import { gotoWithTlsRetry } from './support/navigation';
 
 const project = process.env.NETKEEP_E2E_PROJECT ?? 'netkeep-e2e';
 const root = resolve(import.meta.dirname, '../..');
@@ -57,7 +58,7 @@ test('reauthenticates once and preserves update feedback across navigation and r
     `);
 
     try {
-        await page.goto('/updates');
+        await gotoWithTlsRetry(page, '/updates');
         await expect(
             page.getByRole('button', { name: 'Update now' }),
         ).toBeEnabled();
@@ -98,7 +99,7 @@ test('reauthenticates once and preserves update feedback across navigation and r
             page.getByText('Update request received', { exact: true }),
         ).toBeVisible();
 
-        await page.goto('/dashboard');
+        await gotoWithTlsRetry(page, '/dashboard');
         await expect(
             page.getByText('Updating v1.0.3 to v1.0.5', { exact: true }),
         ).toBeVisible();

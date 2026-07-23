@@ -36,8 +36,8 @@ O token fica somente no cofre de secrets do GitHub e não deve ser salvo em
 O workflow `.github/workflows/release.yml` é acionado por tags SemVer:
 
 ```bash
-git tag -a v1.0.2 -m "NetKeep v1.0.2"
-git push origin v1.0.2
+git tag -a v1.0.3 -m "NetKeep v1.0.3"
+git push origin v1.0.3
 ```
 
 O workflow:
@@ -45,7 +45,7 @@ O workflow:
 1. autentica no GHCR com `GITHUB_TOKEN`;
 2. autentica no Docker Hub com os secrets;
 3. constrói NetKeep, NetKeep-Oxidized e NetKeep-Updater para `amd64` e `arm64`;
-4. publica as tags SemVer do painel e updater e `0.37.0-r1` do motor;
+4. publica as tags SemVer do painel e updater e `0.37.0-r2` do motor;
 5. gera SBOM e provenance para as três imagens;
 6. assina os digests nos dois registries;
 7. substitui as tags do Compose pelos digests publicados;
@@ -56,20 +56,20 @@ O Compose nunca usa `latest`; a tag existe apenas para descoberta manual.
 ## Conferência
 
 ```bash
-docker pull lrqnet/netkeep:1.0.2
-docker image inspect lrqnet/netkeep:1.0.2
+docker pull lrqnet/netkeep:1.0.3
+docker image inspect lrqnet/netkeep:1.0.3
 cosign verify \
   --certificate-identity-regexp='github.com/lrqnet/NetKeep' \
   --certificate-oidc-issuer='https://token.actions.githubusercontent.com' \
-  docker.io/lrqnet/netkeep:1.0.2
+  docker.io/lrqnet/netkeep:1.0.3
 
 cosign verify \
   --certificate-identity-regexp='github.com/lrqnet/NetKeep' \
   --certificate-oidc-issuer='https://token.actions.githubusercontent.com' \
-  docker.io/lrqnet/netkeep-oxidized:0.37.0-r1
+  docker.io/lrqnet/netkeep-oxidized:0.37.0-r2
 ```
 
-Verifique também `docker.io/lrqnet/netkeep-updater:1.0.2` com a mesma
+Verifique também `docker.io/lrqnet/netkeep-updater:1.0.3` com a mesma
 identidade e emissor.
 
 ## Deploy ou atualização
@@ -79,7 +79,7 @@ Em um servidor novo:
 ```bash
 mkdir -p /opt/netkeep
 cd /opt/netkeep
-curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.2/compose.yaml
+curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.3/compose.yaml
 docker compose up -d
 ```
 

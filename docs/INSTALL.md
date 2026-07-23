@@ -21,7 +21,7 @@ também são espelhadas no GHCR.
 ```bash
 mkdir -p /opt/netkeep
 cd /opt/netkeep
-curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.2/compose.yaml
+curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.3/compose.yaml
 docker compose up -d --wait
 docker compose ps
 ```
@@ -112,10 +112,12 @@ docker compose exec postgres sh -c \
   uso;
 - `netkeep_recovery_secrets`: credencial administrativa, acessível somente aos
   serviços de inicialização e recuperação;
-- `netkeep_storage`: uploads, logs e sessões;
+- `netkeep_storage`: uploads, logs, sessões e traces diagnósticos já
+  criptografados durante a retenção de 24 horas;
 - `oxidized_config` e `sandbox_config`: configurações e modelos isolados;
 - `oxidized_git`: histórico permanente;
-- `sandbox_git`: histórico descartável de testes;
+- `sandbox_git`: volume legado declarado e não montado; o Git e os traces em
+  plaintext do sandbox atual ficam somente em `tmpfs`;
 - `backup_data`: arquivos completos locais;
 - `restore_inbox`: uploads e estado transacional de restauração;
 - `update_exchange`: pedidos atômicos, heartbeat e estados do updater;

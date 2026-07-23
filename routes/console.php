@@ -20,6 +20,7 @@ Schedule::command('netkeep:check-updates')->everyFiveMinutes()->withoutOverlappi
 Schedule::command('netkeep:auto-update')->everyFiveMinutes()->withoutOverlapping()->onOneServer();
 Schedule::command('netkeep:reconcile-updates')->everyMinute()->withoutOverlapping()->onOneServer();
 Schedule::command('netkeep:prune-backups')->dailyAt('03:30')->withoutOverlapping()->onOneServer();
+Schedule::command('netkeep:prune-collection-diagnostics')->hourly()->withoutOverlapping()->onOneServer();
 Schedule::command('queue:prune-batches --hours=72')->daily();
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;

@@ -21,8 +21,9 @@ class CollectionRequestService
         int $attempt = 1,
         ?CollectionRun $parent = null,
         ?\DateTimeInterface $scheduledFor = null,
+        bool $rejectActive = false,
     ): CollectionRun {
-        return DB::transaction(function () use ($device, $trigger, $requester, $force, $attempt, $parent, $scheduledFor): CollectionRun {
+        $run = DB::transaction(function () use ($device, $trigger, $requester, $force, $attempt, $parent, $scheduledFor, $rejectActive): CollectionRun {
             $locked = Device::query()->lockForUpdate()->findOrFail($device->id);
             $this->ensureCollectable($locked);
 
@@ -37,6 +38,12 @@ class CollectionRequestService
                 ->first();
 
             if ($pending) {
+                if ($rejectActive) {
+                    throw ValidationException::withMessages([
+                        'diagnostic' => __('netkeep.devices.collection_active'),
+                    ]);
+                }
+
                 return $pending;
             }
 
@@ -61,7 +68,11 @@ class CollectionRequestService
                 'trigger' => $trigger,
                 'status' => $status,
                 'attempt' => $attempt,
-                'priority' => $trigger === CollectionTrigger::Manual ? 100 : 0,
+                'priority' => match ($trigger) {
+                    CollectionTrigger::Diagnostic => 200,
+                    CollectionTrigger::Manual => 100,
+                    default => 0,
+                },
                 'scheduled_for' => $scheduledFor ?? now(),
                 'cooldown_until' => $status === CollectionRunStatus::Cooldown ? $scheduledFor : null,
             ]);
@@ -76,6 +87,33 @@ class CollectionRequestService
 
             return $run;
         });
+
+        if ($run->wasRecentlyCreated) {
+            app(CollectionRunEventService::class)->record(
+                $run,
+                'queued',
+                context: array_filter([
+                    'trigger' => $trigger->value,
+                    'attempt' => $attempt,
+                    'parent_uuid' => $parent?->uuid,
+                    'scheduled_for' => $run->scheduled_for->toIso8601String(),
+                ], static fn (mixed $value): bool => $value !== null),
+            );
+            if ($parent) {
+                app(CollectionRunEventService::class)->record(
+                    $parent,
+                    'retry_scheduled',
+                    level: 'warning',
+                    context: [
+                        'retry_uuid' => $run->uuid,
+                        'attempt' => $attempt,
+                        'scheduled_for' => $run->scheduled_for->toIso8601String(),
+                    ],
+                );
+            }
+        }
+
+        return $run;
     }
 
     private function ensureCollectable(Device $device): void

@@ -5,6 +5,8 @@ use App\Http\Middleware\ConfigureSessionSecurity;
 use App\Http\Middleware\EnsureActiveUser;
 use App\Http\Middleware\EnsureCanonicalPasskeys;
 use App\Http\Middleware\EnsureInternalToken;
+use App\Http\Middleware\EnsureOxidizedReporter;
+use App\Http\Middleware\EnsureRecentPassword;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\EnsureSetupComplete;
 use App\Http\Middleware\EnsureTrustedHost;
@@ -30,6 +32,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->prepend(ConfigureSessionSecurity::class);
         $middleware->encryptCookies(except: ['appearance', 'netkeep_locale', 'sidebar_state']);
+        $middleware->validateCsrfTokens(except: [
+            'internal/oxidized/events',
+            'internal/oxidized/diagnostics/*/trace',
+        ]);
 
         $middleware->web(
             prepend: [EnsureTrustedHost::class, ConfigureRequestSecurity::class, EnsureCanonicalPasskeys::class],
@@ -45,6 +51,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'internal.token' => EnsureInternalToken::class,
+            'internal.oxidized.reporter' => EnsureOxidizedReporter::class,
+            'password.recent' => EnsureRecentPassword::class,
             'role' => EnsureRole::class,
             'setup.complete' => EnsureSetupComplete::class,
         ]);

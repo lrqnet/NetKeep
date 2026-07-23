@@ -8,4 +8,5 @@ enum CollectionTrigger: string
     case Scheduled = 'scheduled';
     case Retry = 'retry';
     case ModelTest = 'model_test';
+    case Diagnostic = 'diagnostic';
 }

@@ -1,7 +1,7 @@
 name: netkeep
 
 x-netkeep-image: &netkeep-image
-    image: ${NETKEEP_IMAGE:-docker.io/lrqnet/netkeep:1.0.2}
+    image: ${NETKEEP_IMAGE:-docker.io/lrqnet/netkeep:1.0.3}
 
 x-netkeep-environment: &netkeep-environment
     APP_ENV: production
@@ -13,6 +13,7 @@ x-netkeep-environment: &netkeep-environment
     DB_USERNAME: netkeep
     OXIDIZED_URL: http://oxidized:8888
     OXIDIZED_SANDBOX_URL: http://sandbox:8888
+    OXIDIZED_SANDBOX_CONTROL_URL: http://sandbox:8890
 
 x-netkeep-volumes: &netkeep-volumes
     - netkeep_secrets:/run/netkeep-secrets:ro
@@ -20,7 +21,6 @@ x-netkeep-volumes: &netkeep-volumes
     - oxidized_config:/var/lib/netkeep/oxidized
     - oxidized_git:/var/lib/netkeep/oxidized/repository
     - sandbox_config:/var/lib/netkeep/sandbox
-    - sandbox_git:/var/lib/netkeep/sandbox/repository
     - backup_data:/var/lib/netkeep/backups
     - restore_inbox:/var/lib/netkeep/restore-inbox
     - update_exchange:/var/lib/netkeep/updates
@@ -48,7 +48,6 @@ services:
             - oxidized_config:/var/lib/netkeep/oxidized
             - oxidized_git:/var/lib/netkeep/oxidized/repository
             - sandbox_config:/var/lib/netkeep/sandbox
-            - sandbox_git:/var/lib/netkeep/sandbox/repository
             - backup_data:/var/lib/netkeep/backups
             - restore_inbox:/var/lib/netkeep/restore-inbox
             - update_exchange:/var/lib/netkeep/updates
@@ -81,7 +80,11 @@ services:
             - /tmp:rw,noexec,nosuid,nodev,size=64m
             - /var/run/postgresql:rw,nosuid,nodev,size=16m
         healthcheck:
-            test: ['CMD-SHELL', 'pg_isready -U netkeep_admin -d postgres']
+            test:
+                [
+                    'CMD-SHELL',
+                    'pg_isready -U netkeep_admin -d postgres >/dev/null 2>&1',
+                ]
             interval: 5s
             timeout: 5s
             retries: 30
@@ -145,7 +148,6 @@ services:
             - oxidized_config:/var/lib/netkeep/oxidized
             - oxidized_git:/var/lib/netkeep/oxidized/repository
             - sandbox_config:/var/lib/netkeep/sandbox
-            - sandbox_git:/var/lib/netkeep/sandbox/repository
             - backup_data:/var/lib/netkeep/backups
             - restore_inbox:/var/lib/netkeep/restore-inbox
             - update_exchange:/var/lib/netkeep/updates
@@ -249,7 +251,7 @@ services:
             - egress
 
     oxidized:
-        image: ${NETKEEP_OXIDIZED_IMAGE:-docker.io/lrqnet/netkeep-oxidized:0.37.0-r1}
+        image: ${NETKEEP_OXIDIZED_IMAGE:-docker.io/lrqnet/netkeep-oxidized:0.37.0-r2}
         user: '30000:30000'
         restart: unless-stopped
         read_only: true
@@ -285,7 +287,8 @@ services:
             - device_access
 
     sandbox:
-        image: ${NETKEEP_OXIDIZED_IMAGE:-docker.io/lrqnet/netkeep-oxidized:0.37.0-r1}
+        image: ${NETKEEP_OXIDIZED_IMAGE:-docker.io/lrqnet/netkeep-oxidized:0.37.0-r2}
+        command: ['/usr/local/bin/netkeep-sandbox-controller']
         user: '30000:30000'
         restart: unless-stopped
         read_only: true
@@ -298,15 +301,16 @@ services:
         tmpfs:
             - /tmp:rw,noexec,nosuid,nodev,size=64m
             - /run:rw,nosuid,nodev,size=16m
+            - /run/netkeep-diagnostics:rw,noexec,nosuid,nodev,size=32m
         depends_on:
             app:
                 condition: service_healthy
         environment:
             CONFIG_RELOAD_INTERVAL: '300'
             OXIDIZED_HOME: /home/oxidized/.config/oxidized
+            OXIDIZED_LOGS: /run/netkeep-diagnostics
         volumes:
             - sandbox_config:/home/oxidized/.config/oxidized
-            - sandbox_git:/home/oxidized/.config/oxidized/repository
         healthcheck:
             test:
                 [
@@ -354,14 +358,13 @@ services:
             - oxidized_config:/var/lib/netkeep/oxidized
             - oxidized_git:/var/lib/netkeep/oxidized/repository
             - sandbox_config:/var/lib/netkeep/sandbox
-            - sandbox_git:/var/lib/netkeep/sandbox/repository
             - backup_data:/var/lib/netkeep/backups
             - restore_inbox:/var/lib/netkeep/restore-inbox
         networks:
             - internal
 
     updater:
-        image: ${NETKEEP_UPDATER_IMAGE:-docker.io/lrqnet/netkeep-updater:1.0.2}
+        image: ${NETKEEP_UPDATER_IMAGE:-docker.io/lrqnet/netkeep-updater:1.0.3}
         restart: unless-stopped
         group_add:
             - '20000'

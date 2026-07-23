@@ -1,5 +1,13 @@
 # syntax=docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
 
+FROM golang:1.26.5-alpine@sha256:0178a641fbb4858c5f1b48e34bdaabe0350a330a1b1149aabd498d0699ff5fb2 AS tools-build
+WORKDIR /src/reporter
+COPY oxidized-reporter/go.mod oxidized-reporter/main.go ./
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /netkeep-oxidized-reporter .
+WORKDIR /src/controller
+COPY sandbox-controller/go.mod sandbox-controller/main.go ./
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /netkeep-sandbox-controller .
+
 FROM oxidized/oxidized:0.37.0@sha256:07d8d7d669bb210b1100d121bbe214a3d64d621b1768f8f2179a1508a772541e
 
 USER root
@@ -11,10 +19,13 @@ RUN apt-get update \
     && ln -s /home/oxidized/.config/oxidized/.ssh /home/oxidized/.ssh \
     && chown -h 30000:30000 /home/oxidized/.ssh
 
+COPY --from=tools-build /netkeep-oxidized-reporter /usr/local/bin/netkeep-oxidized-reporter
+COPY --from=tools-build /netkeep-sandbox-controller /usr/local/bin/netkeep-sandbox-controller
+
 LABEL org.opencontainers.image.title="NetKeep Oxidized" \
     org.opencontainers.image.authors="Lucas Quaresma <keep@lrq.lat>" \
     org.opencontainers.image.source="https://github.com/lrqnet/NetKeep" \
-    org.opencontainers.image.licenses="Apache-2.0"
+    org.opencontainers.image.licenses="AGPL-3.0-only"
 
 USER 30000:30000
 

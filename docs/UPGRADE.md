@@ -4,15 +4,15 @@ O NetKeep segue SemVer, detecta releases estáveis oficiais no máximo uma vez
 por hora e separa a consulta de versões da instalação. A detecção funciona sem
 socket Docker e sem depender do agente de atualização.
 
-## Última atualização manual para v1.0.2
+## Atualização manual para instalações sem updater
 
 Instalações v1.0.0 e v1.0.1 ainda não possuem o updater integrado. Faça uma
-última atualização manual para v1.0.2:
+última atualização manual diretamente para v1.0.3:
 
 ```bash
 cd /opt/netkeep
 docker compose exec app php artisan netkeep:backup
-curl -fsSLo compose.yaml.next https://github.com/lrqnet/NetKeep/releases/download/v1.0.2/compose.yaml
+curl -fsSLo compose.yaml.next https://github.com/lrqnet/NetKeep/releases/download/v1.0.3/compose.yaml
 docker compose -f compose.yaml.next config --quiet
 mv compose.yaml.next compose.yaml
 docker compose pull
@@ -59,3 +59,32 @@ proprietário reautenticar e aceitar explicitamente esse risco.
 Quando o manifesto permite rollback e o health check falha, o Compose anterior
 é restaurado automaticamente. Caso contrário, a operação entra em
 `recovery_required`; preserve volumes e snapshot e siga o guia de restauração.
+
+## Mudanças de dados e sandbox na v1.0.3
+
+A atualização cria as tabelas de eventos e artefatos de coleta durante as
+migrations normais. Antes de atualizar, confirme um snapshot completo
+criptografado e espaço livre no volume `netkeep_storage`, que passa a guardar
+somente os traces já cifrados e ainda dentro da retenção de 24 horas.
+
+O `init` instala de forma idempotente e atômica o hook gerenciado do reporter
+nas configurações de produção e sandbox, inclusive em instalações existentes.
+Entradas de hooks não relacionadas são preservadas. Após a atualização,
+confirme que `init` e `database-init` terminaram com código zero e que app,
+worker, scheduler, Oxidized e sandbox estão saudáveis.
+
+O Git usado pelo sandbox deixa de ser persistente e passa para
+`/run/netkeep-diagnostics` em `tmpfs`. O volume legado `sandbox_git` permanece
+declarado, não é montado e não é removido automaticamente. Não execute
+`docker volume rm` durante a atualização; remova um volume legado apenas em uma
+janela posterior, depois de confirmar que não contém nenhum dado necessário.
+
+Depois do primeiro ciclo, valide a limpeza sem expor conteúdo de traces:
+
+```bash
+docker compose exec app php artisan netkeep:prune-collection-diagnostics
+docker compose ps
+```
+
+Uma reversão para versão anterior deve usar o snapshot e a política assinada da
+release; não tente desfazer migrations manualmente em produção.

@@ -74,6 +74,22 @@ Esse comando executa Pint, PHPStan e PHPUnit. A suíte inclui autenticação,
 papéis, inventário, fonte HTTP do Oxidized, histórico Git, modelos, alertas,
 integrações, backup e catálogo com 5.000 equipamentos.
 
+O reporter e o controller do sandbox possuem suítes Go independentes:
+
+```bash
+docker run --rm -v "$PWD:/src" -w /src/oxidized-reporter \
+  golang:1.26.5-alpine@sha256:0178a641fbb4858c5f1b48e34bdaabe0350a330a1b1149aabd498d0699ff5fb2 \
+  sh -c 'test -z "$(gofmt -l .)" && go test ./...'
+
+docker run --rm -v "$PWD:/src" -w /src/sandbox-controller \
+  golang:1.26.5-alpine@sha256:0178a641fbb4858c5f1b48e34bdaabe0350a330a1b1149aabd498d0699ff5fb2 \
+  sh -c 'test -z "$(gofmt -l .)" && go test ./...'
+```
+
+As suítes cobrem token e `Host`, replay durante retry, limites, truncamento,
+traversal, symlinks, remoção do plaintext quando a aplicação está indisponível
+e reinício autenticado do processo Oxidized filho.
+
 ## Jornada E2E completa
 
 O ambiente E2E é separado da instalação local e usa o projeto Compose

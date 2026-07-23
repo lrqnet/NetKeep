@@ -98,6 +98,17 @@ class ContainerRuntimeTest extends TestCase
         }
     }
 
+    public function test_postgres_healthcheck_does_not_expose_its_pipe_to_the_runtime(): void
+    {
+        $compose = file_get_contents(dirname(__DIR__, 2).'/compose.yaml');
+
+        $this->assertIsString($compose);
+        $this->assertStringContainsString(
+            'pg_isready -U netkeep_admin -d postgres >/dev/null 2>&1',
+            $compose,
+        );
+    }
+
     public function test_updater_root_exception_is_scoped_and_expires(): void
     {
         $root = dirname(__DIR__, 2);
@@ -117,13 +128,19 @@ class ContainerRuntimeTest extends TestCase
     {
         $root = dirname(__DIR__, 2);
         $updater = file_get_contents($root.'/Dockerfile.updater');
+        $oxidized = file_get_contents($root.'/Dockerfile.oxidized');
         $simulator = file_get_contents($root.'/tests/Fixtures/device-simulator/Dockerfile');
 
         $this->assertIsString($updater);
+        $this->assertIsString($oxidized);
         $this->assertIsString($simulator);
         $this->assertStringContainsString('golang:1.26.5-alpine@sha256:', $updater);
         $this->assertStringContainsString('docker:29.6.2-cli-alpine3.24@sha256:', $updater);
         $this->assertStringContainsString('RUN rm -f /usr/local/libexec/docker/cli-plugins/docker-buildx', $updater);
+        $this->assertStringContainsString('golang:1.26.5-alpine@sha256:', $oxidized);
+        $this->assertStringContainsString('COPY --from=tools-build /netkeep-oxidized-reporter', $oxidized);
+        $this->assertStringContainsString('COPY --from=tools-build /netkeep-sandbox-controller', $oxidized);
+        $this->assertStringContainsString('USER 30000:30000', $oxidized);
         $this->assertStringContainsString('golang:1.26.5-alpine@sha256:', $simulator);
         $this->assertStringContainsString("\nFROM scratch\n", $simulator);
         $this->assertStringContainsString('USER 30001:30001', $simulator);
@@ -139,6 +156,24 @@ class ContainerRuntimeTest extends TestCase
         $this->assertSame(4, substr_count($workflow, 'cosign-release: v3.0.6'));
         $this->assertStringNotContainsString(
             'sigstore/cosign-installer@f713795cb21599bc4e5c4b58cbad1da852d7eeb9',
+            $workflow,
+        );
+    }
+
+    public function test_release_versions_match_the_compose_and_oxidized_revision(): void
+    {
+        $root = dirname(__DIR__, 2);
+        $compose = file_get_contents($root.'/compose.yaml');
+        $workflow = file_get_contents($root.'/.github/workflows/release.yml');
+
+        $this->assertIsString($compose);
+        $this->assertIsString($workflow);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep:1.0.3', $compose);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep-updater:1.0.3', $compose);
+        $this->assertSame(2, substr_count($compose, 'docker.io/lrqnet/netkeep-oxidized:0.37.0-r2'));
+        $this->assertStringContainsString('tags: type=raw,value=0.37.0-r2', $workflow);
+        $this->assertStringContainsString(
+            's#docker.io/lrqnet/netkeep-oxidized:0.37.0-r2#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g',
             $workflow,
         );
     }

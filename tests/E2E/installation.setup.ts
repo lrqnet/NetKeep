@@ -43,13 +43,11 @@ setup('installs NetKeep and creates the first owner', async ({ page }) => {
     await page.goto(`${bootstrapURL}/register`);
     await page.getByLabel('Server installation token').fill(token as string);
     await page.getByLabel('Name').fill('NetKeep E2E Owner');
+    await page.getByLabel('Email address').fill('owner@netkeep.example');
     await page
-        .getByLabel('Email address')
-        .fill('owner@netkeep.example');
-    await page.getByLabel('Password', { exact: true }).fill('NetKeep-E2E-2026!');
-    await page
-        .getByLabel('Confirm password')
+        .getByLabel('Password', { exact: true })
         .fill('NetKeep-E2E-2026!');
+    await page.getByLabel('Confirm password').fill('NetKeep-E2E-2026!');
     const registrationResponse = page.waitForResponse(
         (response) =>
             response.url().endsWith('/register') &&
@@ -62,12 +60,8 @@ setup('installs NetKeep and creates the first owner', async ({ page }) => {
     await expect(page).toHaveURL(/\/setup$/, { timeout: 30_000 });
     await page.getByLabel('Company or operation').fill('NetKeep E2E');
     await page.getByLabel('Time zone').selectOption('UTC');
-    await page
-        .getByLabel('Canonical HTTPS URL')
-        .fill(baseURL as string);
-    await page
-        .getByLabel('Default collection interval (seconds)')
-        .fill('3600');
+    await page.getByLabel('Canonical HTTPS URL').fill(baseURL as string);
+    await page.getByLabel('Default collection interval (seconds)').fill('3600');
     await page.getByLabel('Default timeout (seconds)').fill('20');
     await page.getByLabel('Full backup retention (days)').fill('30');
     await page
@@ -99,12 +93,31 @@ setup('installs NetKeep and creates the first owner', async ({ page }) => {
     await page.goto('/devices');
     await page.getByLabel('Name', { exact: true }).fill('E2E Router');
     await page.getByLabel('IP address').fill('172.31.250.10');
-    await page.getByRole('spinbutton', { name: 'Port', exact: true }).fill('2222');
+    await page
+        .getByRole('spinbutton', { name: 'Port', exact: true })
+        .fill('2222');
     await page.getByLabel('Oxidized driver').fill('ios');
     await page.getByLabel('Credential').selectOption({ label: 'E2E SSH' });
     await page.getByRole('button', { name: 'Add device' }).click();
 
-    const deviceRow = page.getByRole('row').filter({ hasText: 'E2E Router' });
+    let deviceRow = page.getByRole('row').filter({ hasText: 'E2E Router' });
+    await expect(deviceRow).toBeVisible();
+    const editHref = await deviceRow
+        .locator('a[href$="/edit"]')
+        .getAttribute('href');
+    expect(editHref).toMatch(/^\/devices\/\d+\/edit$/);
+    await page.goto(editHref as string);
+    await page.getByLabel('Hostname').fill('device-simulator');
+    const updateResponse = page.waitForResponse(
+        (response) =>
+            response.url().endsWith(editHref?.replace(/\/edit$/, '') ?? '') &&
+            response.request().method() === 'PUT',
+    );
+    await page.getByRole('button', { name: 'Save changes' }).click();
+    expect([302, 303]).toContain((await updateResponse).status());
+
+    await page.goto('/devices');
+    deviceRow = page.getByRole('row').filter({ hasText: 'E2E Router' });
     await expect(deviceRow).toBeVisible();
     const approvalResponse = page.waitForResponse(
         (response) =>
@@ -115,9 +128,9 @@ setup('installs NetKeep and creates the first owner', async ({ page }) => {
         .getByRole('button', { name: 'Review and approve device' })
         .click();
     expect([302, 303]).toContain((await approvalResponse).status());
-    await expect(deviceRow.getByText('Approved', { exact: true })).toBeVisible();
-    await deviceRow.getByRole('button', { name: 'Collect now' }).click();
-    await page.getByRole('button', { name: 'Queue collection' }).click();
+    await expect(
+        deviceRow.getByText('Approved', { exact: true }),
+    ).toBeVisible();
 
     mkdirSync(dirname(authFile), { recursive: true });
     await page.context().storageState({ path: authFile });

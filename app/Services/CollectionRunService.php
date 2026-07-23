@@ -13,6 +13,7 @@ class CollectionRunService
 {
     public function dispatch(CollectionRun $run): void
     {
+        app(CollectionRunEventService::class)->record($run, 'target_validation_started');
         $device = $run->device;
         if (
             ! app(DeviceApprovalService::class)->isCurrent($device)
@@ -30,6 +31,7 @@ class CollectionRunService
                 $device->hostname ?: $device->ip_address,
                 $device->approved_resolved_addresses ?? [],
             );
+            app(CollectionRunEventService::class)->record($run, 'target_validation_passed');
             if ($device->transport === 'ssh') {
                 $scan = app(SshHostKeyScanner::class)->scan(
                     $device->hostname ?: $device->ip_address,
@@ -42,6 +44,11 @@ class CollectionRunService
 
                     return;
                 }
+                app(CollectionRunEventService::class)->record(
+                    $run,
+                    'ssh_validation_passed',
+                    context: ['fingerprint_verified' => true],
+                );
             }
         } catch (\Throwable) {
             app(DeviceApprovalService::class)->invalidate($device);
@@ -78,20 +85,32 @@ class CollectionRunService
         });
 
         if (! $accepted) {
+            app(CollectionRunEventService::class)->record(
+                $run->refresh(),
+                'cancelled',
+                level: 'warning',
+                context: ['error_code' => 'device_not_collectable'],
+            );
+
             return;
         }
 
+        app(CollectionRunEventService::class)->record($run->refresh(), 'started');
+
         if (! app(OxidizedClient::class)->collect($run->device->uuid)) {
-            $this->fail($run->refresh(), 'engine_rejected');
+            $this->fail($run->refresh(), 'engine_failure');
+
+            return;
         }
+        app(CollectionRunEventService::class)->record($run->refresh(), 'engine_accepted');
     }
 
     public function succeed(CollectionRun $run): void
     {
-        DB::transaction(function () use ($run): void {
+        $succeeded = DB::transaction(function () use ($run): bool {
             $locked = CollectionRun::query()->with('device')->lockForUpdate()->findOrFail($run->id);
             if ($locked->status !== CollectionRunStatus::Running) {
-                return;
+                return false;
             }
 
             $locked->update([
@@ -99,20 +118,31 @@ class CollectionRunService
                 'finished_at' => now(),
                 'error_code' => null,
             ]);
-            $locked->device->update([
-                'status' => DeviceStatus::Healthy,
-                'consecutive_failures' => 0,
-                'last_error' => null,
-            ]);
+            if ($locked->trigger !== CollectionTrigger::Diagnostic) {
+                $locked->device->update([
+                    'status' => DeviceStatus::Healthy,
+                    'consecutive_failures' => 0,
+                    'last_error' => null,
+                ]);
+            }
+
+            return true;
         });
+        if ($succeeded) {
+            app(CollectionRunEventService::class)->record($run->refresh(), 'success');
+        }
     }
 
-    public function fail(CollectionRun $run, string $errorCode): void
-    {
-        DB::transaction(function () use ($run, $errorCode): void {
+    public function fail(
+        CollectionRun $run,
+        string $errorCode,
+        ?string $technicalMessage = null,
+        bool $recordEvent = true,
+    ): void {
+        $failed = DB::transaction(function () use ($run, $errorCode): bool {
             $locked = CollectionRun::query()->with('device')->lockForUpdate()->findOrFail($run->id);
             if (! in_array($locked->status, [CollectionRunStatus::Running, CollectionRunStatus::Dispatched], true)) {
-                return;
+                return false;
             }
 
             $locked->update([
@@ -120,6 +150,10 @@ class CollectionRunService
                 'finished_at' => now(),
                 'error_code' => $errorCode,
             ]);
+            if ($locked->trigger === CollectionTrigger::Diagnostic) {
+                return true;
+            }
+
             $locked->device->increment('consecutive_failures');
             $locked->device->update([
                 'status' => DeviceStatus::Failing,
@@ -129,7 +163,7 @@ class CollectionRunService
             $delays = config('netkeep.collections.retry_delays', [60, 300, 900]);
             $delay = $delays[$locked->attempt - 1] ?? null;
             if ($delay === null) {
-                return;
+                return true;
             }
 
             app(CollectionRequestService::class)->request(
@@ -139,12 +173,24 @@ class CollectionRunService
                 parent: $locked,
                 scheduledFor: now()->addSeconds((int) $delay),
             );
+
+            return true;
         });
+
+        if ($failed && $recordEvent) {
+            app(CollectionRunEventService::class)->record(
+                $run->refresh(),
+                'failure',
+                level: 'error',
+                technicalMessage: $technicalMessage,
+                context: ['error_code' => $errorCode],
+            );
+        }
     }
 
-    private function cancel(CollectionRun $run, string $errorCode): void
+    public function cancel(CollectionRun $run, string $errorCode): void
     {
-        CollectionRun::query()
+        $cancelled = CollectionRun::query()
             ->whereKey($run->id)
             ->whereIn('status', [CollectionRunStatus::Dispatched, CollectionRunStatus::Running])
             ->update([
@@ -153,5 +199,13 @@ class CollectionRunService
                 'error_code' => $errorCode,
                 'updated_at' => now(),
             ]);
+        if ($cancelled > 0) {
+            app(CollectionRunEventService::class)->record(
+                $run->refresh(),
+                'cancelled',
+                level: 'warning',
+                context: ['error_code' => $errorCode],
+            );
+        }
     }
 }

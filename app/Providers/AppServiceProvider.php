@@ -9,10 +9,13 @@ use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -32,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->configureRateLimiting();
     }
 
     /**
@@ -86,6 +90,15 @@ class AppServiceProvider extends ServiceProvider
                 'auth.owner_registered',
                 $event->user instanceof Model ? $event->user : null,
             );
+        });
+    }
+
+    private function configureRateLimiting(): void
+    {
+        RateLimiter::for('device-diagnostics', function (Request $request): Limit {
+            $identifier = (string) $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinutes(10, 3)->by(hash('sha256', 'device-diagnostics|'.$identifier));
         });
     }
 }

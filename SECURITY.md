@@ -30,6 +30,8 @@ podem deixar de receber patches após anúncio no `CHANGELOG`.
   estimada e o impacto nos equipamentos;
 - consulte o token de instalação somente no terminal local e rotacione-o se
   houver suspeita de exposição.
+- abra traces de diagnóstico somente em uma estação administrativa protegida e
+  nunca os envie a issues, chats ou sistemas de ticket sem cofre apropriado;
 
 O Oxidized e suas dependências mantêm políticas próprias. Achados puramente
 upstream devem ser relatados também ao projeto correspondente.
@@ -49,13 +51,44 @@ garantia passa a ser condicional.
 - Oxidized e sandbox não expõem API;
 - equipamentos exigem aprovação de destino, credencial, driver e host key;
 - DNS e conexões de saída bloqueiam classes especiais e serviços internos;
+- o Oxidized recebe somente o IP literal aprovado e não refaz DNS;
 - login HTTP/IP, Telnet, Ruby raw e atualização automática ficam desativados;
 - app, worker, scheduler e motores são não root, sem capabilities e com
   filesystem somente leitura;
 - somente o updater sem rede recebe o socket Docker e aceita exclusivamente
   manifestos oficiais assinados e verificados offline;
 - backups são criptografados antes de tocar disco ou S3;
+- falhas de produção não capturam dados brutos; diagnóstico é manual,
+  reautenticado, auditado e executado no sandbox;
+- traces de diagnóstico são cifrados em stream, limitados a 5 MiB, respondidos
+  sem cache e expurgados automaticamente após 24 horas;
 - restauração prepara banco temporário e preserva rollback.
+
+## Diagnóstico e traces sensíveis
+
+O acesso à timeline segura é permitido a todos os papéis. Mensagens técnicas,
+contexto e referência do motor ficam restritos a proprietário e administrador
+e são sanitizados antes do banco. Senhas, tokens, comunidades, enable secrets,
+userinfo de URLs, chaves privadas e padrões `password`/`secret` são removidos,
+e a mensagem resultante é limitada a 2 KiB.
+
+O trace bruto é deliberadamente diferente: pode conter segredos que não podem
+ser sanitizados sem destruir o diagnóstico. Por isso ele nunca nasce de uma
+falha de produção, exige ação explícita e senha confirmada nos últimos cinco
+minutos e só existe cifrado no volume persistente. Visualizar ou baixar exige
+nova autorização, gera auditoria e usa `Cache-Control: no-store`.
+
+O plaintext existe apenas no `tmpfs` do sandbox durante a conexão. O reporter
+não usa shell nem entrada do equipamento na linha de comando, limita nomes e
+paths, não segue symlinks e remove trace e repositório efêmero mesmo quando a
+entrega falha. Se o host ou o volume do NetKeep for comprometido enquanto a
+aplicação está operando, a `APP_KEY` pode permitir decifrar traces ainda dentro
+das 24 horas; criptografia de disco e menor privilégio continuam obrigatórios.
+
+O controlador do sandbox aceita somente `POST /restart`, exige o token interno
+e `Host: sandbox`, não recebe corpo e não publica porta. Ele gerencia apenas o
+processo Oxidized filho, para que `input.debug` seja carregado e removido nos
+limites da execução diagnóstica.
 
 ## Dependências e imagens
 
@@ -80,7 +113,9 @@ release; cada release deve documentar os riscos conhecidos. Configurações
 altas ou críticas não justificadas bloqueiam o CI. Isso não reduz a obrigação
 de atualizar dependências quando houver correção disponível.
 
-O relatório específico da v1.0.2 está em
+O relatório específico da v1.0.3 está em
+[`docs/SECURITY_REVIEW_V1.0.3.md`](docs/SECURITY_REVIEW_V1.0.3.md). A revisão
+anterior permanece em
 [`docs/SECURITY_REVIEW_V1.0.2.md`](docs/SECURITY_REVIEW_V1.0.2.md).
 
 ## Limites

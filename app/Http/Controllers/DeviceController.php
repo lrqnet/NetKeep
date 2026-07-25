@@ -7,6 +7,7 @@ use App\Enums\DangerousFeature;
 use App\Enums\DeviceApprovalStatus;
 use App\Enums\DeviceStatus;
 use App\Enums\SupportedLocale;
+use App\Jobs\DispatchCollections;
 use App\Models\CredentialProfile;
 use App\Models\CustomModel;
 use App\Models\Device;
@@ -92,6 +93,9 @@ class DeviceController extends Controller
             'options' => $this->options(),
             'canManage' => $request->user()->role->canManageInventory(),
             'canApprove' => $request->user()->role->canManageSystem(),
+            'initialTab' => $request->query('tab') === 'collections'
+                ? 'collections'
+                : 'configuration',
         ]);
     }
 
@@ -190,6 +194,7 @@ class DeviceController extends Controller
             'collection_run_uuid' => $run->uuid,
             'force' => $force,
         ]);
+        DispatchCollections::dispatch();
 
         return back()->with('success', __('netkeep.devices.collection_queued'));
     }
@@ -215,6 +220,7 @@ class DeviceController extends Controller
             'collection_run_uuid' => $run->uuid,
             'force' => true,
         ]);
+        DispatchCollections::dispatch();
 
         return back()->with('warning', __('netkeep.devices.collection_force_queued'));
     }
@@ -259,7 +265,17 @@ class DeviceController extends Controller
         $hostKey = null;
         $fingerprint = null;
         if ($device->transport === 'ssh') {
-            $scan = $scanner->scan($target, $device->port);
+            try {
+                $scan = $scanner->scan($target, $device->port);
+            } catch (\RuntimeException) {
+                $audit->record('device.approval_failed', $device, [
+                    'reason' => 'ssh_host_key_unavailable',
+                    'transport' => $device->transport,
+                    'port' => $device->port,
+                ]);
+
+                return back()->with('error', __('netkeep.devices.ssh_host_key_unavailable'));
+            }
             $hostKey = $scan['keys'];
             $fingerprint = $scan['fingerprint'];
         }

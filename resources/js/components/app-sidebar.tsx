@@ -122,12 +122,12 @@ export function AppSidebar() {
                         href="/updates"
                         className="mx-2 mt-auto rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm transition-colors group-data-[collapsible=icon]:hidden hover:bg-emerald-500/15"
                     >
-                        <span className="block font-medium text-emerald-700 dark:text-emerald-300">
+                        <span className="block font-medium text-sidebar-primary">
                             {t('updates.sidebar_available', {
                                 version: netkeep.update.version ?? '',
                             })}
                         </span>
-                        <span className="mt-1 block text-xs text-muted-foreground">
+                        <span className="mt-1 block text-xs text-sidebar-foreground">
                             {t('updates.sidebar_open')}
                         </span>
                     </Link>

@@ -7,11 +7,15 @@ use App\Enums\CollectionTrigger;
 use App\Enums\DeviceApprovalStatus;
 use App\Enums\DeviceStatus;
 use App\Enums\RiskLevel;
+use App\Enums\UserRole;
+use App\Exceptions\GitRepositoryUnavailable;
+use App\Jobs\DispatchCollections;
 use App\Models\BackupRun;
 use App\Models\CollectionRun;
 use App\Models\Device;
 use App\Models\Organization;
 use App\Models\Site;
+use App\Models\User;
 use App\Services\BackupReconciler;
 use App\Services\CollectionOrchestrator;
 use App\Services\CollectionRequestService;
@@ -49,6 +53,24 @@ class CollectionControlTest extends TestCase
 
         $this->expectException(ValidationException::class);
         app(CollectionRequestService::class)->request($device, CollectionTrigger::Manual);
+    }
+
+    public function test_manual_http_request_kicks_the_dispatcher_without_waiting_for_the_scheduler(): void
+    {
+        Queue::fake();
+        $device = $this->approvedDevice('198.51.100.62');
+        $user = User::factory()->create(['role' => UserRole::Operator]);
+
+        $this->actingAs($user)
+            ->post(route('devices.collect', $device))
+            ->assertRedirect();
+
+        Queue::assertPushed(DispatchCollections::class);
+        $this->assertDatabaseHas('collection_runs', [
+            'device_id' => $device->id,
+            'trigger' => CollectionTrigger::Manual->value,
+            'status' => CollectionRunStatus::Queued->value,
+        ]);
     }
 
     public function test_failed_collections_retry_after_one_five_and_fifteen_minutes(): void
@@ -158,6 +180,70 @@ class CollectionControlTest extends TestCase
             'collection_run_id' => $run->id,
             'changed' => false,
         ]);
+    }
+
+    public function test_first_success_without_a_git_version_fails_closed(): void
+    {
+        $device = $this->approvedDevice('198.51.100.63');
+        $run = CollectionRun::query()->create([
+            'device_id' => $device->id,
+            'trigger' => CollectionTrigger::Manual,
+            'status' => CollectionRunStatus::Running,
+            'attempt' => 1,
+            'scheduled_for' => now()->subMinute(),
+            'started_at' => now()->subSeconds(10),
+        ]);
+        $history = Mockery::mock(GitHistory::class);
+        $history->shouldReceive('versions')->once()->andReturn([]);
+        $oxidized = Mockery::mock(OxidizedClient::class);
+        $oxidized->shouldReceive('nodes')->once()->andReturn([[
+            'name' => $device->uuid,
+            'last' => ['status' => 'success', 'end' => now()->toIso8601String()],
+        ]]);
+
+        app(BackupReconciler::class)->reconcile($history, $oxidized);
+
+        $this->assertSame(CollectionRunStatus::Failed, $run->refresh()->status);
+        $this->assertSame('configuration_not_persisted', $run->error_code);
+        $this->assertSame(DeviceStatus::Failing, $device->refresh()->status);
+        $this->assertDatabaseMissing('backup_runs', ['collection_run_id' => $run->id]);
+        $this->assertDatabaseHas('collection_run_events', [
+            'collection_run_id' => $run->id,
+            'code' => 'failure',
+        ]);
+    }
+
+    public function test_unavailable_git_history_fails_without_exposing_process_details(): void
+    {
+        $device = $this->approvedDevice('198.51.100.64');
+        $run = CollectionRun::query()->create([
+            'device_id' => $device->id,
+            'trigger' => CollectionTrigger::Manual,
+            'status' => CollectionRunStatus::Running,
+            'attempt' => 1,
+            'scheduled_for' => now()->subMinute(),
+            'started_at' => now()->subSeconds(10),
+        ]);
+        $history = Mockery::mock(GitHistory::class);
+        $history->shouldReceive('versions')
+            ->once()
+            ->andThrow(new GitRepositoryUnavailable);
+        $oxidized = Mockery::mock(OxidizedClient::class);
+        $oxidized->shouldReceive('nodes')->once()->andReturn([[
+            'name' => $device->uuid,
+            'last' => ['status' => 'success', 'end' => now()->toIso8601String()],
+        ]]);
+
+        app(BackupReconciler::class)->reconcile($history, $oxidized);
+
+        $this->assertSame(CollectionRunStatus::Failed, $run->refresh()->status);
+        $this->assertSame('configuration_history_unavailable', $run->error_code);
+        $event = $run->events()->where('code', 'failure')->firstOrFail();
+        $this->assertNull($event->technical_message);
+        $this->assertSame(
+            ['error_code' => 'configuration_history_unavailable'],
+            $event->context,
+        );
     }
 
     public function test_collection_risk_boundaries_match_safe_mode_policy(): void

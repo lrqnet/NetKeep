@@ -286,7 +286,20 @@ export default function DevicesIndex({
                                                                     href={`/devices/${device.id}/configuration`}
                                                                 >
                                                                     {t(
-                                                                        'devices.history',
+                                                                        'devices.configurations',
+                                                                    )}
+                                                                </Link>
+                                                            </Button>
+                                                            <Button
+                                                                asChild
+                                                                variant="ghost"
+                                                                size="sm"
+                                                            >
+                                                                <Link
+                                                                    href={`/devices/${device.id}/edit?tab=collections`}
+                                                                >
+                                                                    {t(
+                                                                        'devices.collections_tab',
                                                                     )}
                                                                 </Link>
                                                             </Button>

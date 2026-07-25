@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\Device;
+use App\Services\GitProcessFactory;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Symfony\Component\Process\Process;
 
 class MigrateGitIdentityCommand extends Command
 {
@@ -13,7 +13,7 @@ class MigrateGitIdentityCommand extends Command
 
     protected $description = 'Migrates tracked device configuration paths to stable UUID identities';
 
-    public function handle(): int
+    public function handle(GitProcessFactory $processes): int
     {
         $repository = rtrim((string) config('netkeep.oxidized.git_path'), '/');
         if (! is_dir($repository.'/.git')) {
@@ -24,19 +24,19 @@ class MigrateGitIdentityCommand extends Command
         Device::withTrashed()
             ->with('group:id,name')
             ->orderBy('id')
-            ->chunkById(250, function ($devices) use ($repository, &$changed): void {
+            ->chunkById(250, function ($devices) use ($processes, $repository, &$changed): void {
                 foreach ($devices as $device) {
                     $destination = ($device->device_group_id ? 'group-'.$device->device_group_id : 'default')
                         .'/'.$device->uuid;
-                    if ($this->tracked($repository, $destination)) {
+                    if ($this->tracked($processes, $repository, $destination)) {
                         continue;
                     }
                     foreach ($this->legacyPaths($device->group?->name, $device->name, $device->device_group_id) as $legacy) {
-                        if (! $this->tracked($repository, $legacy)) {
+                        if (! $this->tracked($processes, $repository, $legacy)) {
                             continue;
                         }
                         File::ensureDirectoryExists($repository.'/'.dirname($destination), 0770, true);
-                        $this->git($repository, ['mv', '--', $legacy, $destination]);
+                        $this->git($processes, $repository, ['mv', '--', $legacy, $destination]);
                         $changed++;
                         break;
                     }
@@ -44,7 +44,7 @@ class MigrateGitIdentityCommand extends Command
             }, 'devices.id', 'id');
 
         if ($changed > 0) {
-            $this->git($repository, ['commit', '-m', 'Migrate device identities to UUID']);
+            $this->git($processes, $repository, ['commit', '-m', 'Migrate device identities to UUID']);
         }
 
         $this->info("Migrated Git identities: {$changed}.");
@@ -79,18 +79,21 @@ class MigrateGitIdentityCommand extends Command
             && ! str_contains($value, "\0");
     }
 
-    private function tracked(string $repository, string $path): bool
+    private function tracked(GitProcessFactory $processes, string $repository, string $path): bool
     {
-        $process = new Process(['git', '-C', $repository, 'ls-files', '--error-unmatch', '--', $path]);
+        $process = $processes->make(
+            $repository,
+            ['ls-files', '--error-unmatch', '--', $path],
+        );
         $process->setTimeout(10);
 
         return $process->run() === 0;
     }
 
     /** @param list<string> $arguments */
-    private function git(string $repository, array $arguments): void
+    private function git(GitProcessFactory $processes, string $repository, array $arguments): void
     {
-        $process = new Process(['git', '-C', $repository, ...$arguments]);
+        $process = $processes->make($repository, $arguments);
         $process->setTimeout(60);
         $process->mustRun();
     }

@@ -1,5 +1,12 @@
-import { Head } from '@inertiajs/react';
-import { Download, GitCompareArrows, History, Router } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import {
+    AlertTriangle,
+    Download,
+    GitCompareArrows,
+    History,
+    ListTree,
+    Router,
+} from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,12 +29,14 @@ type Props = {
         subject: string;
     }>;
     content: string;
+    historyUnavailable: boolean;
 };
 
 export default function ConfigurationShow({
     device,
     versions,
     content,
+    historyUnavailable,
 }: Props) {
     const { t, formatDateTime } = useI18n();
 
@@ -40,16 +49,50 @@ export default function ConfigurationShow({
                     title={device.name}
                     description={`${device.ip_address} · ${device.oxidized_model} · ${device.group?.name ?? 'default'}`}
                     actions={
-                        <Button asChild variant="outline">
-                            <a
-                                href={`/devices/${device.id}/configuration/download`}
-                            >
-                                <Download />
-                                {t('config.download')}
-                            </a>
-                        </Button>
+                        <>
+                            <Button asChild variant="outline">
+                                <Link
+                                    href={`/devices/${device.id}/edit?tab=collections`}
+                                >
+                                    <ListTree />
+                                    {t('config.view_collections')}
+                                </Link>
+                            </Button>
+                            {!historyUnavailable && versions.length > 0 ? (
+                                <Button asChild variant="outline">
+                                    <a
+                                        href={`/devices/${device.id}/configuration/download`}
+                                    >
+                                        <Download />
+                                        {t('config.download')}
+                                    </a>
+                                </Button>
+                            ) : (
+                                <Button variant="outline" disabled>
+                                    <Download />
+                                    {t('config.download')}
+                                </Button>
+                            )}
+                        </>
                     }
                 />
+
+                {historyUnavailable && (
+                    <div
+                        role="alert"
+                        className="flex gap-3 rounded-lg border border-red-500/50 bg-red-500/5 p-4"
+                    >
+                        <AlertTriangle className="mt-0.5 size-5 shrink-0 text-red-700 dark:text-red-300" />
+                        <div>
+                            <p className="font-medium text-red-700 dark:text-red-300">
+                                {t('config.history_unavailable_title')}
+                            </p>
+                            <p className="mt-1 text-sm text-muted-foreground">
+                                {t('config.history_unavailable')}
+                            </p>
+                        </div>
+                    </div>
+                )}
 
                 <div className="grid items-start gap-6 xl:grid-cols-[280px_1fr]">
                     <Card className="gap-3 py-5">
@@ -107,7 +150,9 @@ export default function ConfigurationShow({
                         </CardHeader>
                         <CardContent className="px-0">
                             <pre className="max-h-[72vh] overflow-auto bg-[#07111f] p-5 font-mono text-xs leading-5 text-slate-200">
-                                {content || t('config.awaiting_first')}
+                                {historyUnavailable
+                                    ? t('config.history_unavailable_content')
+                                    : content || t('config.awaiting_first')}
                             </pre>
                         </CardContent>
                     </Card>

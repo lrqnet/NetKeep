@@ -49,6 +49,7 @@ return [
         'collection_failed_safe' => 'The collection failed. Review the device status and protected logs.',
         'diagnostic_queued' => 'The isolated diagnostic was queued. Raw trace access remains protected and audited.',
         'approval_engine_failed' => 'Oxidized did not become healthy. Approval was revoked automatically.',
+        'ssh_host_key_unavailable' => 'The SSH host key could not be obtained. Check that NetKeep can reach the device and that SSH is listening on the configured port.',
         'approved' => 'Device approved for collection.',
         'approval_revoked' => 'Device approval revoked and collections paused.',
         'imported' => ':count devices imported.',
@@ -148,6 +149,9 @@ return [
         'invalid_type' => 'Invalid catalog type.',
         'created' => 'Catalog item created.',
         'deleted' => 'Item removed. Devices and history were preserved.',
+    ],
+    'config' => [
+        'history_unavailable' => 'The configuration history is temporarily unavailable. Try again after checking the application and Oxidized services.',
     ],
     'system' => [
         'updated' => 'System settings updated.',

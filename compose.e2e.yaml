@@ -80,7 +80,7 @@ services:
             context: tests/Fixtures/device-simulator
         networks:
             device_access:
-                ipv4_address: 172.31.250.10
+                ipv4_address: '${NETKEEP_E2E_DEVICE_IP:-10.254.250.10}'
             sandbox_device_access:
 
     sandbox:
@@ -93,4 +93,4 @@ networks:
     device_access:
         ipam:
             config:
-                - subnet: 172.31.250.0/24
+                - subnet: '${NETKEEP_E2E_DEVICE_SUBNET:-10.254.250.0/24}'

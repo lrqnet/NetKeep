@@ -93,7 +93,9 @@ setup('installs NetKeep and creates the first owner', async ({ page }) => {
 
     await gotoWithTlsRetry(page, '/devices');
     await page.getByLabel('Name', { exact: true }).fill('E2E Router');
-    await page.getByLabel('IP address').fill('172.31.250.10');
+    await page
+        .getByLabel('IP address')
+        .fill(process.env.NETKEEP_E2E_DEVICE_IP ?? '10.254.250.10');
     await page
         .getByRole('spinbutton', { name: 'Port', exact: true })
         .fill('2222');

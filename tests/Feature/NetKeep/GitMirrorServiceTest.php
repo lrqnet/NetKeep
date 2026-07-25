@@ -51,11 +51,14 @@ class GitMirrorServiceTest extends TestCase
         try {
             app(GitMirrorService::class)->mirror($destination);
 
-            $this->assertStringNotContainsString('github-secret-token', File::get($arguments));
+            $capturedArguments = File::get($arguments);
+            $this->assertStringNotContainsString('github-secret-token', $capturedArguments);
             $this->assertStringContainsString(
                 'https://198.51.100.10/private/netkeep.git',
-                File::get($arguments),
+                $capturedArguments,
             );
+            $this->assertStringContainsString("safe.directory={$repository}", $capturedArguments);
+            $this->assertStringNotContainsString('safe.directory=*', $capturedArguments);
             $this->assertSame(
                 'Authorization: Basic '.base64_encode('oauth2:github-secret-token'),
                 File::get($header),

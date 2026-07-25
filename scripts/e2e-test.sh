@@ -12,6 +12,8 @@ export NETKEEP_HTTP_PORT="${NETKEEP_E2E_HTTP_PORT:-18081}"
 export NETKEEP_HTTPS_PORT="${NETKEEP_E2E_HTTPS_PORT:-18444}"
 export NETKEEP_E2E_BOOTSTRAP_URL="http://127.0.0.1:${NETKEEP_HTTP_PORT}"
 export NETKEEP_E2E_BASE_URL="https://127.0.0.1:${NETKEEP_HTTPS_PORT}"
+export NETKEEP_E2E_DEVICE_IP="${NETKEEP_E2E_DEVICE_IP:-10.254.250.10}"
+export NETKEEP_E2E_DEVICE_SUBNET="${NETKEEP_E2E_DEVICE_SUBNET:-10.254.250.0/24}"
 export NETKEEP_IMAGE="${NETKEEP_E2E_IMAGE:-netkeep:e2e}"
 export NETKEEP_OXIDIZED_IMAGE="${NETKEEP_E2E_OXIDIZED_IMAGE:-netkeep-oxidized:e2e}"
 export NETKEEP_UPDATER_IMAGE="${NETKEEP_E2E_UPDATER_IMAGE:-netkeep-updater:e2e}"
@@ -134,24 +136,26 @@ test -z "$sandbox_clean"
 "${compose[@]}" exec --no-TTY sandbox \
     sh -c '! grep -R -a -q "NETKEEP-E2E" /home/oxidized/.config/oxidized 2>/dev/null'
 
-"${compose[@]}" exec --no-TTY app php artisan netkeep:dispatch-collections
-
 collection_status=''
 for _ in $(seq 1 45); do
-    if "${compose[@]}" exec --no-TTY app php artisan netkeep:reconcile-backups; then
-        collection_status="$(
-            "${compose[@]}" exec --no-TTY postgres \
-                psql -U netkeep_admin -d netkeep -tAc \
-                "SELECT status FROM collection_runs ORDER BY id DESC LIMIT 1"
-        )"
-        if [[ "$collection_status" == 'succeeded' ]]; then
-            break
-        fi
+    collection_status="$(
+        "${compose[@]}" exec --no-TTY postgres \
+            psql -U netkeep_admin -d netkeep -tAc \
+            "SELECT status FROM collection_runs ORDER BY id DESC LIMIT 1"
+    )"
+    if [[ "$collection_status" == 'succeeded' ]]; then
+        break
     fi
     sleep 2
 done
 
 test "$collection_status" = 'succeeded'
+collection_latency="$(
+    "${compose[@]}" exec --no-TTY postgres \
+        psql -U netkeep_admin -d netkeep -tAc \
+        "SELECT GREATEST(EXTRACT(EPOCH FROM (started_at - created_at)), EXTRACT(EPOCH FROM (finished_at - started_at)))::int FROM collection_runs ORDER BY id DESC LIMIT 1"
+)"
+test "$collection_latency" -lt 30
 
 device_uuid="$(
     "${compose[@]}" exec --no-TTY postgres \

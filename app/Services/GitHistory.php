@@ -2,18 +2,20 @@
 
 namespace App\Services;
 
+use App\Exceptions\GitRepositoryUnavailable;
 use App\Models\Device;
-use Symfony\Component\Process\Process;
 
 class GitHistory
 {
+    public function __construct(private readonly GitProcessFactory $processes) {}
+
     /**
      * @return array<int, array{hash:string,date:string,author:string,subject:string}>
      */
     public function versions(Device $device, int $limit = 50): array
     {
         if (! is_dir(rtrim((string) config('netkeep.oxidized.git_path'), '/').'/.git')) {
-            return [];
+            throw new GitRepositoryUnavailable;
         }
 
         $path = $this->devicePath($device);
@@ -27,8 +29,8 @@ class GitHistory
                 '--',
                 $path,
             ]);
-        } catch (\Throwable) {
-            return [];
+        } catch (\Throwable $exception) {
+            throw new GitRepositoryUnavailable($exception);
         }
 
         return collect(explode("\n", trim($output)))
@@ -46,8 +48,8 @@ class GitHistory
 
         try {
             return $this->run(['show', $revision.':'.$this->devicePath($device)]);
-        } catch (\Throwable) {
-            return '';
+        } catch (\Throwable $exception) {
+            throw new GitRepositoryUnavailable($exception);
         }
     }
 
@@ -56,7 +58,11 @@ class GitHistory
         $this->assertRevision($from);
         $this->assertRevision($to);
 
-        return $this->run(['diff', '--no-color', $from, $to, '--', $this->devicePath($device)]);
+        try {
+            return $this->run(['diff', '--no-color', $from, $to, '--', $this->devicePath($device)]);
+        } catch (\Throwable $exception) {
+            throw new GitRepositoryUnavailable($exception);
+        }
     }
 
     private function devicePath(Device $device): string
@@ -67,11 +73,14 @@ class GitHistory
     }
 
     /**
-     * @param  array<int, string>  $arguments
+     * @param  list<string>  $arguments
      */
     private function run(array $arguments): string
     {
-        $process = new Process(['git', '-C', (string) config('netkeep.oxidized.git_path'), ...$arguments]);
+        $process = $this->processes->make(
+            (string) config('netkeep.oxidized.git_path'),
+            $arguments,
+        );
         $process->setTimeout(15);
         $process->mustRun();
 

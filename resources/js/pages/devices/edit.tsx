@@ -18,6 +18,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { useI18n } from '@/i18n';
 
 type Option = { id: number; name: string };
+type DeviceTab = 'configuration' | 'collections';
 type Device = {
     id: number;
     name: string;
@@ -49,6 +50,7 @@ export default function EditDevice({
     options,
     canManage,
     canApprove,
+    initialTab,
 }: {
     device: Device;
     options: {
@@ -63,17 +65,28 @@ export default function EditDevice({
     };
     canManage: boolean;
     canApprove: boolean;
+    initialTab: DeviceTab;
 }) {
     const { t } = useI18n();
     const [interval, setIntervalValue] = useState(device.backup_interval);
     const [timeout, setTimeoutValue] = useState(device.timeout);
-    const [activeTab, setActiveTab] = useState<'configuration' | 'collections'>(
-        'configuration',
-    );
+    const [activeTab, setActiveTab] = useState<DeviceTab>(initialTab);
     const intervalRisk =
         interval < 900 ? 'critical' : interval < 3600 ? 'warning' : 'normal';
     const timeoutRisk =
         timeout > 180 ? 'critical' : timeout > 60 ? 'warning' : 'normal';
+    const selectTab = (tab: DeviceTab): void => {
+        setActiveTab(tab);
+        const url = new URL(window.location.href);
+
+        if (tab === 'collections') {
+            url.searchParams.set('tab', tab);
+        } else {
+            url.searchParams.delete('tab');
+        }
+
+        window.history.replaceState(window.history.state, '', url);
+    };
     const navigateTabs = (event: React.KeyboardEvent<HTMLDivElement>): void => {
         if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) {
             return;
@@ -82,7 +95,7 @@ export default function EditDevice({
         event.preventDefault();
         const next =
             activeTab === 'configuration' ? 'collections' : 'configuration';
-        setActiveTab(next);
+        selectTab(next);
         requestAnimationFrame(() =>
             document.getElementById(`device-${next}-tab`)?.focus(),
         );
@@ -122,7 +135,7 @@ export default function EditDevice({
                                 ? 'border-b-2 border-primary'
                                 : ''
                         }
-                        onClick={() => setActiveTab('configuration')}
+                        onClick={() => selectTab('configuration')}
                     >
                         {t('devices.configuration_tab')}
                     </Button>
@@ -138,7 +151,7 @@ export default function EditDevice({
                                 ? 'border-b-2 border-primary'
                                 : ''
                         }
-                        onClick={() => setActiveTab('collections')}
+                        onClick={() => selectTab('collections')}
                     >
                         {t('devices.collections_tab')}
                     </Button>

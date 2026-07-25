@@ -98,7 +98,10 @@ docker compose --profile recovery run --rm recovery \
 
 O serviço de recuperação ativa a manutenção, espera filas e coletas em
 execução terminarem, preserva banco e diretórios atuais e só então troca banco,
-Git, modelos, branding e chaves.
+Git, modelos, branding e chaves. A troca bloqueia novas conexões nos bancos
+envolvidos antes de encerrar sessões residuais e renomeá-los. O banco anterior
+permanece indisponível para conexões e somente o banco restaurado, já com o nome
+ativo, volta a aceitá-las.
 
 Reinicie os processos para carregarem as chaves restauradas e o token interno
 rotacionado:

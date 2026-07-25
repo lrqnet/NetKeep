@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-34d399" alt="AGPL-3.0 license"></a>
-  <a href="https://github.com/lrqnet/NetKeep/releases/tag/v1.0.6"><img src="https://img.shields.io/badge/release-v1.0.6-0f172a" alt="NetKeep v1.0.6"></a>
+  <a href="https://github.com/lrqnet/NetKeep/releases/tag/v1.0.7"><img src="https://img.shields.io/badge/release-v1.0.7-0f172a" alt="NetKeep v1.0.7"></a>
   <a href="https://hub.docker.com/r/lrqnet/netkeep"><img src="https://img.shields.io/badge/Docker-amd64%20%7C%20arm64-2496ed?logo=docker&logoColor=white" alt="Docker images for amd64 and arm64"></a>
   <a href="https://github.com/ytti/oxidized"><img src="https://img.shields.io/badge/Oxidized-0.37.0-475569" alt="Oxidized 0.37.0"></a>
 </p>
@@ -105,13 +105,13 @@ administrative networks are strongly recommended.
 
 ## Quick installation
 
-Create a directory, download the Compose file attached to the v1.0.6 release,
+Create a directory, download the Compose file attached to the v1.0.7 release,
 and start the stack:
 
 ```bash
 sudo mkdir -p /opt/netkeep
 cd /opt/netkeep
-sudo curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.6/compose.yaml
+sudo curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.7/compose.yaml
 sudo docker compose up -d --wait
 sudo docker compose ps
 ```
@@ -165,12 +165,14 @@ with a separate five-minute session.
 4. As an owner or administrator, verify its resolved destination, driver,
    credential, and SSH fingerprint, then approve it.
 5. Run the first collection from the device page after reviewing the manual
-   collection warning.
+   collection warning. The request is dispatched immediately while the
+   persistent scheduler remains a fallback.
 6. Open **Collections** on the device page to follow the safe timeline, inspect
    retries, and diagnose failures. A raw diagnostic is always manual, isolated,
    reauthenticated, audited, and may expose credentials.
-7. Open the configuration history to inspect versions, compare changes,
-   search, or download a configuration.
+7. Open **Configurations** from the device list to inspect permanent Git
+   versions, compare changes, search, or download a configuration. A collection
+   is only considered successful after NetKeep confirms its Git version.
 8. Configure operational channels under **Notifications**.
 9. Configure encrypted backups and private Git mirroring under
    **Data protection**.

@@ -92,6 +92,13 @@ O UUID é a identidade técnica no motor e no Git. Nome e grupo são apenas
 apresentação, evitando colisões. O painel estima a duração mínima do ciclo e
 alerta quando ela não cabe no menor intervalo configurado.
 
+Pedidos manuais persistem a execução e enfileiram o dispatcher antes do
+redirect. Essa gravação curta não depende de callbacks de encerramento do
+worker HTTP persistente. O tick periódico continua como fallback. O acesso da
+aplicação ao repositório compartilhado usa `safe.directory` limitado ao path
+canônico configurado em cada processo Git; não existe confiança global ou
+wildcard.
+
 Equipamentos novos ou sincronizados entram desativados e pendentes. Somente
 proprietário ou administrador aprova destino, DNS resolvido, porta, transporte,
 credencial, driver e fingerprint SSH. Alterar qualquer um desses campos revoga
@@ -105,7 +112,10 @@ O reporter compilado na imagem derivada do Oxidized usa somente as variáveis
 oficiais dos hooks `node_success`, `node_fail` e `post_store` e envia JSON de no
 máximo 8 KiB para `POST /internal/oxidized/events`. Um `node_fail` pode encerrar
 a execução imediatamente; o sucesso continua sendo confirmado pelo
-reconciliador de status e Git.
+reconciliador de status e Git. `post_store` agenda uma reconciliação direcionada
+e o ciclo periódico cobre indisponibilidade transitória da fila. A execução só
+fica saudável depois de confirmar uma versão no Git; repositório inacessível ou
+ausência de versão produz falha sanitizada e retry.
 
 Os endpoints JSON e SSE usam o mesmo serializer por papel. Operador e leitor
 nunca recebem `technical_message`, contexto ou referência do motor. O cursor do
@@ -202,5 +212,8 @@ contêiner e deve ser tratado como controle do motor.
 
 O serviço `recovery` prepara o dump em banco temporário, valida manifesto,
 hashes, limites e chaves e preserva banco e diretórios atuais. A troca só ocorre
-depois dessa validação. Um health check malsucedido executa rollback automático.
-O painel apenas prepara uploads; nunca recebe privilégios de recuperação.
+depois dessa validação. Antes do rename, os bancos envolvidos recusam novas
+conexões e suas sessões residuais são encerradas, impedindo reconexões de
+processos durante a troca. Somente o banco que assume o nome ativo volta a
+aceitar conexões. Um health check malsucedido executa rollback automático. O
+painel apenas prepara uploads; nunca recebe privilégios de recuperação.

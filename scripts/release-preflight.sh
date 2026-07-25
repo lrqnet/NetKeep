@@ -18,7 +18,7 @@ UPDATER_VERSION="$(sed -n 's#.*docker.io/lrqnet/netkeep-updater:\([0-9][0-9.]*\)
 
 test "${APP_VERSION}" = "${VERSION}"
 test "${UPDATER_VERSION}" = "${VERSION}"
-test "$(grep -Fc 'docker.io/lrqnet/netkeep-oxidized:0.37.0-r3' compose.yaml)" -eq 2
+test "$(grep -Fc 'docker.io/lrqnet/netkeep-oxidized:0.37.0-r4' compose.yaml)" -eq 2
 grep -Fq "## [${VERSION}] - " CHANGELOG.md
 grep -Fq "releases/tag/${TAG}" README.md
 grep -Fq "releases/download/${TAG}/compose.yaml" README.md

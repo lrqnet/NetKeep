@@ -103,7 +103,10 @@ O ambiente E2E é separado da instalação local e usa o projeto Compose
 
 Esses serviços estão exclusivamente em `compose.e2e.yaml`. Eles não fazem
 parte do `compose.yaml` distribuído nas releases e não são instalados nos
-servidores dos usuários.
+servidores dos usuários. Se a faixa privada padrão do simulador conflitar com
+outra rede Docker local, defina `NETKEEP_E2E_DEVICE_SUBNET` e
+`NETKEEP_E2E_DEVICE_IP` com uma subnet e um endereço livres antes de executar o
+script.
 
 Instale o Chromium do Playwright e execute a jornada usada em pull requests:
 
@@ -119,10 +122,12 @@ O teste parte de volumes vazios e percorre:
 2. confirmação de senha, credencial e equipamento;
 3. fingerprint SSH, aprovação e coleta pelo Oxidized;
 4. commit da configuração no repositório Git;
-5. Webhook, Telegram e SMTP contra os simuladores;
-6. backup v2 criptografado, upload e download no S3Mock;
-7. `prepare`, `apply` e `finalize` pelo contêiner de recuperação;
-8. prova no PostgreSQL e no Git de que o estado anterior foi restaurado.
+5. confirmação de que aplicação e Oxidized, com UIDs distintos, leem o mesmo
+   commit sem confiança Git global;
+6. Webhook, Telegram e SMTP contra os simuladores;
+7. backup v2 criptografado, upload e download no S3Mock;
+8. `prepare`, `apply` e `finalize` pelo contêiner de recuperação;
+9. prova no PostgreSQL e no Git de que o estado anterior foi restaurado.
 
 O ambiente permanece disponível ao final em
 `https://127.0.0.1:18444`. Os serviços de inspeção usam apenas loopback:

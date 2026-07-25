@@ -49,6 +49,7 @@ return [
         'collection_failed_safe' => 'La recolección falló. Revisa el estado del equipo y los registros protegidos.',
         'diagnostic_queued' => 'El diagnóstico aislado fue puesto en cola. El acceso al trace bruto permanece protegido y auditado.',
         'approval_engine_failed' => 'Oxidized no quedó saludable. La aprobación fue revocada automáticamente.',
+        'ssh_host_key_unavailable' => 'No se pudo obtener la clave del host SSH. Verifica que NetKeep pueda alcanzar el equipo y que SSH esté activo en el puerto configurado.',
         'approved' => 'Equipo aprobado para recolección.',
         'approval_revoked' => 'La aprobación fue revocada y las recolecciones quedaron pausadas.',
         'imported' => ':count equipos importados.',
@@ -148,6 +149,9 @@ return [
         'invalid_type' => 'Tipo de catálogo no válido.',
         'created' => 'Elemento de catálogo creado.',
         'deleted' => 'Elemento eliminado. Los equipos y el historial fueron conservados.',
+    ],
+    'config' => [
+        'history_unavailable' => 'El historial de configuraciones no está disponible temporalmente. Inténtalo de nuevo después de verificar los servicios de la aplicación y Oxidized.',
     ],
     'system' => [
         'updated' => 'Configuración del sistema actualizada.',

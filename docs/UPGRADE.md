@@ -7,12 +7,12 @@ socket Docker e sem depender do agente de atualização.
 ## Atualização manual para instalações sem updater
 
 Instalações v1.0.0 e v1.0.1 ainda não possuem o updater integrado. Faça uma
-última atualização manual diretamente para v1.0.6:
+última atualização manual diretamente para v1.0.7:
 
 ```bash
 cd /opt/netkeep
 docker compose exec app php artisan netkeep:backup
-curl -fsSLo compose.yaml.next https://github.com/lrqnet/NetKeep/releases/download/v1.0.6/compose.yaml
+curl -fsSLo compose.yaml.next https://github.com/lrqnet/NetKeep/releases/download/v1.0.7/compose.yaml
 docker compose -f compose.yaml.next config --quiet
 mv compose.yaml.next compose.yaml
 docker compose pull
@@ -61,6 +61,19 @@ Quando o manifesto permite rollback e o health check falha, o Compose anterior
 é restaurado automaticamente. Caso contrário, a operação entra em
 `recovery_required`; preserve volumes e snapshot e siga o guia de restauração.
 
+## Mudanças de coleta e histórico na v1.0.7
+
+A v1.0.7 trata indisponibilidade da chave SSH durante a aprovação como falha
+operacional segura, sem aprovar parcialmente o equipamento. Coletas manuais
+entram na fila imediatamente, e o hook `post_store` agenda a reconciliação da
+execução sem aguardar o próximo ciclo do scheduler.
+
+O acesso ao Git compartilhado passa a confiar somente no caminho exato do
+repositório. Uma coleta só termina com sucesso depois que a configuração está
+confirmada no histórico; falhas de acesso ou da primeira persistência geram
+erro seguro e retry. O upgrade preserva o volume `oxidized_git` e não altera o
+conteúdo das configurações já coletadas.
+
 ## Mudanças do fluxo na v1.0.6
 
 A v1.0.6 adiciona `request_id`, último progresso e reconhecimento terminal às
@@ -83,7 +96,7 @@ manual.
 As tags v1.0.4 e v1.0.5 não possuem release, Compose ou manifesto de atualização
 e não são destinos suportados. A v1.0.4 publicou imagens isoladas; a v1.0.5 foi
 bloqueada antes da publicação. Instalações existentes devem atualizar
-diretamente para v1.0.6. Não use as imagens isoladas da v1.0.4 nem tente
+diretamente para v1.0.7. Não use as imagens isoladas da v1.0.4 nem tente
 reconstruir seus artefatos.
 
 ## Mudanças de dados e sandbox na v1.0.3

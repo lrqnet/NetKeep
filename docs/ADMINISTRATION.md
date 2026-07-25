@@ -58,7 +58,9 @@ timeouts antes de aumentar conexões.
 A coleta manual mostra destino, transporte, driver, estado, última coleta e
 próximo horário permitido. Operadores sempre respeitam o cooldown de cinco
 minutos. Proprietário e administrador podem forçar somente após reautenticação
-e confirmação do risco.
+e confirmação do risco. Depois da confirmação, o NetKeep aciona o dispatcher
+sem aguardar o próximo minuto do scheduler. A fila continua persistente e o
+scheduler permanece como recuperação caso o job imediato não seja processado.
 
 ## Aprovação de equipamentos
 
@@ -73,6 +75,11 @@ desativados. Proprietário ou administrador deve conferir e aprovar:
 
 Mudanças nesses valores revogam automaticamente a aprovação e pausam coletas.
 Uma alteração de chave SSH nunca é aceita silenciosamente.
+
+Se o NetKeep não conseguir alcançar o serviço SSH ou obter a chave do host, a
+aprovação falha com uma mensagem segura e o equipamento permanece desativado e
+pendente. Verifique rota, firewall, porta e serviço SSH antes de tentar
+novamente. A verificação da chave nunca é ignorada.
 
 ## Histórico e diagnóstico por equipamento
 
@@ -113,7 +120,20 @@ docker compose exec app php artisan netkeep:prune-collection-diagnostics
 
 As categorias seguras conhecidas cobrem autenticação, conexão recusada,
 timeout de conexão, limite total da coleta, prompt não detectado, mudança de
-chave SSH, erro de driver e falha do motor.
+chave SSH, erro de driver, falha do motor, histórico Git indisponível e
+configuração não persistida.
+
+O sucesso informado pelo motor não é suficiente para marcar o equipamento como
+saudável. O hook `post_store` solicita a verificação direcionada do repositório
+e o reconciliador periódico funciona como fallback. A execução só termina com
+sucesso quando uma versão permanente é confirmada no Git. Se o repositório
+compartilhado não puder ser lido ou não contiver uma versão, a execução falha
+com uma categoria segura e segue a política normal de retry.
+
+Na lista de equipamentos, **Configurações** abre o histórico Git permanente e
+**Coletas** abre diretamente a timeline operacional. Se o histórico estiver
+indisponível, a página mostra um alerta explícito e desativa o download, sem
+exibir comando, caminho do volume ou saída do Git.
 
 ## Atualizações do NetKeep
 

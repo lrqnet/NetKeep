@@ -10,7 +10,10 @@ use Symfony\Component\Process\Process;
 
 class GitMirrorService
 {
-    public function __construct(private readonly OutboundUrlGuard $urls) {}
+    public function __construct(
+        private readonly OutboundUrlGuard $urls,
+        private readonly GitProcessFactory $processes,
+    ) {}
 
     public function mirror(BackupDestination $destination): void
     {
@@ -50,7 +53,10 @@ class GitMirrorService
                 $environment['GIT_CONFIG_VALUE_1'] = "{$target['host']}:{$target['port']}:{$target['address']}";
             }
 
-            $process = new Process(['git', '-C', $repository, 'push', '--mirror', $target['url']]);
+            $process = $this->processes->make(
+                $repository,
+                ['push', '--mirror', $target['url']],
+            );
             $process->setEnv($environment);
             $process->setTimeout(1800);
             $process->mustRun();

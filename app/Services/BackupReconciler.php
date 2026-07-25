@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\CollectionRunStatus;
 use App\Enums\DeviceStatus;
+use App\Exceptions\GitRepositoryUnavailable;
 use App\Jobs\SendAlert;
 use App\Models\BackupRun;
 use App\Models\CollectionRun;
@@ -58,17 +59,22 @@ class BackupReconciler
                         continue;
                     }
 
-                    $latest = $history->versions($device, 1)[0] ?? null;
                     if ($belongsToRunning && in_array($nodeStatus, ['success', 'done', 'unchanged', 'no_change'], true)) {
-                        $this->recordCollectionResult(
-                            $device,
+                        $result = $this->reconcileRun(
                             $running,
-                            $latest,
+                            $history,
                             $engineEndedAt,
-                            $created,
-                            $recovered,
                         );
+                        $created += $result['created'];
+                        $failed += $result['failed'];
+                        $recovered += $result['recovered'];
 
+                        continue;
+                    }
+
+                    try {
+                        $latest = $history->versions($device, 1)[0] ?? null;
+                    } catch (GitRepositoryUnavailable) {
                         continue;
                     }
 
@@ -133,28 +139,69 @@ class BackupReconciler
     }
 
     /**
-     * @param  array{hash:string,date:string,author:string,subject:string}|null  $latest
+     * @return array{created:int,failed:int,recovered:int}
+     */
+    public function reconcileRun(
+        CollectionRun $running,
+        GitHistory $history,
+        CarbonInterface $engineEndedAt,
+        bool $failWhenMissing = true,
+    ): array {
+        if ($running->status !== CollectionRunStatus::Running) {
+            return ['created' => 0, 'failed' => 0, 'recovered' => 0];
+        }
+        if (BackupRun::query()
+            ->where('collection_run_id', $running->id)
+            ->whereNotNull('git_commit')
+            ->exists()) {
+            app(CollectionRunService::class)->succeed($running);
+
+            return ['created' => 0, 'failed' => 0, 'recovered' => 0];
+        }
+
+        try {
+            $latest = $history->versions($running->device, 1)[0] ?? null;
+        } catch (GitRepositoryUnavailable) {
+            app(CollectionRunService::class)->fail($running, 'configuration_history_unavailable');
+
+            return ['created' => 0, 'failed' => 1, 'recovered' => 0];
+        }
+        if (! $latest) {
+            if ($failWhenMissing) {
+                app(CollectionRunService::class)->fail($running, 'configuration_not_persisted');
+            }
+
+            return ['created' => 0, 'failed' => $failWhenMissing ? 1 : 0, 'recovered' => 0];
+        }
+
+        $result = $this->recordCollectionResult(
+            $running->device,
+            $running,
+            $latest,
+            $engineEndedAt,
+        );
+
+        return [
+            'created' => 1,
+            'failed' => 0,
+            'recovered' => $result['recovered'] ? 1 : 0,
+        ];
+    }
+
+    /**
+     * @param  array{hash:string,date:string,author:string,subject:string}  $latest
+     * @return array{recovered:bool}
      */
     private function recordCollectionResult(
         Device $device,
         CollectionRun $running,
-        ?array $latest,
+        array $latest,
         CarbonInterface $engineEndedAt,
-        int &$created,
-        int &$recovered,
-    ): void {
-        if (BackupRun::query()->where('collection_run_id', $running->id)->exists()) {
-            app(CollectionRunService::class)->succeed($running);
-
-            return;
-        }
-
-        $latestDate = $latest ? Carbon::parse($latest['date']) : null;
-        $commitBelongsToRun = $latest
-            && $latestDate
-            && $running->started_at
+    ): array {
+        $latestDate = Carbon::parse($latest['date']);
+        $commitBelongsToRun = $running->started_at !== null
             && $latestDate->greaterThanOrEqualTo($running->started_at);
-        $commitWasRecorded = $latest && BackupRun::query()
+        $commitWasRecorded = BackupRun::query()
             ->where('device_id', $device->id)
             ->where('git_commit', $latest['hash'])
             ->exists();
@@ -162,21 +209,23 @@ class BackupReconciler
         $changed = $commitBelongsToRun && ! $commitWasRecorded && $hadPreviousCommit;
         $wasFailing = $device->status === DeviceStatus::Failing;
 
-        BackupRun::query()->create([
-            'device_id' => $device->id,
-            'collection_run_id' => $running->id,
-            'status' => 'completed',
-            'started_at' => $running->started_at,
-            'finished_at' => $engineEndedAt,
-            'git_commit' => $latest['hash'] ?? null,
-            'changed' => $changed,
-            'metadata' => array_filter([
-                'subject' => $commitBelongsToRun ? $latest['subject'] : null,
-                'author' => $commitBelongsToRun ? $latest['author'] : null,
-                'engine_status' => 'success',
-                'configuration_changed' => $commitBelongsToRun && ! $commitWasRecorded,
-            ], static fn (mixed $value): bool => $value !== null),
-        ]);
+        BackupRun::query()->updateOrCreate(
+            ['collection_run_id' => $running->id],
+            [
+                'device_id' => $device->id,
+                'status' => 'completed',
+                'started_at' => $running->started_at,
+                'finished_at' => $engineEndedAt,
+                'git_commit' => $latest['hash'],
+                'changed' => $changed,
+                'metadata' => array_filter([
+                    'subject' => $commitBelongsToRun ? $latest['subject'] : null,
+                    'author' => $commitBelongsToRun ? $latest['author'] : null,
+                    'engine_status' => 'success',
+                    'configuration_changed' => $commitBelongsToRun && ! $commitWasRecorded,
+                ], static fn (mixed $value): bool => $value !== null),
+            ],
+        );
         $device->update([
             'status' => DeviceStatus::Healthy,
             'last_backup_at' => $engineEndedAt,
@@ -185,10 +234,8 @@ class BackupReconciler
             'last_error' => null,
         ]);
         app(CollectionRunService::class)->succeed($running);
-        $created++;
 
         if ($wasFailing) {
-            $recovered++;
             SendAlert::dispatch('recovery', 'netkeep.alerts.device_recovered', [
                 'device_id' => $device->id,
                 'device' => $device->name,
@@ -201,6 +248,8 @@ class BackupReconciler
                 'git_commit' => $latest['hash'],
             ]);
         }
+
+        return ['recovered' => $wasFailing];
     }
 
     private function engineEndedAt(mixed $node): ?CarbonInterface

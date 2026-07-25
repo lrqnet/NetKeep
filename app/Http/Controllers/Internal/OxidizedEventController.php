@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Internal;
 use App\Enums\CollectionRunStatus;
 use App\Enums\CollectionTrigger;
 use App\Http\Controllers\Controller;
+use App\Jobs\ReconcileCollectionRun;
 use App\Models\CollectionRun;
 use App\Models\CollectionRunEvent;
 use App\Models\Device;
@@ -101,6 +102,8 @@ class OxidizedEventController extends Controller
         );
         if ($errorCode !== null) {
             $runs->fail($run, $errorCode, recordEvent: false);
+        } elseif ($data['event'] === 'post_store' && $run->trigger !== CollectionTrigger::Diagnostic) {
+            ReconcileCollectionRun::dispatch($run->id);
         }
 
         return response()->json(['accepted' => true, 'event_id' => $event->event_id], 202)

@@ -5,6 +5,39 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 
 ## [Unreleased]
 
+## [1.0.7] - 2026-07-24
+
+### Fixed
+
+- indisponibilidade do serviço SSH durante a aprovação agora retorna uma
+  orientação segura, mantém o equipamento pendente e registra a tentativa sem
+  expor destino ou saída técnica, em vez de responder com erro 500;
+- leitura do histórico Git compartilhado entre os contêineres passa a confiar
+  somente no caminho configurado para o repositório, evitando que ownerships
+  distintos ocultem versões e o conteúdo já coletado;
+- sucesso do motor só conclui a coleta depois da confirmação do commit no Git;
+  falhas de acesso ou persistência agora deixam a execução em falha com motivo
+  seguro e retry, em vez de marcar o equipamento como saudável sem histórico;
+- coletas manuais enfileiram o dispatcher antes do redirect e o hook
+  `post_store` agenda reconciliação direcionada, reduzindo a espera pelo ciclo
+  do scheduler sem depender de callbacks do worker HTTP persistente;
+- lista de equipamentos diferencia os atalhos de configurações e coletas, e a
+  tela de histórico informa explicitamente indisponibilidade sem aparentar uma
+  primeira coleta vazia;
+- rede do simulador E2E usa uma faixa dedicada configurável, evitando colisão
+  com instalações locais do Compose já ativas;
+- restaurações bloqueiam novas conexões nos bancos envolvidos antes de encerrar
+  sessões e renomeá-los, eliminando a corrida com processos que tentem
+  reconectar durante a troca;
+- cartão global de atualização usa as cores próprias da sidebar para manter
+  contraste WCAG AA quando uma nova versão está disponível.
+
+### Security
+
+- downloads e diffs de configuração usam `no-store`; falhas do Git retornam
+  somente mensagem traduzida e código estável, sem comando, path ou saída do
+  processo.
+
 ## [1.0.6] - 2026-07-23
 
 ### Added
@@ -301,7 +334,8 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 - ambiente PostgreSQL do CI alinhado ao arquivo de teste e asserções de
   mensagens independentes do idioma configurado.
 
-[Unreleased]: https://github.com/lrqnet/NetKeep/compare/v1.0.6...HEAD
+[Unreleased]: https://github.com/lrqnet/NetKeep/compare/v1.0.7...HEAD
+[1.0.7]: https://github.com/lrqnet/NetKeep/compare/v1.0.6...v1.0.7
 [1.0.6]: https://github.com/lrqnet/NetKeep/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/lrqnet/NetKeep/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/lrqnet/NetKeep/compare/v1.0.3...v1.0.4

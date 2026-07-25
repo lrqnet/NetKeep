@@ -36,8 +36,8 @@ O token fica somente no cofre de secrets do GitHub e não deve ser salvo em
 O workflow `.github/workflows/release.yml` é acionado por tags SemVer:
 
 ```bash
-git tag -a v1.0.6 -m "NetKeep v1.0.6"
-git push origin refs/tags/v1.0.6
+git tag -a v1.0.7 -m "NetKeep v1.0.7"
+git push origin refs/tags/v1.0.7
 ```
 
 O workflow:
@@ -49,7 +49,7 @@ O workflow:
 3. autentica no GHCR com `GITHUB_TOKEN` e no Docker Hub com os secrets;
 4. constrói NetKeep, NetKeep-Updater e NetKeep-Oxidized para `amd64` e `arm64`;
 5. publica as tags SemVer do painel e updater e a revisão imutável
-   `netkeep-oxidized:0.37.0-r3`;
+   `netkeep-oxidized:0.37.0-r4`;
 6. gera SBOM e provenance das imagens e assina seus digests nos dois
    registries;
 7. substitui as tags do Compose pelos digests publicados;
@@ -61,20 +61,20 @@ O Compose nunca usa `latest`; a tag existe apenas para descoberta manual.
 ## Conferência
 
 ```bash
-docker pull lrqnet/netkeep:1.0.6
-docker image inspect lrqnet/netkeep:1.0.6
+docker pull lrqnet/netkeep:1.0.7
+docker image inspect lrqnet/netkeep:1.0.7
 cosign verify \
-  --certificate-identity='https://github.com/lrqnet/NetKeep/.github/workflows/release.yml@refs/tags/v1.0.6' \
+  --certificate-identity='https://github.com/lrqnet/NetKeep/.github/workflows/release.yml@refs/tags/v1.0.7' \
   --certificate-oidc-issuer='https://token.actions.githubusercontent.com' \
-  docker.io/lrqnet/netkeep:1.0.6
+  docker.io/lrqnet/netkeep:1.0.7
 
 cosign verify \
-  --certificate-identity='https://github.com/lrqnet/NetKeep/.github/workflows/release.yml@refs/tags/v1.0.6' \
+  --certificate-identity='https://github.com/lrqnet/NetKeep/.github/workflows/release.yml@refs/tags/v1.0.7' \
   --certificate-oidc-issuer='https://token.actions.githubusercontent.com' \
-  docker.io/lrqnet/netkeep-oxidized:0.37.0-r3
+  docker.io/lrqnet/netkeep-oxidized:0.37.0-r4
 ```
 
-Verifique também `docker.io/lrqnet/netkeep-updater:1.0.6` com a mesma
+Verifique também `docker.io/lrqnet/netkeep-updater:1.0.7` com a mesma
 identidade e emissor.
 
 Se qualquer registry, assinatura ou criação da release falhar depois de uma
@@ -89,7 +89,7 @@ Em um servidor novo:
 ```bash
 mkdir -p /opt/netkeep
 cd /opt/netkeep
-curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.6/compose.yaml
+curl -fsSLO https://github.com/lrqnet/NetKeep/releases/download/v1.0.7/compose.yaml
 docker compose up -d
 ```
 

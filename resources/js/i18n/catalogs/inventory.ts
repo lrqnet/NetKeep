@@ -61,10 +61,10 @@ export const inventoryMessages = defineMessages({
         pt_BR: 'Estado',
         es: 'Estado',
     },
-    'devices.history': {
-        en: 'History',
-        pt_BR: 'Histórico',
-        es: 'Historial',
+    'devices.configurations': {
+        en: 'Configurations',
+        pt_BR: 'Configurações',
+        es: 'Configuraciones',
     },
     'devices.collect_now': {
         en: 'Collect now',
@@ -667,6 +667,16 @@ export const inventoryMessages = defineMessages({
         pt_BR: 'A coleta excedeu o limite total de tempo.',
         es: 'La recolección superó el límite total de tiempo.',
     },
+    'collections.error.configuration_history_unavailable': {
+        en: 'The configuration history storage is temporarily unavailable.',
+        pt_BR: 'O armazenamento do histórico de configurações está temporariamente indisponível.',
+        es: 'El almacenamiento del historial de configuraciones no está disponible temporalmente.',
+    },
+    'collections.error.configuration_not_persisted': {
+        en: 'The engine finished, but no configuration version could be confirmed.',
+        pt_BR: 'O motor terminou, mas nenhuma versão da configuração pôde ser confirmada.',
+        es: 'El motor terminó, pero no se pudo confirmar ninguna versión de la configuración.',
+    },
     'devices.hostname': {
         en: 'Hostname',
         pt_BR: 'Hostname',
@@ -766,6 +776,26 @@ export const inventoryMessages = defineMessages({
         en: 'Download configuration',
         pt_BR: 'Baixar configuração',
         es: 'Descargar configuración',
+    },
+    'config.view_collections': {
+        en: 'View collections',
+        pt_BR: 'Ver coletas',
+        es: 'Ver recolecciones',
+    },
+    'config.history_unavailable_title': {
+        en: 'Configuration history unavailable',
+        pt_BR: 'Histórico de configurações indisponível',
+        es: 'Historial de configuraciones no disponible',
+    },
+    'config.history_unavailable': {
+        en: 'NetKeep could not verify the permanent Git history. The device is not considered healthy from this collection until persistence is confirmed.',
+        pt_BR: 'O NetKeep não conseguiu verificar o histórico Git permanente. O equipamento não é considerado saudável por esta coleta até a persistência ser confirmada.',
+        es: 'NetKeep no pudo verificar el historial Git permanente. El equipo no se considera saludable por esta recolección hasta que se confirme la persistencia.',
+    },
+    'config.history_unavailable_content': {
+        en: '# Configuration content is unavailable until Git history access is restored.',
+        pt_BR: '# O conteúdo da configuração fica indisponível até o acesso ao histórico Git ser restaurado.',
+        es: '# El contenido de la configuración no está disponible hasta que se restaure el acceso al historial Git.',
     },
     'config.versions': {
         en: 'Versions',

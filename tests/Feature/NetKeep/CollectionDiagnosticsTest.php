@@ -7,6 +7,7 @@ use App\Enums\CollectionTrigger;
 use App\Enums\DeviceApprovalStatus;
 use App\Enums\DeviceStatus;
 use App\Enums\UserRole;
+use App\Jobs\ReconcileCollectionRun;
 use App\Jobs\RunDeviceDiagnostic;
 use App\Models\CollectionRun;
 use App\Models\Device;
@@ -117,6 +118,37 @@ class CollectionDiagnosticsTest extends TestCase
         $response->assertAccepted();
         $this->assertSame($eventCount, $run->events()->count());
         $this->assertStringNotContainsString('fictional-password', (string) $run->events()->value('technical_message'));
+    }
+
+    public function test_post_store_queues_immediate_git_reconciliation(): void
+    {
+        Queue::fake();
+        $device = $this->approvedDevice();
+        $run = $this->collectionRun($device, CollectionRunStatus::Running);
+        $payload = [
+            'event_id' => 'bbbbbbbb-cccc-4ddd-8eee-ffffffffffff',
+            'occurred_at' => now()->toIso8601String(),
+            'event' => 'post_store',
+            'node_name' => $device->uuid,
+            'node_group' => 'default',
+            'node_model' => 'IOS',
+            'job_status' => 'success',
+            'job_time' => '1.2',
+        ];
+
+        $this->withHeader('Host', 'app')
+            ->withHeader('X-NetKeep-Token', 'internal-reporter-token')
+            ->postJson(route('internal.oxidized.events'), $payload)
+            ->assertAccepted();
+
+        Queue::assertPushed(
+            ReconcileCollectionRun::class,
+            fn (ReconcileCollectionRun $job): bool => $job->runId === $run->id,
+        );
+        $this->assertDatabaseHas('collection_run_events', [
+            'collection_run_id' => $run->id,
+            'code' => 'configuration_stored',
+        ]);
     }
 
     public function test_reporter_endpoints_reject_invalid_host_token_unknown_device_and_large_payload(): void

@@ -449,17 +449,14 @@ class RestoreCoordinator
     {
         $rollback = 'netkeep_previous_'.substr(str_replace('-', '', $uuid), 0, 16);
         DB::disconnect();
-        $this->adminSql(
-            'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname IN ('
-            ."'".str_replace("'", "''", $current)."','".str_replace("'", "''", $temporary)."'"
-            .') AND pid <> pg_backend_pid();',
-        );
+        $this->blockConnections([$current, $temporary]);
         $this->adminSql(
             'ALTER DATABASE '.$this->identifier($current).' RENAME TO '.$this->identifier($rollback).';',
         );
         $this->adminSql(
             'ALTER DATABASE '.$this->identifier($temporary).' RENAME TO '.$this->identifier($current).';',
         );
+        $this->allowConnections($current);
 
         return $rollback;
     }
@@ -471,12 +468,8 @@ class RestoreCoordinator
             $rollback = (string) ($state['rollback_database'] ?? '');
             if ($rollback !== '') {
                 $failed = 'netkeep_failed_'.substr(str_replace('-', '', $uuid), 0, 16);
-                $this->adminSql(
-                    'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname IN ('
-                    ."'".str_replace("'", "''", $state['current_database'])."','"
-                    .str_replace("'", "''", $rollback)."'"
-                    .') AND pid <> pg_backend_pid();',
-                );
+                DB::disconnect();
+                $this->blockConnections([(string) $state['current_database'], $rollback]);
                 $this->adminSql(
                     'ALTER DATABASE '.$this->identifier($state['current_database']).' RENAME TO '
                     .$this->identifier($failed).';',
@@ -485,6 +478,7 @@ class RestoreCoordinator
                     'ALTER DATABASE '.$this->identifier($rollback).' RENAME TO '
                     .$this->identifier($state['current_database']).';',
                 );
+                $this->allowConnections((string) $state['current_database']);
                 $this->dropDatabase($failed);
             }
             $this->restoreDirectories((array) ($state['previous_paths'] ?? []));
@@ -648,6 +642,31 @@ class RestoreCoordinator
             .str_replace("'", "''", $database)."' AND pid <> pg_backend_pid();",
         );
         $this->adminSql('DROP DATABASE IF EXISTS '.$this->identifier($database).';');
+    }
+
+    private function allowConnections(string $database): void
+    {
+        $this->adminSql(
+            'ALTER DATABASE '.$this->identifier($database).' WITH ALLOW_CONNECTIONS true;',
+        );
+    }
+
+    /** @param list<string> $databases */
+    private function blockConnections(array $databases): void
+    {
+        foreach ($databases as $database) {
+            $this->adminSql(
+                'ALTER DATABASE '.$this->identifier($database).' WITH ALLOW_CONNECTIONS false;',
+            );
+        }
+        $names = implode(',', array_map(
+            fn (string $database): string => "'".str_replace("'", "''", $database)."'",
+            $databases,
+        ));
+        $this->adminSql(
+            'SELECT pg_terminate_backend(pid) FROM pg_stat_activity '
+            ."WHERE datname IN ({$names}) AND pid <> pg_backend_pid();",
+        );
     }
 
     private function identifier(string $value): string

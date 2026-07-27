@@ -3,7 +3,19 @@
 Todas as mudanças relevantes serão registradas aqui. O projeto segue
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.0.8] - 2026-07-26
+
+### Added
+
+- laboratório Docker isolado e reproduzível para validar integrações reais com
+  LibreNMS e NetBox, com portas locais exclusivas, credenciais efêmeras fora
+  do Git e imagens fixadas por digest;
+
+### Fixed
+
+- falhas de sincronização manual de inventário agora preservam somente o código
+  estável `inventory_sync_failed` no estado e na auditoria, sem persistir ou
+  enviar detalhes brutos da origem externa ao navegador.
 
 ## [1.0.7] - 2026-07-24
 
@@ -334,7 +346,8 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 - ambiente PostgreSQL do CI alinhado ao arquivo de teste e asserções de
   mensagens independentes do idioma configurado.
 
-[Unreleased]: https://github.com/lrqnet/NetKeep/compare/v1.0.7...HEAD
+[Unreleased]: https://github.com/lrqnet/NetKeep/compare/v1.0.8...HEAD
+[1.0.8]: https://github.com/lrqnet/NetKeep/compare/v1.0.7...v1.0.8
 [1.0.7]: https://github.com/lrqnet/NetKeep/compare/v1.0.6...v1.0.7
 [1.0.6]: https://github.com/lrqnet/NetKeep/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/lrqnet/NetKeep/compare/v1.0.4...v1.0.5

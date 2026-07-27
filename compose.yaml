@@ -1,7 +1,7 @@
 name: netkeep
 
 x-netkeep-image: &netkeep-image
-    image: ${NETKEEP_IMAGE:-docker.io/lrqnet/netkeep:1.0.7}
+    image: ${NETKEEP_IMAGE:-docker.io/lrqnet/netkeep:1.0.8}
 
 x-netkeep-environment: &netkeep-environment
     APP_ENV: production
@@ -251,7 +251,7 @@ services:
             - egress
 
     oxidized:
-        image: ${NETKEEP_OXIDIZED_IMAGE:-docker.io/lrqnet/netkeep-oxidized:0.37.0-r4}
+        image: ${NETKEEP_OXIDIZED_IMAGE:-docker.io/lrqnet/netkeep-oxidized:0.37.0-r5}
         user: '30000:30000'
         restart: unless-stopped
         read_only: true
@@ -287,7 +287,7 @@ services:
             - device_access
 
     sandbox:
-        image: ${NETKEEP_OXIDIZED_IMAGE:-docker.io/lrqnet/netkeep-oxidized:0.37.0-r4}
+        image: ${NETKEEP_OXIDIZED_IMAGE:-docker.io/lrqnet/netkeep-oxidized:0.37.0-r5}
         command: ['/usr/local/bin/netkeep-sandbox-controller']
         user: '30000:30000'
         restart: unless-stopped
@@ -364,7 +364,7 @@ services:
             - internal
 
     updater:
-        image: ${NETKEEP_UPDATER_IMAGE:-docker.io/lrqnet/netkeep-updater:1.0.7}
+        image: ${NETKEEP_UPDATER_IMAGE:-docker.io/lrqnet/netkeep-updater:1.0.8}
         restart: unless-stopped
         group_add:
             - '20000'

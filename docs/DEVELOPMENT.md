@@ -63,6 +63,11 @@ docker compose down
 Use `docker compose down --volumes` somente para apagar integralmente os dados
 desse ambiente local.
 
+## Laboratório de integrações
+
+Para validar LibreNMS e NetBox reais sem compartilhar recursos com a instalação
+local, siga o [guia do laboratório de inventário](INVENTORY_LAB.md).
+
 ## Testes PHP isolados
 
 ```bash

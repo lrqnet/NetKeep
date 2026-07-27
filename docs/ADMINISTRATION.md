@@ -11,6 +11,11 @@ somente leitura. Identidade, IP, local, tags e estado podem ser
 sincronizados, mas credenciais, drivers e agendas de coleta permanecem sob
 controle do NetKeep.
 
+Uma sincronização que falha mantém a fonte configurada e apresenta somente uma
+mensagem segura. O estado e a auditoria registram um código estável, sem corpo
+de resposta, token, URL sensível ou detalhes de transporte da origem externa.
+Revise conectividade, token e permissões da fonte antes de tentar novamente.
+
 ## Notificações
 
 **Notificações** gerencia canais Webhook, Telegram e E-mail/SMTP. O resumo

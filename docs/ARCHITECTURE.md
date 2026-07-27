@@ -160,6 +160,9 @@ O cliente de saída resolve DNS em modo fail-closed, bloqueia loopback,
 link-local, metadata, multicast, unspecified, IPv4 mapeado e nomes ou endereços
 dos serviços Compose. A resolução validada é fixada à conexão e repetida a cada
 uso. A proteção é aplicada a inventário, webhooks, Telegram, SMTP, S3 e Git.
+Falhas de fontes de inventário são reduzidas a códigos estáveis antes de serem
+persistidas, auditadas ou expostas na interface; respostas e erros brutos da
+origem externa não cruzam esse limite.
 IPs públicos e privados de equipamentos são permitidos depois da aprovação
 administrativa. O Oxidized recebe um IP literal da resolução aprovada e não
 refaz DNS, preservando o UUID como identidade estável do equipamento.

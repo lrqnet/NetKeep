@@ -25,7 +25,9 @@ class IntegrationController extends Controller
                 'enabled' => $source->enabled,
                 'sync_interval' => $source->sync_interval,
                 'last_synced_at' => $source->last_synced_at,
-                'last_error' => $source->last_error,
+                'last_error' => $source->last_error === null
+                    ? null
+                    : __('netkeep.integrations.sync_failed'),
                 'has_token' => filled($source->token),
             ]),
         ]);
@@ -62,9 +64,9 @@ class IntegrationController extends Controller
             $audit->record('integration.inventory_synced', $source, $result);
 
             return back()->with('success', __('netkeep.integrations.sync_completed', $result));
-        } catch (\Throwable $exception) {
-            $source->update(['last_error' => $exception->getMessage()]);
-            $audit->record('integration.inventory_failed', $source, ['error' => $exception->getMessage()]);
+        } catch (\Throwable) {
+            $source->update(['last_error' => 'inventory_sync_failed']);
+            $audit->record('integration.inventory_failed', $source, ['error_code' => 'inventory_sync_failed']);
 
             return back()->with('error', __('netkeep.integrations.sync_failed'));
         }

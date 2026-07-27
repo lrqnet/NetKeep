@@ -7,12 +7,12 @@ socket Docker e sem depender do agente de atualização.
 ## Atualização manual para instalações sem updater
 
 Instalações v1.0.0 e v1.0.1 ainda não possuem o updater integrado. Faça uma
-última atualização manual diretamente para v1.0.7:
+última atualização manual diretamente para v1.0.8:
 
 ```bash
 cd /opt/netkeep
 docker compose exec app php artisan netkeep:backup
-curl -fsSLo compose.yaml.next https://github.com/lrqnet/NetKeep/releases/download/v1.0.7/compose.yaml
+curl -fsSLo compose.yaml.next https://github.com/lrqnet/NetKeep/releases/download/v1.0.8/compose.yaml
 docker compose -f compose.yaml.next config --quiet
 mv compose.yaml.next compose.yaml
 docker compose pull
@@ -61,6 +61,17 @@ Quando o manifesto permite rollback e o health check falha, o Compose anterior
 é restaurado automaticamente. Caso contrário, a operação entra em
 `recovery_required`; preserve volumes e snapshot e siga o guia de restauração.
 
+## Integrações de inventário na v1.0.8
+
+A v1.0.8 mantém as integrações com LibreNMS e NetBox somente leitura e passa
+a reduzir falhas de sincronização manual a uma mensagem segura. Dados brutos da
+origem externa, inclusive respostas, detalhes de transporte e tokens, não são
+persistidos no estado da fonte, na auditoria ou na interface.
+
+Antes de repetir uma sincronização, revise conectividade, token e permissões
+da fonte. A configuração e os dispositivos já importados são preservados; a
+falha não cria nem aprova equipamentos parcialmente.
+
 ## Mudanças de coleta e histórico na v1.0.7
 
 A v1.0.7 trata indisponibilidade da chave SSH durante a aprovação como falha
@@ -96,7 +107,7 @@ manual.
 As tags v1.0.4 e v1.0.5 não possuem release, Compose ou manifesto de atualização
 e não são destinos suportados. A v1.0.4 publicou imagens isoladas; a v1.0.5 foi
 bloqueada antes da publicação. Instalações existentes devem atualizar
-diretamente para v1.0.7. Não use as imagens isoladas da v1.0.4 nem tente
+diretamente para v1.0.8. Não use as imagens isoladas da v1.0.4 nem tente
 reconstruir seus artefatos.
 
 ## Mudanças de dados e sandbox na v1.0.3

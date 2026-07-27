@@ -2,7 +2,10 @@ import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { gotoWithTlsRetry } from './support/navigation';
+import {
+    gotoWithTlsRetry,
+    reloadWithNetworkRetry,
+} from './support/navigation';
 
 const project = process.env.NETKEEP_E2E_PROJECT ?? 'netkeep-e2e';
 const root = resolve(import.meta.dirname, '../..');
@@ -94,7 +97,7 @@ test('reauthenticates once and preserves update feedback across navigation and r
         await expect(
             page.getByText('Update request received', { exact: true }),
         ).toBeVisible();
-        await page.reload();
+        await reloadWithNetworkRetry(page);
         await expect(
             page.getByText('Update request received', { exact: true }),
         ).toBeVisible();
@@ -117,7 +120,7 @@ test('reauthenticates once and preserves update feedback across navigation and r
                 { timeout: 120_000 },
             )
             .toBe(200);
-        await page.reload();
+        await reloadWithNetworkRetry(page);
         await expect(
             page.getByText('Updating v1.0.3 to v1.0.6', { exact: true }),
         ).toBeVisible();
@@ -132,13 +135,13 @@ test('reauthenticates once and preserves update feedback across navigation and r
                 "last_progress_at" => now(),
             ]);
         `);
-        await page.reload();
+        await reloadWithNetworkRetry(page);
         await expect(
             page.getByText('NetKeep v1.0.6 was installed successfully.', {
                 exact: true,
             }),
         ).toBeVisible();
-        await page.reload();
+        await reloadWithNetworkRetry(page);
         await expect(
             page.getByText('NetKeep v1.0.6 was installed successfully.', {
                 exact: true,

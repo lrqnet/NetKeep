@@ -19,6 +19,10 @@ It uses [Oxidized 0.37.0](https://github.com/ytti/oxidized) as its unmodified
 collection engine and adds inventory, authentication, audit logs, permanent Git
 history, notifications, and encrypted redundancy.
 
+<p align="center">
+  <img src="docs/assets/netkeep-dashboard-preview.webp" alt="NetKeep dashboard in dark mode with fictional example network data" width="1200">
+</p>
+
 > [!IMPORTANT]
 > In safe mode, NetKeep collects, compares, and exports configurations without
 > applying changes to equipment. This guarantee is conditional on reviewed

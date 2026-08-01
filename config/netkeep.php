@@ -8,6 +8,9 @@ return [
 
     'version' => env('NETKEEP_VERSION', 'dev'),
     'source_url' => env('NETKEEP_SOURCE_URL', 'https://github.com/lrqnet/NetKeep'),
+    'readme_preview' => [
+        'password' => env('NETKEEP_README_DEMO_PASSWORD'),
+    ],
     'oxidized' => [
         'url' => env('OXIDIZED_URL', 'http://oxidized:8888'),
         'token' => env('OXIDIZED_INTERNAL_TOKEN'),

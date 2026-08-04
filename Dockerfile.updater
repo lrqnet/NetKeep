@@ -8,7 +8,7 @@ RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /netkeep-updater .
 
 FROM ghcr.io/sigstore/cosign/cosign:v3.0.6@sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00 AS cosign
 
-FROM docker:29.6.2-cli-alpine3.24@sha256:be132a9f282288de4afaf63379dff75711fda0147c6b72a9df44e51841402144
+FROM docker:29.7.0-cli-alpine3.24@sha256:206ae9cc405101ab0cf97d4b515d21bf6aae961f98f7f9d8de6c111718fef335
 RUN rm -f /usr/local/libexec/docker/cli-plugins/docker-buildx
 COPY --from=build /netkeep-updater /usr/local/bin/netkeep-updater
 COPY --from=cosign /ko-app/cosign /usr/local/bin/cosign

@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
 
-FROM composer:2@sha256:5946476338742b200bb9ff88f8be56275ddae4b3949c72305cb0dbf10cfcb760 AS php-dependencies
+FROM composer:2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040 AS php-dependencies
 WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install \
@@ -21,7 +21,7 @@ COPY routes routes
 COPY artisan .
 RUN composer dump-autoload --no-dev --classmap-authoritative --no-scripts
 
-FROM composer:2@sha256:5946476338742b200bb9ff88f8be56275ddae4b3949c72305cb0dbf10cfcb760 AS php-test-dependencies
+FROM composer:2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040 AS php-test-dependencies
 WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install \

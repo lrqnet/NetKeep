@@ -40,7 +40,7 @@ COPY public public
 COPY components.json tsconfig.json vite.config.ts ./
 RUN npm run build
 
-FROM postgres:18.4-bookworm@sha256:1961f96e6029a02c3812d7cb329a3b03a3ac2bb067058dec17b0f5596aca9296 AS postgres-client
+FROM postgres:18.4-bookworm@sha256:882236b897e39051d2368c5ccc6cda944904723506b2dfc97f2a8f5bc9afa382 AS postgres-client
 
 FROM dunglas/frankenphp:1-php8.4-bookworm@sha256:79b347211bfec90d6a1373c4956a7d3832c8248a2ff2d76bd0b677f37284d32f AS runtime-base
 RUN install-php-extensions \

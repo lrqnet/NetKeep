@@ -2,5 +2,6 @@ misconfigurations:
     - id: AVD-DS-0002
       paths:
           - Dockerfile.updater
-      expired_at: 2026-10-21
+      expired_at: 2027-01-20
+      # Reviewed 2026-10-22: read-only rootfs, no network, all capabilities dropped.
       statement: The updater is the only network-isolated service with Docker socket access and therefore remains host-root-equivalent regardless of its container UID.

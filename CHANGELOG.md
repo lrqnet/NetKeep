@@ -3,7 +3,7 @@
 Todas as mudanças relevantes serão registradas aqui. O projeto segue
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.0.9] - 2026-10-22
 
 ### Security
 
@@ -15,6 +15,8 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
   resolver os alertas identificados pelas auditorias Composer e npm;
 - comando de restauração valida argumentos e opções textuais com os tipos
   retornados pelo Laravel atualizado;
+- dependência criptográfica do simulador de testes atualizada para corrigir a
+  CVE-2026-56854; exceção do updater revisada e limitada a 2027-01-20;
 - instalações existentes precisam reconstruir ou obter a imagem corrigida e
   recriar todos os serviços PHP; atualizar somente o código não corrige o runtime.
 

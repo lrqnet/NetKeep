@@ -3,6 +3,21 @@
 Todas as mudanças relevantes serão registradas aqui. O projeto segue
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Security
+
+- correção urgente das CVE-2026-109618 e CVE-2026-109619: imagem FrankenPHP
+  atualizada para PHP 8.4.27 e imagem Composer atualizada, ambas fixadas por digest;
+- build e CI rejeitam versões PHP anteriores às correções; os requisitos do
+  Composer aceitam PHP 8.4.27+ e 8.5.12+ nas respectivas linhas;
+- dependências PHP e JavaScript atualizadas dentro das versões compatíveis para
+  resolver os alertas identificados pelas auditorias Composer e npm;
+- comando de restauração valida argumentos e opções textuais com os tipos
+  retornados pelo Laravel atualizado;
+- instalações existentes precisam reconstruir ou obter a imagem corrigida e
+  recriar todos os serviços PHP; atualizar somente o código não corrige o runtime.
+
 ## [1.0.8] - 2026-07-26
 
 ### Added

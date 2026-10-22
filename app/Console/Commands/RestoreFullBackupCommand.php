@@ -26,7 +26,7 @@ class RestoreFullBackupCommand extends Command
         InstallationClaimService $claims,
     ): int {
         try {
-            return match ((string) $this->argument('action')) {
+            return match ($this->argument('action')) {
                 'prepare' => $this->prepare($restores, $claims),
                 'apply' => $this->changeState($restores, $claims, 'apply'),
                 'rollback' => $this->changeState($restores, $claims, 'rollback'),
@@ -44,14 +44,14 @@ class RestoreFullBackupCommand extends Command
         RestoreCoordinator $restores,
         InstallationClaimService $claims,
     ): int {
-        $webRequest = $this->option('web-request');
+        $webRequest = $this->stringInput($this->option('web-request'));
         $requestPath = null;
         $requestedBy = null;
-        $archive = (string) $this->argument('archive');
-        $identity = $this->option('identity') ? (string) $this->option('identity') : null;
+        $archive = $this->stringInput($this->argument('archive'));
+        $identity = $this->stringInput($this->option('identity')) ?: null;
         $password = null;
         if ($webRequest) {
-            $request = $this->readWebRequest((string) $webRequest);
+            $request = $this->readWebRequest($webRequest);
             $requestPath = $request['path'];
             $archive = $request['archive'];
             $identity = $request['identity'];
@@ -65,8 +65,8 @@ class RestoreFullBackupCommand extends Command
 
             return self::FAILURE;
         }
-        if ($password === null && $passwordFile = $this->option('password-file')) {
-            $path = realpath((string) $passwordFile);
+        if ($password === null && $passwordFile = $this->stringInput($this->option('password-file'))) {
+            $path = realpath($passwordFile);
             if ($path === false || ! is_file($path)) {
                 $this->error('The password file is invalid.');
 
@@ -103,7 +103,7 @@ class RestoreFullBackupCommand extends Command
         InstallationClaimService $claims,
         string $action,
     ): int {
-        $uuid = (string) $this->option('operation');
+        $uuid = $this->stringInput($this->option('operation'));
         if ($uuid === '' || ! $this->option('force')) {
             $this->error('Use --operation=<uuid> and --force.');
 
@@ -116,6 +116,18 @@ class RestoreFullBackupCommand extends Command
         $this->info("Restore {$action} completed for {$uuid}.");
 
         return self::SUCCESS;
+    }
+
+    private function stringInput(mixed $value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+        if (! is_string($value)) {
+            throw new \InvalidArgumentException('Restore arguments and value options must be strings.');
+        }
+
+        return $value;
     }
 
     private function invalidAction(): int

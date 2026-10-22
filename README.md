@@ -39,7 +39,7 @@ history, notifications, and encrypted redundancy.
 ## Highlights
 
 - One-command deployment with Docker Compose and no required `.env` file.
-- Laravel 13, PHP 8.4, PostgreSQL, FrankenPHP, React 19, TypeScript, and
+- Laravel 13, PHP 8.4.27, PostgreSQL, FrankenPHP, React 19, TypeScript, and
   Tailwind CSS 4.
 - Oxidized isolated inside the Compose network with no host port exposed.
 - NetKeep-controlled persistent collection queue with deduplication, cooldowns,

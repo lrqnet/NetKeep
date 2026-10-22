@@ -1,7 +1,9 @@
 # syntax=docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
 
-FROM composer:2@sha256:5946476338742b200bb9ff88f8be56275ddae4b3949c72305cb0dbf10cfcb760 AS php-dependencies
+FROM composer:2@sha256:da624c2c705d54e2f5a9bb77a5dc6c7d091711433ebefd7035672e84c2010fee AS php-dependencies
 WORKDIR /app
+COPY scripts/check-php-security.php scripts/check-php-security.php
+RUN php scripts/check-php-security.php
 COPY composer.json composer.lock ./
 RUN composer install \
     --no-dev \
@@ -21,8 +23,10 @@ COPY routes routes
 COPY artisan .
 RUN composer dump-autoload --no-dev --classmap-authoritative --no-scripts
 
-FROM composer:2@sha256:5946476338742b200bb9ff88f8be56275ddae4b3949c72305cb0dbf10cfcb760 AS php-test-dependencies
+FROM composer:2@sha256:da624c2c705d54e2f5a9bb77a5dc6c7d091711433ebefd7035672e84c2010fee AS php-test-dependencies
 WORKDIR /app
+COPY scripts/check-php-security.php scripts/check-php-security.php
+RUN php scripts/check-php-security.php
 COPY composer.json composer.lock ./
 RUN composer install \
     --no-interaction \
@@ -42,7 +46,10 @@ RUN npm run build
 
 FROM postgres:18.4-bookworm@sha256:1961f96e6029a02c3812d7cb329a3b03a3ac2bb067058dec17b0f5596aca9296 AS postgres-client
 
-FROM dunglas/frankenphp:1-php8.4-bookworm@sha256:79b347211bfec90d6a1373c4956a7d3832c8248a2ff2d76bd0b677f37284d32f AS runtime-base
+FROM dunglas/frankenphp:1-php8.4-bookworm@sha256:49369ff211d81dc30a15890d58c0651d639aef0d9c0a9b91bcc6f387a77bd7a2 AS runtime-base
+COPY scripts/check-php-security.php /usr/local/lib/netkeep/check-php-security.php
+RUN php /usr/local/lib/netkeep/check-php-security.php \
+    && frankenphp php-cli /usr/local/lib/netkeep/check-php-security.php
 RUN install-php-extensions \
         bcmath \
         intl \
@@ -138,5 +145,7 @@ COPY compose.yaml ./compose.yaml
 COPY phpunit.xml phpstan.neon pint.json ./
 COPY .env.example .env
 COPY tests tests
+COPY scripts scripts
+COPY Dockerfile Dockerfile.oxidized Dockerfile.updater ./
 
 FROM runtime-base AS production

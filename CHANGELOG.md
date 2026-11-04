@@ -3,6 +3,15 @@
 Todas as mudanças relevantes serão registradas aqui. O projeto segue
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Security
+
+- ESLint atualizado para 10, com plugins React e imports compatíveis;
+- removida a cadeia de minimatch 3 das ferramentas de desenvolvimento;
+- auditoria npm passa a incluir desenvolvimento e bloquear alertas moderados;
+- testes de regressão verificam as regras essenciais da configuração de lint.
+
 ## [1.0.11] - 2026-11-04
 
 ### Security

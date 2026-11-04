@@ -1,11 +1,16 @@
+import { createRequire } from 'node:module';
 import js from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
 import prettier from 'eslint-config-prettier/flat';
-import importPlugin from 'eslint-plugin-import';
-import react from 'eslint-plugin-react';
+import react from '@eslint-react/eslint-plugin';
 import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 import typescript from 'typescript-eslint';
+
+const require = createRequire(import.meta.url);
+// The CommonJS entry avoids eager ESM imports of removed minimatch APIs
+// in unused import-x rules. The enabled rules use the current matching API.
+const importPlugin = require('eslint-plugin-import-x');
 
 const controlStatements = [
     'if',
@@ -30,30 +35,35 @@ export default [
     reactHooks.configs.flat['recommended-latest'],
     ...typescript.configs.recommended,
     {
-        ...react.configs.flat.recommended,
-        ...react.configs.flat['jsx-runtime'],
+        plugins: {
+            '@eslint-react': react,
+        },
+        rules: {
+            '@eslint-react/no-missing-key': 'error',
+            '@eslint-react/no-missing-component-display-name': 'error',
+            '@eslint-react/no-direct-mutation-state': 'error',
+            '@eslint-react/jsx-no-children-prop': 'error',
+            '@eslint-react/jsx-no-comment-textnodes': 'error',
+            '@eslint-react/dom-no-dangerously-set-innerhtml-with-children':
+                'error',
+            '@eslint-react/dom-no-unknown-property': 'error',
+            '@eslint-react/dom-no-unsafe-target-blank': 'error',
+            '@eslint-react/dom-no-void-elements-with-children': 'error',
+        },
+    },
+    {
         languageOptions: {
             globals: {
                 ...globals.browser,
             },
         },
-        rules: {
-            'react/react-in-jsx-scope': 'off',
-            'react/prop-types': 'off',
-            'react/no-unescaped-entities': 'off',
-        },
-        settings: {
-            react: {
-                version: 'detect',
-            },
-        },
     },
     {
         plugins: {
-            import: importPlugin,
+            'import-x': importPlugin,
         },
         settings: {
-            'import/resolver': {
+            'import-x/resolver': {
                 typescript: {
                     alwaysTryTypes: true,
                     project: './tsconfig.json',
@@ -70,7 +80,7 @@ export default [
                     fixStyle: 'separate-type-imports',
                 },
             ],
-            'import/order': [
+            'import-x/order': [
                 'error',
                 {
                     groups: [
@@ -84,7 +94,7 @@ export default [
                     // alphabetize: { order: 'asc', caseInsensitive: true },
                 },
             ],
-            'import/consistent-type-specifier-style': [
+            'import-x/consistent-type-specifier-style': [
                 'error',
                 'prefer-top-level',
             ],
@@ -95,7 +105,11 @@ export default [
             '@stylistic': stylistic,
         },
         rules: {
-            '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: false }],
+            '@stylistic/brace-style': [
+                'error',
+                '1tbs',
+                { allowSingleLine: false },
+            ],
             '@stylistic/padding-line-between-statements': [
                 'error',
                 ...paddingAroundControl,
@@ -123,7 +137,11 @@ export default [
         },
         rules: {
             curly: ['error', 'all'],
-            '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: false }],
+            '@stylistic/brace-style': [
+                'error',
+                '1tbs',
+                { allowSingleLine: false },
+            ],
         },
     },
 ];

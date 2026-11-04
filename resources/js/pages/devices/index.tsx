@@ -1,4 +1,4 @@
-import { Form, Head, Link, router } from '@inertiajs/react';
+import { Form, Head, Link, router, usePage } from '@inertiajs/react';
 import {
     AlertTriangle,
     Download,
@@ -105,6 +105,7 @@ export default function DevicesIndex({
     canApprove: boolean;
 }) {
     const { t, formatNumber, formatDateTime } = useI18n();
+    const { errors } = usePage().props;
     const [collectionDevice, setCollectionDevice] = useState<Device | null>(
         null,
     );
@@ -157,6 +158,15 @@ export default function DevicesIndex({
                         </>
                     }
                 />
+
+                {errors.file && (
+                    <p
+                        role="alert"
+                        className="rounded-md border border-destructive p-4 text-sm text-destructive"
+                    >
+                        {errors.file}
+                    </p>
+                )}
 
                 <div
                     className={`grid items-start gap-6 ${canManage ? 'xl:grid-cols-[1fr_360px]' : ''}`}

@@ -1,4 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
+import { useState } from 'react';
 import {
     AlertTriangle,
     Download,
@@ -39,6 +40,38 @@ export default function ConfigurationShow({
     historyUnavailable,
 }: Props) {
     const { t, formatDateTime } = useI18n();
+    const [comparing, setComparing] = useState(false);
+    const [from, setFrom] = useState(versions[1]?.hash ?? '');
+    const [to, setTo] = useState(versions[0]?.hash ?? '');
+    const [diff, setDiff] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [failed, setFailed] = useState(false);
+
+    const compare = async (): Promise<void> => {
+        setLoading(true);
+        setFailed(false);
+        setDiff(null);
+
+        try {
+            const query = new URLSearchParams({ from, to });
+            const response = await fetch(
+                `/devices/${device.id}/configuration/diff?${query}`,
+                {
+                    headers: { Accept: 'text/plain' },
+                },
+            );
+
+            if (!response.ok) {
+                throw new Error('configuration_diff_failed');
+            }
+
+            setDiff(await response.text());
+        } catch {
+            setFailed(true);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <>
@@ -143,12 +176,98 @@ export default function ConfigurationShow({
                                     {t('config.current')}
                                 </CardTitle>
                             </div>
-                            <Button variant="ghost" size="sm" disabled>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled={
+                                    historyUnavailable || versions.length < 2
+                                }
+                                onClick={() => setComparing(!comparing)}
+                            >
                                 <GitCompareArrows />
                                 {t('config.compare')}
                             </Button>
                         </CardHeader>
                         <CardContent className="px-0">
+                            {comparing && (
+                                <div className="space-y-3 border-b p-4">
+                                    <div className="grid gap-3 sm:grid-cols-2">
+                                        {[
+                                            {
+                                                label: t(
+                                                    'config.from_revision',
+                                                ),
+                                                value: from,
+                                                change: setFrom,
+                                            },
+                                            {
+                                                label: t('config.to_revision'),
+                                                value: to,
+                                                change: setTo,
+                                            },
+                                        ].map((field) => (
+                                            <label
+                                                key={field.label}
+                                                className="grid min-w-0 gap-2 text-sm"
+                                            >
+                                                {field.label}
+                                                <select
+                                                    className="h-9 w-full min-w-0 rounded-md border bg-background px-2"
+                                                    value={field.value}
+                                                    disabled={loading}
+                                                    onChange={(event) => {
+                                                        field.change(
+                                                            event.target.value,
+                                                        );
+                                                        setDiff(null);
+                                                        setFailed(false);
+                                                    }}
+                                                >
+                                                    {versions.map((version) => (
+                                                        <option
+                                                            key={version.hash}
+                                                            value={version.hash}
+                                                        >
+                                                            {version.hash.slice(
+                                                                0,
+                                                                8,
+                                                            )}{' '}
+                                                            ·{' '}
+                                                            {formatDateTime(
+                                                                version.date,
+                                                            )}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </label>
+                                        ))}
+                                    </div>
+                                    <Button
+                                        disabled={
+                                            loading ||
+                                            !from ||
+                                            !to ||
+                                            from === to
+                                        }
+                                        onClick={() => void compare()}
+                                    >
+                                        {t('config.compare')}
+                                    </Button>
+                                    {failed && (
+                                        <p
+                                            role="alert"
+                                            className="text-sm text-destructive"
+                                        >
+                                            {t('config.compare_failed')}
+                                        </p>
+                                    )}
+                                    {diff !== null && (
+                                        <pre className="max-h-[60vh] overflow-auto rounded-md bg-muted p-4 text-xs">
+                                            {diff || t('config.no_changes')}
+                                        </pre>
+                                    )}
+                                </div>
+                            )}
                             <pre className="max-h-[72vh] overflow-auto bg-[#07111f] p-5 font-mono text-xs leading-5 text-slate-200">
                                 {historyUnavailable
                                     ? t('config.history_unavailable_content')

@@ -53,6 +53,22 @@ class CollectionDiagnosticsTest extends TestCase
         parent::tearDown();
     }
 
+    public function test_event_history_can_be_paginated_without_losing_events(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::Owner]);
+        $run = $this->collectionRun($this->approvedDevice(), CollectionRunStatus::Failed);
+        for ($index = 0; $index < 205; $index++) {
+            app(CollectionRunEventService::class)->record($run, 'progress');
+        }
+        $first = $this->actingAs($user)->getJson(route('collection-runs.events', $run))
+            ->assertOk()->assertJsonCount(200, 'events');
+        $cursor = $first->json('next_cursor');
+        $this->assertNotNull($cursor);
+        $second = $this->getJson(route('collection-runs.events', [$run, 'after' => $cursor]))
+            ->assertOk()->assertJsonCount(5, 'events')->assertJsonPath('next_cursor', null);
+        $this->assertGreaterThan($cursor, $second->json('events.0.id'));
+    }
+
     public function test_timeline_serializer_never_exposes_technical_fields_to_operator_or_viewer(): void
     {
         $device = $this->approvedDevice();

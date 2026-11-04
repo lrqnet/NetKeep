@@ -162,22 +162,33 @@ export function DeviceCollectionHistory({
             setLoadError(false);
 
             try {
-                const response = await fetch(
-                    `/collection-runs/${run.uuid}/events`,
-                    { headers: { Accept: 'application/json' } },
-                );
+                const allEvents: CollectionEvent[] = [];
+                let cursor: number | null = 0;
+                let latestRun: CollectionRun | null = null;
 
-                if (!response.ok) {
-                    throw new Error('collection_events_failed');
-                }
+                do {
+                    const response = await fetch(
+                        `/collection-runs/${run.uuid}/events?after=${cursor}`,
+                        { headers: { Accept: 'application/json' } },
+                    );
 
-                const payload = (await response.json()) as {
-                    run: CollectionRun;
-                    events: CollectionEvent[];
-                };
-                setSelected(payload.run);
-                setEvents(payload.events);
-                lastEventIdRef.current = payload.events.at(-1)?.id ?? 0;
+                    if (!response.ok) {
+                        throw new Error('collection_events_failed');
+                    }
+
+                    const payload = (await response.json()) as {
+                        run: CollectionRun;
+                        events: CollectionEvent[];
+                        next_cursor: number | null;
+                    };
+                    allEvents.push(...payload.events);
+                    latestRun = payload.run;
+                    cursor = payload.next_cursor ?? null;
+                } while (cursor !== null);
+
+                setSelected(latestRun);
+                setEvents(allEvents);
+                lastEventIdRef.current = allEvents.at(-1)?.id ?? 0;
             } catch {
                 setLoadError(true);
             } finally {

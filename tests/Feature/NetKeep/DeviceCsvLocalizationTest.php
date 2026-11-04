@@ -13,6 +13,21 @@ class DeviceCsvLocalizationTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_invalid_csv_never_partially_imports_devices(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::Administrator]);
+        foreach ([
+            'bad,192.0.2.12,ios,extra',
+            'bad,invalid-ip,ios',
+        ] as $row) {
+            $content = "name,ip_address,oxidized_model\nvalid,192.0.2.11,ios\n{$row}\n";
+            $this->actingAs($user)->post('/devices/import', [
+                'file' => UploadedFile::fake()->createWithContent('devices.csv', $content),
+            ])->assertSessionHasErrors('file');
+            $this->assertDatabaseMissing('devices', ['name' => 'valid']);
+        }
+    }
+
     public function test_csv_export_uses_the_users_language(): void
     {
         $user = User::factory()->create([

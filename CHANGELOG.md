@@ -5,6 +5,15 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 
 ## [Unreleased]
 
+### Fixed
+
+- Edição do proprietário preservando o papel e rótulos dos administradores;
+- importação CSV atômica, com rejeição de linhas com colunas excedentes;
+- sincronização de inventário preserva a saúde da última coleta;
+- histórico de coletas carrega todos os eventos por cursor;
+- comparação de revisões disponível na interface de configurações;
+- página de usuários adaptada a telas pequenas e intermediárias.
+
 ### Security
 
 - ESLint atualizado para 10, com plugins React e imports compatíveis;

@@ -10,17 +10,18 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { useI18n } from '@/i18n';
 import type { TranslationKey } from '@/i18n/catalog';
+import type { User as AuthUser } from '@/types';
 
 type User = {
     id: number;
     name: string;
     email: string;
-    role: string;
+    role: AuthUser['role'];
     locale: string;
     is_active: boolean;
     last_login_at: string | null;
 };
-type Role = { value: string; label: string };
+type Role = { value: AuthUser['role']; label: string };
 
 export default function UsersIndex({
     users,
@@ -32,9 +33,9 @@ export default function UsersIndex({
     const { auth, availableLocales } = usePage().props;
     const current = auth.user;
     const { t, formatDateTime } = useI18n();
-    const roleKeys: Record<string, TranslationKey> = {
+    const roleKeys: Record<AuthUser['role'], TranslationKey> = {
         owner: 'users.role.owner',
-        admin: 'users.role.admin',
+        administrator: 'users.role.admin',
         operator: 'users.role.operator',
         viewer: 'users.role.viewer',
     };
@@ -49,14 +50,14 @@ export default function UsersIndex({
                     description={t('users.description')}
                 />
 
-                <div className="grid items-start gap-6 xl:grid-cols-[1fr_360px]">
+                <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
                     <Card className="gap-0 overflow-hidden py-0">
                         <CardContent className="px-0">
                             <div className="divide-y">
                                 {users.map((user) => (
                                     <div
                                         key={user.id}
-                                        className="flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center"
+                                        className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-start gap-x-4 gap-y-3 px-4 py-5 sm:px-6"
                                     >
                                         <span className="grid size-10 shrink-0 place-items-center rounded-full bg-muted">
                                             {user.role === 'owner' ? (
@@ -65,8 +66,8 @@ export default function UsersIndex({
                                                 <UserRound className="size-4" />
                                             )}
                                         </span>
-                                        <div className="min-w-0 flex-1">
-                                            <div className="flex items-center gap-2">
+                                        <div className="min-w-0">
+                                            <div className="flex min-w-0 flex-wrap items-center gap-2">
                                                 <p className="truncate font-medium">
                                                     {user.name}
                                                 </p>
@@ -90,7 +91,10 @@ export default function UsersIndex({
                                             </p>
                                         </div>
                                         {user.role === 'owner' && (
-                                            <Badge variant="outline">
+                                            <Badge
+                                                variant="outline"
+                                                className="col-start-2 w-fit"
+                                            >
                                                 {t('users.role.owner')}
                                             </Badge>
                                         )}
@@ -99,7 +103,7 @@ export default function UsersIndex({
                                             <Form
                                                 action={`/users/${user.id}`}
                                                 method="put"
-                                                className="grid w-full gap-2 lg:w-auto lg:grid-cols-[140px_210px_140px_110px_auto_auto]"
+                                                className="col-span-2 grid w-full min-w-0 gap-3 sm:grid-cols-2"
                                             >
                                                 {({ processing }) => (
                                                     <>
@@ -112,7 +116,7 @@ export default function UsersIndex({
                                                             aria-label={t(
                                                                 'common.name',
                                                             )}
-                                                            className="h-8 text-xs"
+                                                            className="h-9 text-sm"
                                                             required
                                                         />
                                                         <Input
@@ -125,7 +129,7 @@ export default function UsersIndex({
                                                             aria-label={t(
                                                                 'common.email',
                                                             )}
-                                                            className="h-8 text-xs"
+                                                            className="h-9 text-sm"
                                                             required
                                                         />
                                                         {user.role ===
@@ -147,7 +151,7 @@ export default function UsersIndex({
                                                                         name: user.name,
                                                                     },
                                                                 )}
-                                                                className="h-8 rounded-md border bg-background px-2 text-xs"
+                                                                className="h-9 w-full min-w-0 rounded-md border bg-background px-3 text-sm"
                                                             >
                                                                 {roles
                                                                     .filter(
@@ -191,7 +195,7 @@ export default function UsersIndex({
                                                                     name: user.name,
                                                                 },
                                                             )}
-                                                            className="h-8 rounded-md border bg-background px-2 text-xs"
+                                                            className="h-9 w-full min-w-0 rounded-md border bg-background px-3 text-sm"
                                                         >
                                                             {availableLocales.map(
                                                                 (locale) => (
@@ -218,7 +222,7 @@ export default function UsersIndex({
                                                                 value="1"
                                                             />
                                                         ) : (
-                                                            <label className="flex h-8 items-center gap-2 text-xs whitespace-nowrap">
+                                                            <label className="flex h-9 items-center gap-2 text-sm whitespace-nowrap">
                                                                 <input
                                                                     type="hidden"
                                                                     name="is_active"
@@ -261,6 +265,7 @@ export default function UsersIndex({
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
+                                                    className="col-span-2 justify-self-start whitespace-normal"
                                                     onClick={() => {
                                                         if (
                                                             confirm(
@@ -288,7 +293,7 @@ export default function UsersIndex({
                         </CardContent>
                     </Card>
 
-                    <Card className="sticky top-4 gap-4 py-5">
+                    <Card className="min-w-0 gap-4 py-5 xl:sticky xl:top-4">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-base">
                                 <Plus className="size-4 text-emerald-600" />
@@ -391,12 +396,12 @@ export default function UsersIndex({
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     {[
                         ['owner', Crown],
-                        ['admin', Shield],
+                        ['administrator', Shield],
                         ['operator', UserRound],
                         ['viewer', UserRound],
                     ].map(([role, Icon]) => {
                         const RoleIcon = Icon as typeof Crown;
-                        const key = roleKeys[role as string];
+                        const key = roleKeys[role as AuthUser['role']];
                         const descriptionKey =
                             `${key}_description` as TranslationKey;
 

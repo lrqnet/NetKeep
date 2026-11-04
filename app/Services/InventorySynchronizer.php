@@ -89,7 +89,10 @@ class InventorySynchronizer
                 } elseif (! $external['enabled']) {
                     $device->forceFill(['enabled' => false, 'status' => DeviceStatus::Disabled]);
                 } elseif ($device->approval_status === DeviceApprovalStatus::Approved) {
-                    $device->forceFill(['enabled' => true, 'status' => DeviceStatus::Pending]);
+                    $device->forceFill(['enabled' => true]);
+                    if ($device->status === DeviceStatus::Disabled) {
+                        $device->status = DeviceStatus::Pending;
+                    }
                 } else {
                     $device->forceFill(['enabled' => false, 'status' => DeviceStatus::Pending]);
                 }

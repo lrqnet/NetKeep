@@ -78,7 +78,7 @@ class UserController extends Controller
         abort_if($user->role === UserRole::Owner && $data['role'] !== UserRole::Owner->value, 422, __('netkeep.users.transfer_separately'));
         abort_if($request->user()->is($user) && ! $data['is_active'], 422, __('netkeep.users.cannot_disable_self'));
         abort_if($user->role === UserRole::Owner && ! $data['is_active'], 422, __('netkeep.users.use_transfer'));
-        abort_if($data['role'] === UserRole::Owner->value, 422, __('netkeep.users.use_transfer'));
+        abort_if($data['role'] === UserRole::Owner->value && $user->role !== UserRole::Owner, 422, __('netkeep.users.use_transfer'));
 
         $oldEmail = $user->email;
         $user->update($data);

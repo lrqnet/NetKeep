@@ -46,12 +46,13 @@ class InventorySynchronizerTest extends TestCase
         $result = app(InventorySynchronizer::class)->sync($source);
         $this->assertSame(['created' => 2, 'updated' => 0, 'disabled' => 0], $result);
         $edge = Device::query()->where('external_id', '10')->firstOrFail();
-        $edge->update(['oxidized_model' => 'junos', 'backup_interval' => 7200]);
+        $edge->update(['oxidized_model' => 'junos', 'backup_interval' => 7200, 'approval_status' => DeviceApprovalStatus::Approved, 'enabled' => true, 'status' => DeviceStatus::Healthy]);
 
         $second = app(InventorySynchronizer::class)->sync($source->refresh());
         $this->assertSame(['created' => 0, 'updated' => 2, 'disabled' => 0], $second);
         $this->assertSame('junos', $edge->refresh()->oxidized_model);
         $this->assertSame(7200, $edge->backup_interval);
+        $this->assertSame(DeviceStatus::Healthy, $edge->status);
         $this->assertDatabaseCount('devices', 2);
     }
 

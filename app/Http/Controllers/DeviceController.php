@@ -369,10 +369,17 @@ class DeviceController extends Controller
 
         $count = 0;
         $errors = [];
+        $records = [];
         while (($row = fgetcsv($handle)) !== false) {
             if ($count >= 10000) {
                 fclose($handle);
                 abort(422, __('netkeep.csv.record_limit'));
+            }
+            if (count($row) > count($headers)) {
+                $errors[] = ['row' => $count + 2, 'error' => 'column_count'];
+                $count++;
+
+                continue;
             }
             $record = array_combine($headers, array_pad($row, count($headers), null));
             if (! $record || empty($record['name']) || empty($record['ip_address'])) {
@@ -398,25 +405,7 @@ class DeviceController extends Controller
                 continue;
             }
 
-            $group = empty($record['group']) ? null : DeviceGroup::query()->firstOrCreate(['name' => $record['group']]);
-            $site = empty($record['site']) ? null : Site::query()->firstOrCreate(['name' => $record['site']]);
-            Device::query()->updateOrCreate(
-                ['name' => $record['name']],
-                [
-                    'hostname' => ($record['hostname'] ?? null) ?: null,
-                    'ip_address' => $record['ip_address'],
-                    'port' => (int) (($record['port'] ?? null) ?: 22),
-                    'transport' => ($record['transport'] ?? null) ?: 'ssh',
-                    'manufacturer' => ($record['manufacturer'] ?? null) ?: null,
-                    'hardware_model' => ($record['hardware_model'] ?? null) ?: null,
-                    'oxidized_model' => $record['oxidized_model'],
-                    'device_group_id' => $group?->id,
-                    'site_id' => $site?->id,
-                    'enabled' => false,
-                    'approval_status' => DeviceApprovalStatus::Pending,
-                    'status' => DeviceStatus::Pending,
-                ],
-            );
+            $records[] = $record;
             $count++;
         }
         fclose($handle);
@@ -424,6 +413,29 @@ class DeviceController extends Controller
             return back()->withErrors(['file' => __('netkeep.csv.invalid_rows', ['count' => count($errors)])])
                 ->with('csv_preview', ['rows' => $count, 'errors' => array_slice($errors, 0, 100)]);
         }
+        DB::transaction(function () use ($records): void {
+            foreach ($records as $record) {
+                $group = empty($record['group']) ? null : DeviceGroup::query()->firstOrCreate(['name' => $record['group']]);
+                $site = empty($record['site']) ? null : Site::query()->firstOrCreate(['name' => $record['site']]);
+                Device::query()->updateOrCreate(
+                    ['name' => $record['name']],
+                    [
+                        'hostname' => ($record['hostname'] ?? null) ?: null,
+                        'ip_address' => $record['ip_address'],
+                        'port' => (int) (($record['port'] ?? null) ?: 22),
+                        'transport' => ($record['transport'] ?? null) ?: 'ssh',
+                        'manufacturer' => ($record['manufacturer'] ?? null) ?: null,
+                        'hardware_model' => ($record['hardware_model'] ?? null) ?: null,
+                        'oxidized_model' => $record['oxidized_model'],
+                        'device_group_id' => $group?->id,
+                        'site_id' => $site?->id,
+                        'enabled' => false,
+                        'approval_status' => DeviceApprovalStatus::Pending,
+                        'status' => DeviceStatus::Pending,
+                    ],
+                );
+            }
+        });
         $audit->record('devices.imported', metadata: ['format' => 'csv', 'count' => $count, 'enabled' => false]);
 
         return back()->with('success', __('netkeep.devices.imported', ['count' => $count]));

@@ -817,6 +817,26 @@ export const inventoryMessages = defineMessages({
         pt_BR: 'atual',
         es: 'actual',
     },
+    'config.from_revision': {
+        en: 'From revision',
+        pt_BR: 'Revisão inicial',
+        es: 'Revisión inicial',
+    },
+    'config.to_revision': {
+        en: 'To revision',
+        pt_BR: 'Revisão final',
+        es: 'Revisión final',
+    },
+    'config.compare_failed': {
+        en: 'Could not load the comparison. Try again.',
+        pt_BR: 'Não foi possível carregar a comparação. Tente novamente.',
+        es: 'No se pudo cargar la comparación. Inténtalo de nuevo.',
+    },
+    'config.no_changes': {
+        en: 'No changes between these revisions.',
+        pt_BR: 'Não há diferenças entre essas revisões.',
+        es: 'No hay diferencias entre estas revisiones.',
+    },
     'config.compare': {
         en: 'Compare',
         pt_BR: 'Comparar',

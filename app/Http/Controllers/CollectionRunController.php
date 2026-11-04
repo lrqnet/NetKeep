@@ -53,12 +53,15 @@ class CollectionRunController extends Controller
         $events = $run->events()
             ->when(isset($data['after']), fn ($query) => $query->where('id', '>', (int) $data['after']))
             ->orderBy('id')
-            ->limit(200)
+            ->limit(201)
             ->get();
+        $hasMore = $events->count() > 200;
+        $events = $events->take(200);
 
         return response()->json([
             'run' => $serializer->run($run->loadMissing(['requester:id,name', 'parent:id,uuid', 'artifacts']), $request->user()),
             'events' => $events->map(fn ($event): array => $serializer->event($event, $request->user()))->values(),
+            'next_cursor' => $hasMore ? $events->last()?->id : null,
         ])->header('Cache-Control', 'no-store, private');
     }
 

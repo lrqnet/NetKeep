@@ -13,6 +13,24 @@ class SecurityTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_reenabling_pending_two_factor_preserves_the_secret(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user)->withSession(['auth.password_confirmed_at' => time()]);
+
+        $this->postJson(route('two-factor.enable'))->assertSuccessful();
+        $secret = $user->fresh()->two_factor_secret;
+        $this->assertNotEmpty($secret);
+
+        $this->withSession(['two_factor_confirming_at' => time() - 3600])
+            ->postJson(route('two-factor.enable'))
+            ->assertSuccessful()
+            ->assertSessionMissing('two_factor_confirming_at');
+
+        $this->assertSame($secret, $user->fresh()->two_factor_secret);
+        $this->assertNull($user->fresh()->two_factor_confirmed_at);
+    }
+
     public function test_security_page_is_displayed()
     {
         $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());

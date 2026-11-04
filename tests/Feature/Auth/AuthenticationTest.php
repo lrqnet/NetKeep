@@ -6,8 +6,10 @@ use App\Models\User;
 use App\Support\UserInputLimits;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Timebox;
 use Inertia\Testing\AssertableInertia;
 use Laravel\Fortify\Features;
+use Mockery;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -82,6 +84,27 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertGuest();
+    }
+
+    public function test_failed_login_paths_share_the_same_timebox_and_error(): void
+    {
+        User::factory()->create(['email' => 'active@example.com']);
+        User::factory()->create(['email' => 'inactive@example.com', 'is_active' => false]);
+
+        foreach (['missing@example.com', 'active@example.com', 'inactive@example.com'] as $email) {
+            $timebox = Mockery::mock(Timebox::class);
+            $timebox->shouldReceive('call')->once()
+                ->with(Mockery::type('callable'), 200_000)
+                ->andReturnUsing(fn (callable $callback) => $callback());
+            $this->app->instance(Timebox::class, $timebox);
+
+            $this->post(route('login.store'), [
+                'email' => $email,
+                'password' => $email === 'inactive@example.com' ? 'password' : 'wrong-password',
+            ])->assertSessionHasErrors(['email' => trans('auth.failed')]);
+
+            $this->assertGuest();
+        }
     }
 
     public function test_login_rejects_email_whitespace(): void

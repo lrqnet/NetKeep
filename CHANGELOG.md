@@ -3,6 +3,23 @@
 Todas as mudanças relevantes serão registradas aqui. O projeto segue
 [Semantic Versioning](https://semver.org/).
 
+## [1.0.10] - 2026-11-04
+
+### Security
+
+- Laravel Fortify atualizado para 1.41.0, com correções no fluxo de confirmação
+  de 2FA e recuperação de senha;
+- login personalizado passa a aplicar a proteção temporal também aos caminhos
+  de credenciais inválidas e conta inativa;
+- Symfony Mime atualizado para corrigir a CVE-2026-45070 e dependência de
+  desenvolvimento Zod atualizada para resolver seu alerta de segurança.
+
+### Changed
+
+- cliente Laravel Passkeys atualizado para 0.4.0, mantendo o servidor em 0.2.1;
+- adicionados testes de regressão para proteção temporal do login e repetição
+  da ativação de 2FA pendente.
+
 ## [1.0.9] - 2026-10-22
 
 ### Security

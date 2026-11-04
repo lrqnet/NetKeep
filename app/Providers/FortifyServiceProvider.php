@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Illuminate\Support\Timebox;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -58,11 +59,14 @@ class FortifyServiceProvider extends ServiceProvider
                 'email' => ['required', 'string', 'email', 'not_regex:/\s/u', 'max:'.UserInputLimits::EMAIL],
                 'password' => ['required', 'string', 'max:'.UserInputLimits::PASSWORD],
             ]);
-            $user = User::query()->where('email', Str::lower($credentials['email']))->first();
 
-            return $user && $user->is_active && password_verify($credentials['password'], $user->password)
-                ? $user
-                : null;
+            return app(Timebox::class)->call(function () use ($credentials): ?User {
+                $user = User::query()->where('email', Str::lower($credentials['email']))->first();
+
+                return $user && $user->is_active && password_verify($credentials['password'], $user->password)
+                    ? $user
+                    : null;
+            }, 200_000);
         });
     }
 

@@ -135,14 +135,14 @@ class ContainerRuntimeTest extends TestCase
         $this->assertIsString($updater);
         $this->assertIsString($oxidized);
         $this->assertIsString($simulator);
-        $this->assertStringContainsString('golang:1.26.5-alpine@sha256:', $updater);
-        $this->assertStringContainsString('docker:29.6.2-cli-alpine3.24@sha256:', $updater);
-        $this->assertStringContainsString('RUN rm -f /usr/local/libexec/docker/cli-plugins/docker-buildx', $updater);
-        $this->assertStringContainsString('golang:1.26.5-alpine@sha256:', $oxidized);
+        $this->assertStringContainsString('golang:1.27.3-alpine@sha256:', $updater);
+        $this->assertStringContainsString('docker:29.9.3-cli@sha256:', $updater);
+        $this->assertStringContainsString('rm -f /usr/local/libexec/docker/cli-plugins/docker-buildx', $updater);
+        $this->assertStringContainsString('golang:1.27.3-alpine@sha256:', $oxidized);
         $this->assertStringContainsString('COPY --from=tools-build /netkeep-oxidized-reporter', $oxidized);
         $this->assertStringContainsString('COPY --from=tools-build /netkeep-sandbox-controller', $oxidized);
         $this->assertStringContainsString('USER 30000:30000', $oxidized);
-        $this->assertStringContainsString('golang:1.26.5-alpine@sha256:', $simulator);
+        $this->assertStringContainsString('golang:1.27.3-alpine@sha256:', $simulator);
         $this->assertStringContainsString("\nFROM scratch\n", $simulator);
         $this->assertStringContainsString('USER 30001:30001', $simulator);
     }
@@ -154,7 +154,7 @@ class ContainerRuntimeTest extends TestCase
 
         $this->assertIsString($workflow);
         $this->assertSame(4, substr_count($workflow, $installer));
-        $this->assertSame(4, substr_count($workflow, 'cosign-release: v3.0.6'));
+        $this->assertSame(4, substr_count($workflow, 'cosign-release: v3.1.4'));
         $this->assertStringNotContainsString(
             'sigstore/cosign-installer@f713795cb21599bc4e5c4b58cbad1da852d7eeb9',
             $workflow,
@@ -171,11 +171,11 @@ class ContainerRuntimeTest extends TestCase
         $this->assertIsString($compose);
         $this->assertIsString($preflight);
         $this->assertIsString($workflow);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep:1.0.10', $compose);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep-updater:1.0.10', $compose);
-        $this->assertSame(2, substr_count($compose, 'docker.io/lrqnet/netkeep-oxidized:0.37.0-r7'));
-        $this->assertStringContainsString('tags: type=raw,value=0.37.0-r7', $workflow);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep-oxidized:0.37.0-r7', $preflight);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep:1.0.11', $compose);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep-updater:1.0.11', $compose);
+        $this->assertSame(2, substr_count($compose, 'docker.io/lrqnet/netkeep-oxidized:0.37.0-r8'));
+        $this->assertStringContainsString('tags: type=raw,value=0.37.0-r8', $workflow);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep-oxidized:0.37.0-r8', $preflight);
         $this->assertSame(3, substr_count($workflow, 'needs: preflight'));
         $this->assertStringContainsString('sh scripts/release-preflight.sh', $workflow);
         $this->assertStringContainsString('Reject previously published immutable tags', $workflow);
@@ -195,7 +195,7 @@ class ContainerRuntimeTest extends TestCase
             $preflight,
         );
         $this->assertStringContainsString(
-            's#docker.io/lrqnet/netkeep-oxidized:0.37.0-r7#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g',
+            's#docker.io/lrqnet/netkeep-oxidized:0.37.0-r8#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g',
             $workflow,
         );
     }

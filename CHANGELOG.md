@@ -3,6 +3,15 @@
 Todas as mudanças relevantes serão registradas aqui. O projeto segue
 [Semantic Versioning](https://semver.org/).
 
+## [1.0.11] - 2026-11-04
+
+### Security
+
+- Ferramentas Go e Cosign recompiladas com Go 1.27.3;
+- imagem do updater e pacotes Alpine atualizados;
+- scans de imagens passam a bloquear vulnerabilidades altas e críticas com correção;
+- dependências de análise JavaScript atualizadas e minimatch 10 substituído por 11.0.1.
+
 ## [1.0.10] - 2026-11-04
 
 ### Security

@@ -7,6 +7,8 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 
 ### Fixed
 
+- Contraste dos links da barra lateral e das opções de tema, e nome acessível do seletor de idioma;
+
 - Edição do proprietário preservando o papel e rótulos dos administradores;
 - importação CSV atômica, com rejeição de linhas com colunas excedentes;
 - sincronização de inventário preserva a saúde da última coleta;

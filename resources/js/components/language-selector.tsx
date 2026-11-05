@@ -81,7 +81,7 @@ export function LanguageSelector({
                     type="button"
                     variant="outline"
                     size="sm"
-                    aria-label={t('language.selector_label')}
+                    aria-label={`${t('language.selector_label')}: ${current?.label ?? 'English'}`}
                     aria-busy={updating}
                     className={cn(
                         inverted &&

@@ -150,7 +150,7 @@ class ContainerRuntimeTest extends TestCase
     public function test_release_uses_the_current_pinned_cosign_installer(): void
     {
         $workflow = file_get_contents(dirname(__DIR__, 2).'/.github/workflows/release.yml');
-        $installer = 'sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6';
+        $installer = 'sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532';
 
         $this->assertIsString($workflow);
         $this->assertSame(4, substr_count($workflow, $installer));
@@ -171,11 +171,11 @@ class ContainerRuntimeTest extends TestCase
         $this->assertIsString($compose);
         $this->assertIsString($preflight);
         $this->assertIsString($workflow);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep:1.0.11', $compose);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep-updater:1.0.11', $compose);
-        $this->assertSame(2, substr_count($compose, 'docker.io/lrqnet/netkeep-oxidized:0.37.0-r8'));
-        $this->assertStringContainsString('tags: type=raw,value=0.37.0-r8', $workflow);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep-oxidized:0.37.0-r8', $preflight);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep:1.0.12', $compose);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep-updater:1.0.12', $compose);
+        $this->assertSame(2, substr_count($compose, 'docker.io/lrqnet/netkeep-oxidized:0.37.0-r9'));
+        $this->assertStringContainsString('tags: type=raw,value=0.37.0-r9', $workflow);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep-oxidized:0.37.0-r9', $preflight);
         $this->assertSame(3, substr_count($workflow, 'needs: preflight'));
         $this->assertStringContainsString('sh scripts/release-preflight.sh', $workflow);
         $this->assertStringContainsString('Reject previously published immutable tags', $workflow);
@@ -195,7 +195,7 @@ class ContainerRuntimeTest extends TestCase
             $preflight,
         );
         $this->assertStringContainsString(
-            's#docker.io/lrqnet/netkeep-oxidized:0.37.0-r8#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g',
+            's#docker.io/lrqnet/netkeep-oxidized:0.37.0-r9#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g',
             $workflow,
         );
     }

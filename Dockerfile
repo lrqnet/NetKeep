@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
 
-FROM composer:2@sha256:da624c2c705d54e2f5a9bb77a5dc6c7d091711433ebefd7035672e84c2010fee AS php-dependencies
+FROM composer:2@sha256:5190d9b445add2fa26090108273cb1ef1e1af98175201c737b85b3c4f90fbf7c AS php-dependencies
 WORKDIR /app
 COPY scripts/check-php-security.php scripts/check-php-security.php
 RUN php scripts/check-php-security.php
@@ -23,7 +23,7 @@ COPY routes routes
 COPY artisan .
 RUN composer dump-autoload --no-dev --classmap-authoritative --no-scripts
 
-FROM composer:2@sha256:da624c2c705d54e2f5a9bb77a5dc6c7d091711433ebefd7035672e84c2010fee AS php-test-dependencies
+FROM composer:2@sha256:5190d9b445add2fa26090108273cb1ef1e1af98175201c737b85b3c4f90fbf7c AS php-test-dependencies
 WORKDIR /app
 COPY scripts/check-php-security.php scripts/check-php-security.php
 RUN php scripts/check-php-security.php
@@ -35,7 +35,7 @@ RUN composer install \
     --prefer-dist \
     --optimize-autoloader
 
-FROM node:22-bookworm-slim@sha256:6c74791e557ce11fc957704f6d4fe134a7bc8d6f5ca4403205b2966bd488f6b3 AS frontend
+FROM node:22-bookworm-slim@sha256:5ec23b7c622b00547753bc6ffd78085dd868a68aeb41c8e0a1418f033e13d96d AS frontend
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts
@@ -46,7 +46,7 @@ RUN npm run build
 
 FROM postgres:18.4-bookworm@sha256:882236b897e39051d2368c5ccc6cda944904723506b2dfc97f2a8f5bc9afa382 AS postgres-client
 
-FROM dunglas/frankenphp:1-php8.4-bookworm@sha256:49369ff211d81dc30a15890d58c0651d639aef0d9c0a9b91bcc6f387a77bd7a2 AS runtime-base
+FROM dunglas/frankenphp:1-php8.4-bookworm@sha256:30061df7626971d597e45962269dfa7c077d972e96d1c4baf7c9259d5f7ecd55 AS runtime-base
 COPY scripts/check-php-security.php /usr/local/lib/netkeep/check-php-security.php
 RUN php /usr/local/lib/netkeep/check-php-security.php \
     && frankenphp php-cli /usr/local/lib/netkeep/check-php-security.php

@@ -50,12 +50,12 @@ jobs:
             exit 1
           fi
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
-      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550
         with:
           registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -79,8 +79,8 @@ jobs:
           assert_absent "ghcr.io/lrqnet/netkeep:${VERSION}"
           assert_absent "docker.io/lrqnet/netkeep-updater:${VERSION}"
           assert_absent "ghcr.io/lrqnet/netkeep-updater:${VERSION}"
-          assert_absent "docker.io/lrqnet/netkeep-oxidized:0.37.0-r8"
-          assert_absent "ghcr.io/lrqnet/netkeep-oxidized:0.37.0-r8"
+          assert_absent "docker.io/lrqnet/netkeep-oxidized:0.37.0-r9"
+          assert_absent "ghcr.io/lrqnet/netkeep-oxidized:0.37.0-r9"
 
   netkeep-image:
     needs: preflight
@@ -93,12 +93,12 @@ jobs:
           persist-credentials: false
       - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
-      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550
         with:
           registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -128,7 +128,7 @@ jobs:
           sbom: true
           cache-from: type=gha,scope=netkeep
           cache-to: type=gha,mode=max,scope=netkeep
-      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6
+      - uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532
         with:
           cosign-release: v3.1.4
       - name: Sign NetKeep image
@@ -149,12 +149,12 @@ jobs:
           persist-credentials: false
       - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
-      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550
         with:
           registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -165,7 +165,7 @@ jobs:
           images: |
             ghcr.io/lrqnet/netkeep-oxidized
             docker.io/lrqnet/netkeep-oxidized
-          tags: type=raw,value=0.37.0-r8
+          tags: type=raw,value=0.37.0-r9
       - id: build
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
         with:
@@ -179,7 +179,7 @@ jobs:
           sbom: true
           cache-from: type=gha,scope=netkeep-oxidized
           cache-to: type=gha,mode=max,scope=netkeep-oxidized
-      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6
+      - uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532
         with:
           cosign-release: v3.1.4
       - name: Sign NetKeep Oxidized image
@@ -200,12 +200,12 @@ jobs:
           persist-credentials: false
       - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
-      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550
         with:
           registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -234,7 +234,7 @@ jobs:
           sbom: true
           cache-from: type=gha,scope=netkeep-updater
           cache-to: type=gha,mode=max,scope=netkeep-updater
-      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6
+      - uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532
         with:
           cosign-release: v3.1.4
       - name: Sign NetKeep updater image
@@ -268,7 +268,7 @@ jobs:
           mkdir -p dist
           sed \
             -e "s#docker.io/lrqnet/netkeep:${VERSION}#docker.io/lrqnet/netkeep@${APP_DIGEST}#g" \
-            -e "s#docker.io/lrqnet/netkeep-oxidized:0.37.0-r8#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g" \
+            -e "s#docker.io/lrqnet/netkeep-oxidized:0.37.0-r9#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g" \
             -e "s#docker.io/lrqnet/netkeep-updater:${VERSION}#docker.io/lrqnet/netkeep-updater@${UPDATER_DIGEST}#g" \
             compose.yaml > dist/compose.yaml
           grep -q "docker.io/lrqnet/netkeep@sha256:" dist/compose.yaml
@@ -296,7 +296,7 @@ jobs:
               compose_sha256: $compose_sha,
               images: $images
             }' > dist/update-manifest.json
-      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6
+      - uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532
         with:
           cosign-release: v3.1.4
       - name: Sign update manifest

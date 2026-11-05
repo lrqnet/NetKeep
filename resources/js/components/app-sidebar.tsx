@@ -7,7 +7,7 @@ import {
     CloudCog,
     FileClock,
     Gauge,
-    Github,
+    CodeXml,
     Library,
     Network,
     KeyRound,
@@ -93,7 +93,7 @@ export function AppSidebar() {
         {
             title: `NetKeep ${netkeep.version}`,
             href: netkeep.source_version_url,
-            icon: Github,
+            icon: CodeXml,
         },
         {
             title: t('nav.documentation'),

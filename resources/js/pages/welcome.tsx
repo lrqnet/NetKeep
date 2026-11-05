@@ -3,7 +3,7 @@ import {
     ArrowRight,
     Check,
     GitCompareArrows,
-    Github,
+    CodeXml,
     Heart,
     History,
     Network,
@@ -88,7 +88,7 @@ export default function Welcome({ installed }: { installed: boolean }) {
                                         target="_blank"
                                         rel="noreferrer"
                                     >
-                                        <Github />
+                                        <CodeXml />
                                         {t('welcome.source')}
                                     </a>
                                 </Button>
@@ -281,7 +281,7 @@ export default function Welcome({ installed }: { installed: boolean }) {
                                 rel="noreferrer"
                                 className="inline-flex items-center gap-2 text-slate-400 transition-colors hover:text-white"
                             >
-                                <Github className="size-4" />
+                                <CodeXml className="size-4" />
                                 {t('welcome.footer_creator')}
                             </a>
                             <Button

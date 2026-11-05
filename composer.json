@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "lrqnet/netkeep",
     "type": "project",
-    "description": "Painel livre para inventário e backup de configurações de rede com Oxidized.",
+    "description": "Painel livre para invent\u00e1rio e backup de configura\u00e7\u00f5es de rede com Oxidized.",
     "keywords": [
         "oxidized",
         "network-backup",
@@ -35,7 +35,7 @@
         "laravel/sail": "^1.53",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.9.3",
-        "phpunit/phpunit": "^12.5.23"
+        "phpunit/phpunit": "^13.4.6"
     },
     "autoload": {
         "psr-4": {
@@ -115,6 +115,9 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "platform": {
+            "php": "8.4.27"
         }
     },
     "minimum-stability": "stable",

@@ -3,7 +3,7 @@
 Todas as mudanças relevantes serão registradas aqui. O projeto segue
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.0.12] - 2026-11-05
 
 ### Fixed
 
@@ -15,6 +15,12 @@ Todas as mudanças relevantes serão registradas aqui. O projeto segue
 - página de usuários adaptada a telas pequenas e intermediárias.
 
 ### Security
+
+- Componentes Symfony atualizados para 8.1.11, corrigindo os avisos publicados em 4 de novembro;
+- dependências PHP e JavaScript atualizadas, incluindo Laravel, Inertia e React;
+- imagens-base de PHP, Composer e Node atualizadas por digest;
+- Actions de autenticação Docker e instalação do Cosign atualizadas;
+- configuração do compilador React adaptada ao novo plugin do Vite.
 
 - ESLint atualizado para 10, com plugins React e imports compatíveis;
 - removida a cadeia de minimatch 3 das ferramentas de desenvolvimento;

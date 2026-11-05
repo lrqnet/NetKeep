@@ -7,12 +7,12 @@ socket Docker e sem depender do agente de atualização.
 ## Atualização manual para instalações sem updater
 
 Instalações v1.0.0 e v1.0.1 ainda não possuem o updater integrado. Faça uma
-última atualização manual diretamente para v1.0.11:
+última atualização manual diretamente para v1.0.12:
 
 ```bash
 cd /opt/netkeep
 docker compose exec app php artisan netkeep:backup
-curl -fsSLo compose.yaml.next https://github.com/lrqnet/NetKeep/releases/download/v1.0.11/compose.yaml
+curl -fsSLo compose.yaml.next https://github.com/lrqnet/NetKeep/releases/download/v1.0.12/compose.yaml
 docker compose -f compose.yaml.next config --quiet
 mv compose.yaml.next compose.yaml
 docker compose pull
@@ -107,7 +107,7 @@ manual.
 As tags v1.0.4 e v1.0.5 não possuem release, Compose ou manifesto de atualização
 e não são destinos suportados. A v1.0.4 publicou imagens isoladas; a v1.0.5 foi
 bloqueada antes da publicação. Instalações existentes devem atualizar
-diretamente para v1.0.11. Não use as imagens isoladas da v1.0.4 nem tente
+diretamente para v1.0.12. Não use as imagens isoladas da v1.0.4 nem tente
 reconstruir seus artefatos.
 
 ## Mudanças de dados e sandbox na v1.0.3

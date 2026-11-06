@@ -139,13 +139,20 @@ docker compose ps
 Uma reversão para versão anterior deve usar o snapshot e a política assinada da
 release; não tente desfazer migrations manualmente em produção.
 
-### Oxidized models in v1.0.13
+### Modelos Oxidized na v1.0.13
 
-The engine remains based on Oxidized 0.37.0, with upstream model fixes pinned
-to commit `76e630b70e04901a48eda3bf14a7773d94d7a482`. Existing backups and
-device records require no migration. Model normalization may produce a first
-revision when transient output is removed. PAN-OS API now exports the running
-configuration; set device variable `panos_api_candidate: true` before upgrading
-if candidate configuration exports are required. Custom models continue to
-override the built-in model with the same name. FTD requires HTTP input and
-creates/deletes its configured export file on the device.
+O motor mantém a base Oxidized 0.37.0, com correções de modelos fixadas no
+commit `76e630b70e04901a48eda3bf14a7773d94d7a482`. Equipamentos e backups
+existentes dispensam migração. A normalização pode gerar uma primeira revisão
+quando dados transitórios forem removidos. Modelos personalizados continuam
+sobrescrevendo o modelo nativo de mesmo nome.
+
+O NetKeep continua aceitando equipamentos por SSH e Telnet. Os modelos HTTP
+Cisco FTD e PAN-OS API estão disponíveis e testados no motor, mas a coleta por
+HTTP ainda depende de integração no fluxo de equipamentos do NetKeep. O VSOL
+usa SSH. Esta atualização de modelos não habilita HTTP na interface.
+
+No motor Oxidized, PAN-OS API passa a exportar a configuração aplicada. A
+variável de modelo `panos_api_candidate: true` preserva a exportação candidata;
+ela não é um novo campo no editor de equipamentos do NetKeep. O FTD cria e
+remove seu arquivo de exportação no equipamento; use um nome dedicado.

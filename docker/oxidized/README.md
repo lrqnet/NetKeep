@@ -35,3 +35,12 @@ variable `panos_api_candidate: true` to retain the former candidate export
 behavior. FTD uses the HTTP input and creates/deletes its export file
 (default `oxidized.zip`) on the device; use a dedicated export filename.
 Actual equipment and firmware compatibility still needs device validation.
+
+## NetKeep transport scope
+
+NetKeep currently accepts SSH and Telnet devices. FTD and PAN-OS API are HTTP
+models: their files and HTTP compatibility are present and tested in the engine,
+but HTTP collection cannot yet be configured through NetKeep's device workflow.
+This backport does not add HTTP transport to the application. VSOL uses SSH.
+The `panos_api_candidate` setting above is an Oxidized model variable, not a
+new field in NetKeep's device editor.

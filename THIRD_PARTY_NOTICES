@@ -2,14 +2,21 @@ THIRD-PARTY NOTICES
 
 Oxidized
 --------
-NetKeep runs the unmodified container image oxidized/oxidized:0.37.0 as a
-separate service. Oxidized is developed at https://github.com/ytti/oxidized
+NetKeep builds a separate service from oxidized/oxidized:0.37.0, with
+upstream model and HTTP compatibility backports pinned in
+docker/oxidized/upstream.json. The copied files retain Apache-2.0 licensing. Oxidized is developed at https://github.com/ytti/oxidized
 and is licensed under the Apache License, Version 2.0.
 
 NetKeep does not claim ownership of Oxidized. The upstream source and exact
 license for version 0.37.0 are available at:
 https://github.com/ytti/oxidized/tree/0.37.0
 https://github.com/ytti/oxidized/blob/0.37.0/LICENSE
+
+Rubyzip
+-------
+The Oxidized service includes rubyzip 3.7.0 for FTD exports, licensed under
+BSD-2-Clause. Its license is included in the installed gem:
+https://github.com/rubyzip/rubyzip/blob/v3.7.0/LICENSE
 
 PostgreSQL client
 -----------------

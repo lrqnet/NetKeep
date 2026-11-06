@@ -3,6 +3,21 @@
 Todas as mudanças relevantes serão registradas aqui. O projeto segue
 [Semantic Versioning](https://semver.org/).
 
+## [1.0.13] - 2026-11-06
+
+### Fixed
+
+- Backports dos 26 modelos de equipamentos alterados no Oxidized desde 0.37.0, incluindo Cisco FTD e VSOL OLT;
+- melhorias na ocultação de credenciais, prompts, paginação e remoção de dados transitórios;
+- compatibilidade HTTP e rubyzip para a coleta do Cisco FTD;
+- correção de mutabilidade das strings na classe base de modelos;
+- catálogo de modelos atualizado e testes de regressão upstream integrados ao CI.
+
+### Changed
+
+- PAN-OS API coleta a configuração aplicada por padrão. Para preservar a exportação da configuração candidata, use `panos_api_candidate: true` nas variáveis do equipamento;
+- imagem Oxidized publicada como `0.37.0-r10`, mantendo a base estável 0.37.0 e fixando os backports no commit `76e630b70e04901a48eda3bf14a7773d94d7a482`.
+
 ## [1.0.12] - 2026-11-05
 
 ### Fixed

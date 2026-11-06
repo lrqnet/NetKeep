@@ -7,12 +7,12 @@ socket Docker e sem depender do agente de atualização.
 ## Atualização manual para instalações sem updater
 
 Instalações v1.0.0 e v1.0.1 ainda não possuem o updater integrado. Faça uma
-última atualização manual diretamente para v1.0.12:
+última atualização manual diretamente para v1.0.13:
 
 ```bash
 cd /opt/netkeep
 docker compose exec app php artisan netkeep:backup
-curl -fsSLo compose.yaml.next https://github.com/lrqnet/NetKeep/releases/download/v1.0.12/compose.yaml
+curl -fsSLo compose.yaml.next https://github.com/lrqnet/NetKeep/releases/download/v1.0.13/compose.yaml
 docker compose -f compose.yaml.next config --quiet
 mv compose.yaml.next compose.yaml
 docker compose pull
@@ -107,7 +107,7 @@ manual.
 As tags v1.0.4 e v1.0.5 não possuem release, Compose ou manifesto de atualização
 e não são destinos suportados. A v1.0.4 publicou imagens isoladas; a v1.0.5 foi
 bloqueada antes da publicação. Instalações existentes devem atualizar
-diretamente para v1.0.12. Não use as imagens isoladas da v1.0.4 nem tente
+diretamente para v1.0.13. Não use as imagens isoladas da v1.0.4 nem tente
 reconstruir seus artefatos.
 
 ## Mudanças de dados e sandbox na v1.0.3
@@ -138,3 +138,14 @@ docker compose ps
 
 Uma reversão para versão anterior deve usar o snapshot e a política assinada da
 release; não tente desfazer migrations manualmente em produção.
+
+### Oxidized models in v1.0.13
+
+The engine remains based on Oxidized 0.37.0, with upstream model fixes pinned
+to commit `76e630b70e04901a48eda3bf14a7773d94d7a482`. Existing backups and
+device records require no migration. Model normalization may produce a first
+revision when transient output is removed. PAN-OS API now exports the running
+configuration; set device variable `panos_api_candidate: true` before upgrading
+if candidate configuration exports are required. Custom models continue to
+override the built-in model with the same name. FTD requires HTTP input and
+creates/deletes its configured export file on the device.

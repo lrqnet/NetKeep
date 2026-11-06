@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'version' => '0.37.0',
+    'version' => '0.37.0 + models 76e630b70e04',
     'models' => [
         'acmepacket', 'acos', 'acsw', 'addpack', 'adtran', 'adva', 'aen',
         'aireos', 'airfiber', 'airos', 'alteonos', 'alvarion', 'aos', 'aos7',
@@ -16,7 +16,7 @@ return [
         'edgeos', 'edgeswitch', 'efos', 'eltex', 'enterasys', 'enterasys800',
         'enterprise_sonic', 'eos', 'exalink', 'f5os', 'fabricos', 'fastiron',
         'fiberdriver', 'firebrick', 'firelinuxos', 'firewareos', 'fortigate',
-        'fortios', 'fortiwlc', 'fsos', 'ftos', 'fujitsupy', 'gaiaos',
+        'fortios', 'fortiwlc', 'fsos', 'ftd', 'ftos', 'fujitsupy', 'gaiaos',
         'garderos', 'gcombnps', 'grandstream', 'grandstreamht8xx', 'h3c',
         'hatteras', 'hios', 'hirschmann', 'hpebladesystem', 'hpemsa', 'hpmsm',
         'ibos', 'icotera', 'ingate', 'ios', 'iosxe', 'iosxr', 'ipos',
@@ -32,7 +32,7 @@ return [
         'siklumhtg', 'sixwind', 'slxos', 'smartax', 'smartbyte', 'smartcs',
         'sonicos', 'speedtouch', 'sros', 'srosmd', 'stoneos', 'supermicro',
         'swos', 'tdre', 'telco', 'tmos', 'tnsr', 'tplink', 'trango', 'truenas',
-        'ucs', 'unifiap', 'uplinkolt', 'viptela', 'voltaire', 'voss', 'vrp',
+        'ucs', 'unifiap', 'uplinkolt', 'viptela', 'voltaire', 'voss', 'vrp', 'vsololt',
         'vyatta', 'vyos', 'weos', 'xos', 'yamaha', 'zhoneolt', 'zteolt',
         'zy1308', 'zynos', 'zynosadsl', 'zynoscli', 'zynosgs', 'zynosmgs',
     ],

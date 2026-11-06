@@ -171,11 +171,11 @@ class ContainerRuntimeTest extends TestCase
         $this->assertIsString($compose);
         $this->assertIsString($preflight);
         $this->assertIsString($workflow);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep:1.0.12', $compose);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep-updater:1.0.12', $compose);
-        $this->assertSame(2, substr_count($compose, 'docker.io/lrqnet/netkeep-oxidized:0.37.0-r9'));
-        $this->assertStringContainsString('tags: type=raw,value=0.37.0-r9', $workflow);
-        $this->assertStringContainsString('docker.io/lrqnet/netkeep-oxidized:0.37.0-r9', $preflight);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep:1.0.13', $compose);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep-updater:1.0.13', $compose);
+        $this->assertSame(2, substr_count($compose, 'docker.io/lrqnet/netkeep-oxidized:0.37.0-r10'));
+        $this->assertStringContainsString('tags: type=raw,value=0.37.0-r10', $workflow);
+        $this->assertStringContainsString('docker.io/lrqnet/netkeep-oxidized:0.37.0-r10', $preflight);
         $this->assertSame(3, substr_count($workflow, 'needs: preflight'));
         $this->assertStringContainsString('sh scripts/release-preflight.sh', $workflow);
         $this->assertStringContainsString('Reject previously published immutable tags', $workflow);
@@ -195,7 +195,7 @@ class ContainerRuntimeTest extends TestCase
             $preflight,
         );
         $this->assertStringContainsString(
-            's#docker.io/lrqnet/netkeep-oxidized:0.37.0-r9#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g',
+            's#docker.io/lrqnet/netkeep-oxidized:0.37.0-r10#docker.io/lrqnet/netkeep-oxidized@${OXIDIZED_DIGEST}#g',
             $workflow,
         );
     }

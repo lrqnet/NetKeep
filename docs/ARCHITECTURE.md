@@ -28,7 +28,8 @@ Docker socket ---- updater sem rede ---- volume update_exchange ---- Laravel
 ```
 
 Web, worker e scheduler usam a mesma imagem NetKeep, executada como UID 20000.
-Os motores usam uma imagem derivada do Oxidized 0.37.0 sem alterar seu código,
+Os motores usam uma imagem derivada do Oxidized 0.37.0, com backports de
+modelos e compatibilidade HTTP fixados em `docker/oxidized/upstream.json`,
 executada como UID 30000. PostgreSQL, Oxidized, sandbox e recovery não publicam
 portas no host.
 

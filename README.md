@@ -15,9 +15,10 @@
 
 NetKeep is designed for Internet service providers and infrastructure teams
 that need a safe and approachable way to manage network configuration backups.
-It uses [Oxidized 0.37.0](https://github.com/ytti/oxidized) as its unmodified
-collection engine and adds inventory, authentication, audit logs, permanent Git
-history, notifications, and encrypted redundancy.
+It uses [Oxidized 0.37.0](https://github.com/ytti/oxidized) as its collection engine,
+with pinned [upstream model backports](docker/oxidized/README.md), and adds
+inventory, authentication, audit logs, permanent Git history, notifications,
+and encrypted redundancy.
 
 <p align="center">
   <img src="docs/assets/netkeep-dashboard-preview.webp" alt="NetKeep dashboard in dark mode with fictional example network data" width="1200">

@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: shivammathur/setup-php@9a96576163ad88ed6f6f2cbf381c5229baf95677
+      - uses: shivammathur/setup-php@856a08ae411fe40fc2b1b13c123dd9dcec28d0ca
         with:
           php-version: '8.4.27'
       - name: Verify patched PHP runtime

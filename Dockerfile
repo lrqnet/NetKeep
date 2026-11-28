@@ -44,7 +44,7 @@ COPY public public
 COPY components.json tsconfig.json vite.config.ts ./
 RUN npm run build
 
-FROM postgres:18.4-bookworm@sha256:882236b897e39051d2368c5ccc6cda944904723506b2dfc97f2a8f5bc9afa382 AS postgres-client
+FROM postgres:19.0-bookworm@sha256:f8b826440669ad283328d2ac8326682539eddd91867904ad5abf4ec19269d241 AS postgres-client
 
 FROM dunglas/frankenphp:1-php8.4-bookworm@sha256:7dfebdddf5f92d0edfceb6905c9fc88e82906639eb5e14644b8851a416da90a9 AS runtime-base
 COPY scripts/check-php-security.php /usr/local/lib/netkeep/check-php-security.php

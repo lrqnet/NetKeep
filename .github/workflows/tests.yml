@@ -52,7 +52,7 @@ jobs:
           persist-credentials: false
       - uses: shivammathur/setup-php@9a96576163ad88ed6f6f2cbf381c5229baf95677
         with:
-          php-version: '8.4.27'
+          php-version: '8.4.28'
           tools: composer:v2
           coverage: none
       - name: Verify patched PHP runtime
@@ -120,7 +120,7 @@ jobs:
           persist-credentials: false
       - uses: shivammathur/setup-php@9a96576163ad88ed6f6f2cbf381c5229baf95677
         with:
-          php-version: '8.4.27'
+          php-version: '8.4.28'
           coverage: none
       - name: Verify patched PHP runtime
         run: php scripts/check-php-security.php

@@ -202,7 +202,7 @@ npm run assets:favicons
 
 ## Desenvolvimento nativo
 
-Requer PHP 8.4.27+ ou 8.5.12+ nas respectivas linhas, Composer 2, Node.js 22 e
+Requer PHP 8.4.28+ ou 8.5.13+ nas respectivas linhas, Composer 2, Node.js 22 e
 PostgreSQL. Versões anteriores não contêm as correções das CVE-2026-109618 e
 CVE-2026-109619.
 

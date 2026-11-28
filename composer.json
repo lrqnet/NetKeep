@@ -18,7 +18,7 @@
     ],
     "license": "AGPL-3.0-only",
     "require": {
-        "php": "~8.4.27 || ~8.5.12",
+        "php": "~8.4.28 || ~8.5.13",
         "inertiajs/inertia-laravel": "^3.0",
         "laravel/fortify": "^1.41.0",
         "laravel/framework": "^13.17",
@@ -117,7 +117,7 @@
             "php-http/discovery": true
         },
         "platform": {
-            "php": "8.4.27"
+            "php": "8.4.28"
         }
     },
     "minimum-stability": "stable",

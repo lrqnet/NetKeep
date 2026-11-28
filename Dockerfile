@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
 
-FROM composer:2@sha256:5190d9b445add2fa26090108273cb1ef1e1af98175201c737b85b3c4f90fbf7c AS php-dependencies
+FROM composer:2@sha256:5b2137f112f939a92788ceb5e55f54859d9dbf467a44037cf7760bdda949f365 AS php-dependencies
 WORKDIR /app
 COPY scripts/check-php-security.php scripts/check-php-security.php
 RUN php scripts/check-php-security.php
@@ -23,7 +23,7 @@ COPY routes routes
 COPY artisan .
 RUN composer dump-autoload --no-dev --classmap-authoritative --no-scripts
 
-FROM composer:2@sha256:5190d9b445add2fa26090108273cb1ef1e1af98175201c737b85b3c4f90fbf7c AS php-test-dependencies
+FROM composer:2@sha256:5b2137f112f939a92788ceb5e55f54859d9dbf467a44037cf7760bdda949f365 AS php-test-dependencies
 WORKDIR /app
 COPY scripts/check-php-security.php scripts/check-php-security.php
 RUN php scripts/check-php-security.php
@@ -46,7 +46,7 @@ RUN npm run build
 
 FROM postgres:18.4-bookworm@sha256:882236b897e39051d2368c5ccc6cda944904723506b2dfc97f2a8f5bc9afa382 AS postgres-client
 
-FROM dunglas/frankenphp:1-php8.4-bookworm@sha256:30061df7626971d597e45962269dfa7c077d972e96d1c4baf7c9259d5f7ecd55 AS runtime-base
+FROM dunglas/frankenphp:1-php8.4-bookworm@sha256:7dfebdddf5f92d0edfceb6905c9fc88e82906639eb5e14644b8851a416da90a9 AS runtime-base
 COPY scripts/check-php-security.php /usr/local/lib/netkeep/check-php-security.php
 RUN php /usr/local/lib/netkeep/check-php-security.php \
     && frankenphp php-cli /usr/local/lib/netkeep/check-php-security.php
